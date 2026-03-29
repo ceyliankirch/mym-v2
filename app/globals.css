@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* On définit la police sur TOUS les éléments */
+* {
+  font-family: var(--font-montserrat), sans-serif !important;
+}
+
+body {
+  font-family: var(--font-montserrat), sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* On force aussi sur les éléments qui ont souvent leur propre style par défaut */
+button, input, optgroup, select, textarea {
+  font-family: var(--font-montserrat), sans-serif !important;
+}
