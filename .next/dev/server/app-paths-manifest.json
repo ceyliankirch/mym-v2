@@ -1,3 +1,7 @@
 {
-  "/page": "app/page.js"
+  "/admin/page": "app/admin/page.js",
+  "/page": "app/page.js",
+  "/qui-sommes-nous/page": "app/qui-sommes-nous/page.js",
+  "/sejours-enfants-ados/page": "app/sejours-enfants-ados/page.js",
+  "/sorties-seniors/page": "app/sorties-seniors/page.js"
 }

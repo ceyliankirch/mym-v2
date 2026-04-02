@@ -1,3 +1,5 @@
 node_modules/
 .env.local
 /app/generated/prisma
+
+/app/generated/prisma

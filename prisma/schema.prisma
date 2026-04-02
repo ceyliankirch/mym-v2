@@ -1,0 +1,62 @@
+// prisma/schema.prisma
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- TES MODÈLES ---
+
+model Sejour {
+  id           String    @id @default(cuid())
+  titre        String
+  lieu         String?
+  dateDebut    DateTime?
+  dateFin      DateTime?
+  saison       String?
+  imageUrl     String?   // Obligatoire pour stocker le lien Vercel Blob
+  places       Int       @default(0)
+  prix         Float     @default(0)
+  statut       String    @default("Brouillon") 
+  enAvant      Boolean   @default(false)
+  tranchesAge  String?   // Pour stocker "6-12 ans" par exemple
+  createdAt    DateTime  @default(now())
+  inscriptions Inscription[]
+}
+
+model Client {
+  id           String        @id @default(cuid())
+  nom          String
+  prenom       String?
+  
+  // ⚡ NOUVEAUX CHAMPS POUR LE DASHBOARD
+  email        String?       @unique
+  telephone    String?
+
+  createdAt    DateTime      @default(now())
+  
+  // Relation : Un client peut avoir plusieurs inscriptions
+  inscriptions Inscription[]
+}
+
+model Inscription {
+  id          String   @id @default(cuid())
+  montantPaye Float    @default(0)
+  
+  // ⚡ NOUVEAU CHAMP (Optionnel mais recommandé)
+  statut      String   @default("Confirmé")
+  
+  createdAt   DateTime @default(now())
+
+  // Clés étrangères et relations
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+
+  sejourId    String
+  sejour      Sejour   @relation(fields: [sejourId], references: [id])
+}

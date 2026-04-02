@@ -1,4 +1,5 @@
 "use client";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { 
@@ -38,16 +39,63 @@ function FooterCol({ title, links }) {
 /* ─── FOOTER PRINCIPAL ───────────────────────────────────────────────────── */
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer style={{ background: C.teal, color: C.white, padding: "64px 32px 32px", borderRadius: "40px 40px 0 0" }}>
+    <footer className="footer-wrapper" style={{ background: C.teal, color: C.white, padding: "64px 32px 32px", borderRadius: "40px 40px 0 0", fontFamily: "var(--font-montserrat), sans-serif" }}>
+      
+      {/* ── STYLES RESPONSIVES INJECTÉS ──────────────────────────────────── */}
+      <style>{`
+        /* Bureau par défaut (4 colonnes) */
+        .footer-grid {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr 1fr 1fr;
+          gap: 48px;
+          margin-bottom: 48px;
+        }
+
+        /* Tablette (2 colonnes) */
+        @media (max-width: 1024px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+          }
+        }
+
+        /* Mobile (1 colonne) */
+        @media (max-width: 640px) {
+          .footer-wrapper {
+            padding: 48px 24px 24px !important;
+            border-radius: 32px 32px 0 0 !important;
+          }
+          .footer-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 32px !important;
+          }
+          .footer-bottom {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+            gap: 16px !important;
+          }
+          .footer-bottom-links {
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+        }
+      `}</style>
+
       <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr", gap: "48px", marginBottom: "48px" }}>
+        
+        {/* Grille principale (avec classe responsive) */}
+        <div className="footer-grid">
           
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <div style={{ width: "40px", height: "40px", borderRadius: "14px", background: C.yellow, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "14px", background: C.yellow, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <span style={{ color: C.teal, fontWeight: 900, fontSize: "1.1rem" }}>M</span>
               </div>
               <div>
@@ -55,10 +103,10 @@ export default function Footer() {
                 <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", color: C.yellow, lineHeight: 1.2 }}>Moment</div>
               </div>
             </div>
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, marginBottom: "20px" }}>
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, marginBottom: "20px", maxWidth: "300px" }}>
               Séjours inoubliables pour enfants, ados et séniors depuis Sucy-en-Brie.
             </p>
-            <div style={{ display: "flex", borderRadius: "14px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.12)" }}>
+            <div style={{ display: "flex", borderRadius: "14px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.12)", maxWidth: "300px" }}>
               <input type="email" placeholder="Votre email"
                 style={{ flex: 1, background: "rgba(255,255,255,0.06)", color: C.white, fontSize: "12px", padding: "11px 14px", border: "none", outline: "none", minWidth: 0 }} />
               <button style={{ background: C.yellow, color: C.teal, padding: "0 16px", border: "none", cursor: "pointer", flexShrink: 0, transition: "background .2s" }}
@@ -103,9 +151,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+        {/* Ligne inférieure (Copyright & Liens légaux) */}
+        <div className="footer-bottom" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
           <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", margin: 0 }}>© {currentYear} Make Your Moment · Association loi 1901</p>
-          <div style={{ display: "flex", gap: "20px" }}>
+          <div className="footer-bottom-links" style={{ display: "flex", gap: "20px" }}>
             {["Mentions légales", "CGV", "Confidentialité"].map((l, i) => (
               <Link key={i} href="#" style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => e.currentTarget.style.color = C.yellow}
