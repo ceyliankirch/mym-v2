@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
   ArrowRight, ArrowUpRight, ChevronRight, MapPin, Calendar, Users, Star,
@@ -94,75 +95,92 @@ function BtnOutline({ children, large, light }) {
 }
 
 /* ─── COMPOSANTS CARTES ──────────────────────────────────────────── */
+/* ─── COMPOSANT : CARTE DE SÉJOUR (CATALOGUE) ────────────────────── */
 function SejourCard({ s, idx }) {
   const [liked, setLiked] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
 
   return (
-    <div style={{ background: C.white, borderRadius: "24px", overflow: "hidden", cursor: "pointer", boxShadow: "0 2px 16px rgba(17,76,90,0.07)", transition: "all .3s ease", animation: `fadeUp .5s ease both`, animationDelay: `${idx * 0.05}s`, display: "flex", flexDirection: "column" }}
-      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-6px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
-      <div style={{ position: "relative", height: "180px", overflow: "hidden" }}>
-        <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        <div style={{ position: "absolute", top: "12px", left: "12px", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "4px 10px", display: "flex", alignItems: "center", gap: "5px" }}>
-          <Icon size={12} style={{ color: sColor }} />
-          <span style={{ fontSize: "10px", fontWeight: 800, color: C.teal, textTransform: "uppercase" }}>{s.saison || "Saison"}</span>
-        </div>
-        <button onClick={e => { e.stopPropagation(); setLiked(!liked); }} style={{ position: "absolute", top: "12px", right: "12px", width: "32px", height: "32px", background: "white", borderRadius: "50%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Heart size={14} style={{ fill: liked ? C.saffron : "none", color: liked ? C.saffron : "#ccc" }} />
-        </button>
-      </div>
-
-      <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "12px" }}>
-          <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal, lineHeight: 1.3 }}>{s.titre}</h3>
-          <span style={{ fontSize: "16px", fontWeight: 900, color: C.saffron }}>{s.prix || "0"}€</span>
-        </div>
-        
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "20px", flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#8aaa", fontSize: "12px", fontWeight: 600 }}>
-            <Calendar size={13} style={{ color: C.saffron }} /> {formatSejourDates(s.dateDebut, s.dateFin)}
+    // ⚡ C'est ce Link qui fait toute la magie !
+    <Link href={`/sejours-enfants-ados/${s.id}`} style={{ textDecoration: "none" }}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+    >
+      <div style={{
+          background: C.white, borderRadius: "24px", overflow: "hidden", cursor: "pointer",
+          boxShadow: hovered ? "0 20px 56px rgba(17,76,90,0.14)" : "0 2px 16px rgba(17,76,90,0.07)", 
+          transition: "all .3s ease",
+          animation: `fadeUp .5s ease both`, animationDelay: `${idx * 0.05}s`,
+          display: "flex", flexDirection: "column",
+          transform: hovered ? "translateY(-6px)" : "translateY(0)"
+        }}
+      >
+        <div style={{ position: "relative", height: "180px", overflow: "hidden" }}>
+          <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} 
+               alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease" }} />
+          <div style={{ position: "absolute", top: "12px", left: "12px", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "4px 10px", display: "flex", alignItems: "center", gap: "5px" }}>
+            <Icon size={12} style={{ color: sColor }} />
+            <span style={{ fontSize: "10px", fontWeight: 800, color: C.teal, textTransform: "uppercase" }}>{s.saison}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#8aaa", fontSize: "12px", fontWeight: 600 }}>
-            <MapPin size={13} style={{ color: "#10b981" }} /> {s.lieu || "Lieu à définir"}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#8aaa", fontSize: "12px", fontWeight: 600 }}>
-            <Users size={13} style={{ color: C.teal }} /> {formatAge(s.tranchesAge)}
-          </div>
+          {/* ⚡ preventDefault empêche d'ouvrir la page quand on clique juste sur le coeur */}
+          <button onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
+            style={{ position: "absolute", top: "12px", right: "12px", width: "32px", height: "32px", background: "white", borderRadius: "50%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Heart size={14} style={{ fill: liked ? C.saffron : "none", color: liked ? C.saffron : "#ccc" }} />
+          </button>
         </div>
 
-        <button style={{ width: "100%", background: C.yellow, color: C.teal, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", borderRadius: "999px", padding: "12px", border: "none", cursor: "pointer", transition: "background 0.2s" }}
-          onMouseEnter={e => e.currentTarget.style.background = C.saffron} onMouseLeave={e => e.currentTarget.style.background = C.yellow}>
-          Voir le séjour
-        </button>
+        <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", marginBottom: "8px" }}>
+            <h3 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, lineHeight: 1.3 }}>{s.titre}</h3>
+            <span style={{ fontSize: "16px", fontWeight: 900, color: C.saffron }}>{s.prix}€</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "12px" }}>
+            <MapPin size={12} style={{ color: "#aaa" }} />
+            <span style={{ fontSize: "12px", color: "#888", fontWeight: 500 }}>{s.lieu || "Lieu à définir"}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "16px", color: C.teal, fontWeight: 700, fontSize: "11px", flex: 1 }}>
+            <Users size={12} /> {formatAge(s.tranchesAge)}
+          </div>
+          {/* Remplacé le <button> par une <div> pour éviter les bugs HTML (pas de bouton dans un lien) */}
+          <div style={{ width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "10px", textAlign: "center", transition: "all 0.2s" }}>
+            Voir le séjour
+          </div>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
-function FeaturedHeroCard({ s }) {
+/* ─── COMPOSANT : CARTE "A L'AFFICHE" (HERO) ────────────────────── */
+function FeaturedHeroCard({ s, idx }) {
   const { icon: Icon } = getSeasonConfig(s.saison);
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <div style={{ position: "relative", width: "100%", height: "240px", borderRadius: "24px", overflow: "hidden", boxShadow: "0 12px 32px rgba(0,0,0,0.2)", cursor: "pointer", transition: "transform .3s" }} 
-         onMouseEnter={e => e.currentTarget.style.transform = "scale(1.02)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
-      <img src={s.imageUrl || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80"} alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,76,90,0.95) 0%, rgba(17,76,90,0.4) 40%, transparent 100%)" }} />
-      
-      <div style={{ position: "absolute", top: "16px", left: "16px", background: C.yellow, borderRadius: "999px", padding: "6px 14px", fontSize: "10px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
-        <Star size={11} fill={C.teal} /> À LA UNE
-      </div>
-      
-      <div style={{ position: "absolute", bottom: "20px", left: "20px", right: "20px" }}>
-        <h4 style={{ color: "white", fontWeight: 900, fontSize: "1.3rem", marginBottom: "8px", lineHeight: 1.2 }}>{s.titre}</h4>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "rgba(255,255,255,0.8)", fontSize: "12px", fontWeight: 600 }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Icon size={12} /> {s.saison || "Saison"}</span>
-            <span style={{ opacity: 0.5 }}>•</span>
-            <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Users size={12} /> {formatAge(s.tranchesAge)}</span>
+    // ⚡ On ajoute le Link ici aussi !
+    <Link href={`/sejours-enfants-ados/${s.id}`} style={{ textDecoration: "none" }}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div style={{
+        position: "relative", width: "100%", height: "220px", borderRadius: "24px", overflow: "hidden",
+        boxShadow: "0 12px 32px rgba(0,0,0,0.2)", cursor: "pointer", transition: "transform .3s",
+        transform: hovered ? "scale(1.02) translateX(10px)" : "scale(1) translateX(0)"
+      }}>
+        <img src={s.imageUrl} alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,76,90,0.9) 0%, transparent 70%)" }} />
+        <div style={{ position: "absolute", top: "12px", left: "12px", background: C.yellow, borderRadius: "999px", padding: "4px 12px", fontSize: "10px", fontWeight: 800, color: C.teal }}>
+          À LA UNE
+        </div>
+        <div style={{ position: "absolute", bottom: "16px", left: "16px", right: "16px" }}>
+          <h4 style={{ color: "white", fontWeight: 900, fontSize: "1.1rem", marginBottom: "4px" }}>{s.titre}</h4>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "rgba(255,255,255,0.7)", fontSize: "11px" }}>
+              <Icon size={12} /> {s.saison}
+            </div>
+            <span style={{ color: C.yellow, fontWeight: 900 }}>{s.prix}€</span>
           </div>
-          <span style={{ color: C.yellow, fontWeight: 900, fontSize: "1.2rem" }}>{s.prix || "0"}€</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

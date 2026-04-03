@@ -1,82 +1,102 @@
-[00:00:03.537] Server  LOG     ✓ Ready in 2.7s
-[00:00:06.592] Server  LOG     🚀 PRISMA : Démarrage en mode NATIF (Sans Adaptateur) !
-[00:00:08.685] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:02:35.147] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:05:44.573] Server  ERROR   ⨯ ./app/sejours-enfants-ados/page.jsx:2:1
-Module not found: Can't resolve './SejoursClient'
-  1 | import { prisma } from "@/lib/prisma";
-> 2 | import SejoursClient from "./SejoursClient";
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  3 |
-  4 | export const dynamic = "force-dynamic";
-  5 |
+[00:00:01.488] Server  LOG     ✓ Ready in 1224ms
+[00:00:04.806] Server  LOG     🚀 PRISMA : Démarrage en mode NATIF (Sans Adaptateur) !
+[00:00:04.882] Server  WARN    Error: Route "/sejours-enfants-ados/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:00:05.557] Server  ERROR   ⨯ PrismaClientValidationError: 
+Invalid `{imported module ./lib/prisma.js}["prisma"].sejour.findUnique()` invocation in
+/home/ceylian/mym-v2/.next/dev/server/chunks/ssr/[root-of-the-server]__e24b0079._.js:102:153
 
+   99 // 1. On récupère l'ID du séjour dans l'URL
+  100 const { id } = params;
+  101 // 2. On demande à Neon (Prisma) de trouver le séjour correspondant
+→ 102 const sejour = await {imported module ./lib/prisma.js}["prisma"].sejour.findUnique({
+        where: {
+          id: undefined,
+      ?   AND?: SejourWhereInput | SejourWhereInput[],
+      ?   OR?: SejourWhereInput[],
+      ?   NOT?: SejourWhereInput | SejourWhereInput[],
+      ?   titre?: StringFilter | String,
+      ?   lieu?: StringNullableFilter | String | Null,
+      ?   dateDebut?: DateTimeNullableFilter | DateTime | Null,
+      ?   dateFin?: DateTimeNullableFilter | DateTime | Null,
+      ?   saison?: StringNullableFilter | String | Null,
+      ?   imageUrl?: StringNullableFilter | String | Null,
+      ?   places?: IntFilter | Int,
+      ?   prix?: FloatFilter | Float,
+      ?   statut?: StringFilter | String,
+      ?   enAvant?: BoolFilter | Boolean,
+      ?   tranchesAge?: StringNullableFilter | String | Null,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   inscriptions?: InscriptionListRelationFilter
+        }
+      })
 
+Argument `where` of type SejourWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+[00:00:13.106] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:16.915] Server  WARN    Error: Route "/sejours-enfants-ados/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:00:17.186] Server  ERROR   ⨯ PrismaClientValidationError: 
+Invalid `{imported module ./lib/prisma.js}["prisma"].sejour.findUnique()` invocation in
+/home/ceylian/mym-v2/.next/dev/server/chunks/ssr/[root-of-the-server]__e24b0079._.js:102:153
 
-https://nextjs.org/docs/messages/module-not-found
+   99 // 1. On récupère l'ID du séjour dans l'URL
+  100 const { id } = params;
+  101 // 2. On demande à Neon (Prisma) de trouver le séjour correspondant
+→ 102 const sejour = await {imported module ./lib/prisma.js}["prisma"].sejour.findUnique({
+        where: {
+          id: undefined,
+      ?   AND?: SejourWhereInput | SejourWhereInput[],
+      ?   OR?: SejourWhereInput[],
+      ?   NOT?: SejourWhereInput | SejourWhereInput[],
+      ?   titre?: StringFilter | String,
+      ?   lieu?: StringNullableFilter | String | Null,
+      ?   dateDebut?: DateTimeNullableFilter | DateTime | Null,
+      ?   dateFin?: DateTimeNullableFilter | DateTime | Null,
+      ?   saison?: StringNullableFilter | String | Null,
+      ?   imageUrl?: StringNullableFilter | String | Null,
+      ?   places?: IntFilter | Int,
+      ?   prix?: FloatFilter | Float,
+      ?   statut?: StringFilter | String,
+      ?   enAvant?: BoolFilter | Boolean,
+      ?   tranchesAge?: StringNullableFilter | String | Null,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   inscriptions?: InscriptionListRelationFilter
+        }
+      })
 
+Argument `where` of type SejourWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+[00:00:17.591] Browser ERROR   uncaughtError: PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].sejour.findUnique()` invocation in
+/home/ceylian/mym-v2/.next/dev/server/chunks/ssr/[root-of-the-server]__e24b0079._.js:102:153
 
-[00:05:44.574] Server  ERROR   ⨯ ./app/sejours-enfants-ados/page.jsx:2:1
-Module not found: Can't resolve './SejoursClient'
-  1 | import { prisma } from "@/lib/prisma";
-> 2 | import SejoursClient from "./SejoursClient";
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  3 |
-  4 | export const dynamic = "force-dynamic";
-  5 |
+   99 // 1. On récupère l'ID du séjour dans l'URL
+  100 const { id } = params;
+  101 // 2. On demande à Neon (Prisma) de trouver le séjour correspondant
+→ 102 const sejour = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].sejour.findUnique({
+        where: {
+          id: undefined,
+      ?   AND?: SejourWhereInput | SejourWhereInput[],
+      ?   OR?: SejourWhereInput[],
+      ?   NOT?: SejourWhereInput | SejourWhereInput[],
+      ?   titre?: StringFilter | String,
+      ?   lieu?: StringNullableFilter | String | Null,
+      ?   dateDebut?: DateTimeNullableFilter | DateTime | Null,
+      ?   dateFin?: DateTimeNullableFilter | DateTime | Null,
+      ?   saison?: StringNullableFilter | String | Null,
+      ?   imageUrl?: StringNullableFilter | String | Null,
+      ?   places?: IntFilter | Int,
+      ?   prix?: FloatFilter | Float,
+      ?   statut?: StringFilter | String,
+      ?   enAvant?: BoolFilter | Boolean,
+      ?   tranchesAge?: StringNullableFilter | String | Null,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   inscriptions?: InscriptionListRelationFilter
+        }
+      })
 
-
-
-https://nextjs.org/docs/messages/module-not-found
-
-
-[00:05:44.584] Server  ERROR   ⨯ ./app/sejours-enfants-ados/page.jsx:2:1
-Module not found: Can't resolve './SejoursClient'
-  1 | import { prisma } from "@/lib/prisma";
-> 2 | import SejoursClient from "./SejoursClient";
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  3 |
-  4 | export const dynamic = "force-dynamic";
-  5 |
-
-
-
-https://nextjs.org/docs/messages/module-not-found
-
-
-[00:05:44.585] Server  ERROR   ⨯ ./app/sejours-enfants-ados/page.jsx:2:1
-Module not found: Can't resolve './SejoursClient'
-  1 | import { prisma } from "@/lib/prisma";
-> 2 | import SejoursClient from "./SejoursClient";
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  3 |
-  4 | export const dynamic = "force-dynamic";
-  5 |
-
-
-
-https://nextjs.org/docs/messages/module-not-found
-
-
-[00:05:44.614] Server  LOG     ✓ Compiled in 165ms
-[00:05:45.740] Browser ERROR   ./app/sejours-enfants-ados/page.jsx:2:1
-Module not found: Can't resolve './SejoursClient'
-  1 | import { prisma } from "@/lib/prisma";
-> 2 | import SejoursClient from "./SejoursClient";
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  3 |
-  4 | export const dynamic = "force-dynamic";
-  5 |
-
-https://nextjs.org/docs/messages/module-not-found
-[00:05:57.542] Server  LOG     ✓ Compiled in 347ms
-[00:06:01.878] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:06:58.209] Server  LOG     ✓ Compiled in 102ms
-[00:10:54.641] Server  LOG     ✓ Compiled in 50ms
-[00:12:58.094] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:16:01.803] Server  LOG     📡 Admin : Récupération des données depuis Neon...
-[00:16:03.248] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:16:10.054] Server  LOG     📡 Admin : Récupération des données depuis Neon...
-[00:22:28.311] Server  LOG     ✓ Compiled in 330ms
-[00:26:02.016] Server  LOG     📡 Admin : Récupération des données depuis Neon...
-[00:29:00.632] Server  LOG     📡 Admin : Récupération des données depuis Neon...
+Argument `where` of type SejourWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+[00:02:19.640] Server  LOG     ✓ Compiled in 45ms
+[00:02:20.648] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:15.687] Server  LOG     ✓ Compiled in 65ms
+[00:03:20.214] Browser ERROR   uncaughtError: ReferenceError: Header is not defined
+[00:03:34.121] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:03:34.137] Server  LOG     ✓ Compiled in 56ms
+[00:03:35.343] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
