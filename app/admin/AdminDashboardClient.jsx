@@ -78,6 +78,46 @@ const formatSejourDates = (startStr, endStr) => {
   return `Du ${startDay} au ${endDay} ${startMonth}`;
 };
 
+// ⚡ NOUVELLE FONCTION DE COMPRESSION WEBP NATIVE
+const compressToWebP = (file, maxWidth = 1200, quality = 0.8) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+
+        // Redimensionnement proportionnel si l'image est trop grande
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Conversion en WebP
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error("Erreur de compression"));
+          
+          // On recrée un objet File propre avec la nouvelle extension
+          const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+          const compressedFile = new File([blob], newFileName, { type: 'image/webp' });
+          
+          resolve({ file: compressedFile, preview: URL.createObjectURL(blob) });
+        }, 'image/webp', quality);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 /* ── COMPOSANTS UI RÉUTILISABLES ── */
 function StatCard({ title, value, icon: Icon, color }) {
   return (
@@ -156,23 +196,40 @@ function CustomSelect({ name, label, options, defaultValue }) {
   );
 }
 
-function ImageUpload({ defaultValue }) {
+// ⚡ Composant Upload avec Compression WebP intégrée
+function ImageUpload({ defaultValue, onImageCompressed }) {
   const [preview, setPreview] = useState(defaultValue || null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const fileInputRef = useRef(null);
-  const handleImageChange = (e) => {
+  
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result);
-      reader.readAsDataURL(file);
+      setIsCompressing(true);
+      try {
+        const { file: webpFile, preview: webpPreview } = await compressToWebP(file);
+        setPreview(webpPreview);
+        onImageCompressed(webpFile); // On remonte le fichier compressé
+      } catch (error) {
+        console.error("Erreur lors de la compression :", error);
+      }
+      setIsCompressing(false);
     }
   };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Image de couverture</label>
+      <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Image de couverture (auto-compressée en WebP)</label>
       <div onClick={() => fileInputRef.current?.click()} style={{ width: "100%", height: "140px", borderRadius: "16px", border: `2px dashed ${preview ? "transparent" : C.lightGray}`, background: C.arctic, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", overflow: "hidden" }}>
-        <input type="file" name="image" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
-        {preview ? <img src={preview} alt="Aperçu" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
+        
+        {/* On gère l'envoi manuellement, donc pas de name="image" ici */}
+        <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
+        
+        {isCompressing ? (
+          <p style={{ fontSize: "13px", fontWeight: 700, color: C.saffron }}>Compression en cours... ⚡</p>
+        ) : preview ? (
+          <img src={preview} alt="Aperçu" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
           <>
             <UploadCloud size={32} color={C.gray} style={{ marginBottom: "8px" }} />
             <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>Cliquez pour uploader</p>
@@ -188,6 +245,9 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
   const isEditing = sejourData !== "nouveau" && sejourData !== "nouveau-senior";
   const defaultAge = sejourData === "nouveau-senior" ? "Séniors" : "";
   const [prixOptions, setPrixOptions] = useState(isEditing && sejourData.prix ? [sejourData.prix] : [0]);
+  
+  // ⚡ État pour stocker l'image compressée
+  const [compressedImage, setCompressedImage] = useState(null);
 
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.4)", backdropFilter: "blur(4px)" }}>
@@ -199,6 +259,12 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
         
         <form action={async (formData) => {
           setIsSubmitting(true);
+          
+          // ⚡ Injection de l'image compressée dans le formulaire
+          if (compressedImage) {
+            formData.set("image", compressedImage);
+          }
+
           // ⚡ DÉCOMMENTÉ : On sauvegarde en base de données
           if (isEditing) { await modifierSejour(sejourData.id, formData); } 
           else { await creerSejour(formData); }
@@ -242,7 +308,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             ]} />
           </div>
           
-          <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} />
+          <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} />
           
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
             <button type="button" onClick={() => setSejourEnEdition(null)} style={{ cursor: "pointer", background: "none", border: "none", color: C.gray, fontWeight: 600 }}>Annuler</button>

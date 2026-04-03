@@ -52,11 +52,7 @@ const NAV = [
         label: "Sorties séniors",
         href: "/sorties-seniors"
     },
-    {
-        label: "Séjours scolaires",
-        href: "/sejours-scolaires"
-    },
-    {
+    /*{ label: "Séjours scolaires", href: "/sejours-scolaires" },*/ {
         label: "FAQ",
         href: "/faq"
     }

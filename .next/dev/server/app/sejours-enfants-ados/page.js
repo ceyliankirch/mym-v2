@@ -1,6 +1,6 @@
 var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/sejours-enfants-ados/page.js")
-R.c("server/chunks/ssr/node_modules_next_dist_7a66b8bd._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__99b63cb4._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__04e239c7._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__933c8974._.js")
 R.c("server/chunks/ssr/node_modules_e2d1c5df._.js")
 R.c("server/chunks/ssr/[externals]__e8a2741f._.js")
 R.c("server/chunks/ssr/app_b9b1292a._.js")

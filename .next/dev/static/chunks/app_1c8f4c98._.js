@@ -588,6 +588,47 @@ const formatSejourDates = (startStr, endStr)=>{
     if (startMonth !== endMonth) return `Du ${startDay} ${startMonth} au ${endDay} ${endMonth}`;
     return `Du ${startDay} au ${endDay} ${startMonth}`;
 };
+// ⚡ NOUVELLE FONCTION DE COMPRESSION WEBP NATIVE
+const compressToWebP = (file, maxWidth = 1200, quality = 0.8)=>{
+    return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e)=>{
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = ()=>{
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+                // Redimensionnement proportionnel si l'image est trop grande
+                if (width > maxWidth) {
+                    height = Math.round(height * maxWidth / width);
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Conversion en WebP
+                canvas.toBlob((blob)=>{
+                    if (!blob) return reject(new Error("Erreur de compression"));
+                    // On recrée un objet File propre avec la nouvelle extension
+                    const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+                    const compressedFile = new File([
+                        blob
+                    ], newFileName, {
+                        type: 'image/webp'
+                    });
+                    resolve({
+                        file: compressedFile,
+                        preview: URL.createObjectURL(blob)
+                    });
+                }, 'image/webp', quality);
+            };
+            img.onerror = (err)=>reject(err);
+        };
+        reader.onerror = (err)=>reject(err);
+    });
+};
 /* ── COMPOSANTS UI RÉUTILISABLES ── */ function StatCard({ title, value, icon: Icon, color }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: {
@@ -623,17 +664,17 @@ const formatSejourDates = (startStr, endStr)=>{
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 87,
+                        lineNumber: 127,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 86,
+                    lineNumber: 126,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 85,
+                lineNumber: 125,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -650,7 +691,7 @@ const formatSejourDates = (startStr, endStr)=>{
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 91,
+                        lineNumber: 131,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -663,19 +704,19 @@ const formatSejourDates = (startStr, endStr)=>{
                         children: value
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 92,
+                        lineNumber: 132,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 90,
+                lineNumber: 130,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 84,
+        lineNumber: 124,
         columnNumber: 5
     }, this);
 }
@@ -712,7 +753,7 @@ function FilterDropdown({ value, onChange, options, defaultLabel }) {
                         children: displayLabel
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 109,
+                        lineNumber: 149,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
@@ -724,13 +765,13 @@ function FilterDropdown({ value, onChange, options, defaultLabel }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 110,
+                        lineNumber: 150,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 105,
+                lineNumber: 145,
                 columnNumber: 7
             }, this),
             isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -767,7 +808,7 @@ function FilterDropdown({ value, onChange, options, defaultLabel }) {
                         children: defaultLabel
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 115,
+                        lineNumber: 155,
                         columnNumber: 11
                     }, this),
                     options.map((opt)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -788,19 +829,19 @@ function FilterDropdown({ value, onChange, options, defaultLabel }) {
                             children: opt.label
                         }, opt.value, false, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 119,
+                            lineNumber: 159,
                             columnNumber: 13
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 114,
+                lineNumber: 154,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 104,
+        lineNumber: 144,
         columnNumber: 5
     }, this);
 }
@@ -830,7 +871,7 @@ function CustomSelect({ name, label, options, defaultValue }) {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 136,
+                lineNumber: 176,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -839,7 +880,7 @@ function CustomSelect({ name, label, options, defaultValue }) {
                 value: selected.value
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 137,
+                lineNumber: 177,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -870,14 +911,14 @@ function CustomSelect({ name, label, options, defaultValue }) {
                                 color: selected.color || C.teal
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 140,
+                                lineNumber: 180,
                                 columnNumber: 29
                             }, this),
                             selected.label
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 139,
+                        lineNumber: 179,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
@@ -887,13 +928,13 @@ function CustomSelect({ name, label, options, defaultValue }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 143,
+                        lineNumber: 183,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 138,
+                lineNumber: 178,
                 columnNumber: 7
             }, this),
             isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -931,40 +972,48 @@ function CustomSelect({ name, label, options, defaultValue }) {
                                 color: opt.color || C.teal
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 149,
+                                lineNumber: 189,
                                 columnNumber: 28
                             }, this),
                             opt.label
                         ]
                     }, opt.value, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 148,
+                        lineNumber: 188,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 146,
+                lineNumber: 186,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 135,
+        lineNumber: 175,
         columnNumber: 5
     }, this);
 }
 _s1(CustomSelect, "quk5NPnr/e0BIqUkmvtWExVll/8=");
 _c2 = CustomSelect;
-function ImageUpload({ defaultValue }) {
+// ⚡ Composant Upload avec Compression WebP intégrée
+function ImageUpload({ defaultValue, onImageCompressed }) {
     _s2();
     const [preview, setPreview] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(defaultValue || null);
+    const [isCompressing, setIsCompressing] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const fileInputRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const handleImageChange = (e)=>{
+    const handleImageChange = async (e)=>{
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = ()=>setPreview(reader.result);
-            reader.readAsDataURL(file);
+            setIsCompressing(true);
+            try {
+                const { file: webpFile, preview: webpPreview } = await compressToWebP(file);
+                setPreview(webpPreview);
+                onImageCompressed(webpFile); // On remonte le fichier compressé
+            } catch (error) {
+                console.error("Erreur lors de la compression :", error);
+            }
+            setIsCompressing(false);
         }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -981,10 +1030,10 @@ function ImageUpload({ defaultValue }) {
                     color: C.gray,
                     textTransform: "uppercase"
                 },
-                children: "Image de couverture"
+                children: "Image de couverture (auto-compressée en WebP)"
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 172,
+                lineNumber: 222,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1006,7 +1055,6 @@ function ImageUpload({ defaultValue }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                         type: "file",
-                        name: "image",
                         accept: "image/*",
                         ref: fileInputRef,
                         onChange: handleImageChange,
@@ -1015,10 +1063,21 @@ function ImageUpload({ defaultValue }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 174,
+                        lineNumber: 226,
                         columnNumber: 9
                     }, this),
-                    preview ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                    isCompressing ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        style: {
+                            fontSize: "13px",
+                            fontWeight: 700,
+                            color: C.saffron
+                        },
+                        children: "Compression en cours... ⚡"
+                    }, void 0, false, {
+                        fileName: "[project]/app/admin/AdminDashboardClient.jsx",
+                        lineNumber: 229,
+                        columnNumber: 11
+                    }, this) : preview ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                         src: preview,
                         alt: "Aperçu",
                         style: {
@@ -1028,8 +1087,8 @@ function ImageUpload({ defaultValue }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 175,
-                        columnNumber: 20
+                        lineNumber: 231,
+                        columnNumber: 11
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$cloud$2d$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__UploadCloud$3e$__["UploadCloud"], {
@@ -1040,7 +1099,7 @@ function ImageUpload({ defaultValue }) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 177,
+                                lineNumber: 234,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1052,7 +1111,7 @@ function ImageUpload({ defaultValue }) {
                                 children: "Cliquez pour uploader"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 178,
+                                lineNumber: 235,
                                 columnNumber: 13
                             }, this)
                         ]
@@ -1060,17 +1119,17 @@ function ImageUpload({ defaultValue }) {
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 173,
+                lineNumber: 223,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 171,
+        lineNumber: 221,
         columnNumber: 5
     }, this);
 }
-_s2(ImageUpload, "4n7EaoOxUXrudna9a2MQF+pdY0U=");
+_s2(ImageUpload, "5MVv99DhhIsDWyBANKAa+8Sq460=");
 _c3 = ImageUpload;
 /* ── MODALE CRÉATION / ÉDITION ── */ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmitting }) {
     _s3();
@@ -1081,6 +1140,8 @@ _c3 = ImageUpload;
     ] : [
         0
     ]);
+    // ⚡ État pour stocker l'image compressée
+    const [compressedImage, setCompressedImage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: {
             position: "absolute",
@@ -1125,12 +1186,12 @@ _c3 = ImageUpload;
                         size: 16
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 195,
+                        lineNumber: 255,
                         columnNumber: 293
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 195,
+                    lineNumber: 255,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1143,12 +1204,16 @@ _c3 = ImageUpload;
                     children: isEditing ? "Modifier le séjour" : sejourData === "nouveau-senior" ? "Créer une sortie Sénior" : "Créer un nouveau séjour"
                 }, void 0, false, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 196,
+                    lineNumber: 256,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                     action: async (formData)=>{
                         setIsSubmitting(true);
+                        // ⚡ Injection de l'image compressée dans le formulaire
+                        if (compressedImage) {
+                            formData.set("image", compressedImage);
+                        }
                         // ⚡ DÉCOMMENTÉ : On sauvegarde en base de données
                         if (isEditing) {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$actions$2f$data$3a$b956da__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__["modifierSejour"])(sejourData.id, formData);
@@ -1184,7 +1249,7 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 210,
+                                    lineNumber: 276,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1200,13 +1265,13 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 211,
+                                    lineNumber: 277,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 209,
+                            lineNumber: 275,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1228,7 +1293,7 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 215,
+                                    lineNumber: 281,
                                     columnNumber: 14
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1244,13 +1309,13 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 216,
+                                    lineNumber: 282,
                                     columnNumber: 14
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 214,
+                            lineNumber: 280,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1270,7 +1335,7 @@ _c3 = ImageUpload;
                                     children: "Option(s) de prix (€)"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 220,
+                                    lineNumber: 286,
                                     columnNumber: 13
                                 }, this),
                                 prixOptions.map((p, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1285,7 +1350,7 @@ _c3 = ImageUpload;
                                         }
                                     }, idx, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 222,
+                                        lineNumber: 288,
                                         columnNumber: 15
                                     }, this)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1306,13 +1371,13 @@ _c3 = ImageUpload;
                                     children: "+ Ajouter une option de prix"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 224,
+                                    lineNumber: 290,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 219,
+                            lineNumber: 285,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1334,7 +1399,7 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 228,
+                                    lineNumber: 294,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1350,13 +1415,13 @@ _c3 = ImageUpload;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 229,
+                                    lineNumber: 295,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 227,
+                            lineNumber: 293,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1398,7 +1463,7 @@ _c3 = ImageUpload;
                                     ]
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 233,
+                                    lineNumber: 299,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CustomSelect, {
@@ -1421,20 +1486,21 @@ _c3 = ImageUpload;
                                     ]
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 239,
+                                    lineNumber: 305,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 232,
+                            lineNumber: 298,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ImageUpload, {
-                            defaultValue: isEditing ? sejourData.imageUrl : null
+                            defaultValue: isEditing ? sejourData.imageUrl : null,
+                            onImageCompressed: setCompressedImage
                         }, void 0, false, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 245,
+                            lineNumber: 311,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1457,7 +1523,7 @@ _c3 = ImageUpload;
                                     children: "Annuler"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 248,
+                                    lineNumber: 314,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1474,34 +1540,34 @@ _c3 = ImageUpload;
                                     children: isSubmitting ? "Enregistrement..." : isEditing ? "Enregistrer les modifications" : "Enregistrer"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 249,
+                                    lineNumber: 315,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 247,
+                            lineNumber: 313,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 200,
+                    lineNumber: 260,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-            lineNumber: 194,
+            lineNumber: 254,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 193,
+        lineNumber: 253,
         columnNumber: 5
     }, this);
 }
-_s3(ModalSejour, "3qREGAmKm1jQmfUtr/Olc9OwEaE=");
+_s3(ModalSejour, "DlPmyKbQBmKI0Z981OP80p1EDuM=");
 _c4 = ModalSejour;
 /* ── COMPOSANTS DE TABLEAUX ET GRILLES ── */ function TableInscriptions({ data }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1522,7 +1588,7 @@ _c4 = ModalSejour;
                 children: "Dernières Inscriptions"
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 263,
+                lineNumber: 329,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -1547,7 +1613,7 @@ _c4 = ModalSejour;
                                     children: "PARTICIPANT"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 266,
+                                    lineNumber: 332,
                                     columnNumber: 11
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1559,7 +1625,7 @@ _c4 = ModalSejour;
                                     children: "SÉJOUR"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 267,
+                                    lineNumber: 333,
                                     columnNumber: 11
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1571,18 +1637,18 @@ _c4 = ModalSejour;
                                     children: "MONTANT"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 268,
+                                    lineNumber: 334,
                                     columnNumber: 11
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 265,
+                            lineNumber: 331,
                             columnNumber: 16
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 265,
+                        lineNumber: 331,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1605,7 +1671,7 @@ _c4 = ModalSejour;
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 273,
+                                        lineNumber: 339,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1616,7 +1682,7 @@ _c4 = ModalSejour;
                                         children: b.sejour?.titre
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 274,
+                                        lineNumber: 340,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1631,30 +1697,30 @@ _c4 = ModalSejour;
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 275,
+                                        lineNumber: 341,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, b.id, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 272,
+                                lineNumber: 338,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 270,
+                        lineNumber: 336,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 264,
+                lineNumber: 330,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 262,
+        lineNumber: 328,
         columnNumber: 5
     }, this);
 }
@@ -1702,7 +1768,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 292,
+                                lineNumber: 358,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1714,7 +1780,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "SÉJOUR"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 293,
+                                lineNumber: 359,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1726,7 +1792,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "ÂGE"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 294,
+                                lineNumber: 360,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1738,7 +1804,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "REMPLISSAGE"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 295,
+                                lineNumber: 361,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1750,7 +1816,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "DATES"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 296,
+                                lineNumber: 362,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1762,7 +1828,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "PRIX"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 297,
+                                lineNumber: 363,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1775,18 +1841,18 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                 children: "ACTIONS"
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 298,
+                                lineNumber: 364,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 291,
+                        lineNumber: 357,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 290,
+                    lineNumber: 356,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1834,19 +1900,19 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                     color: "#10b981"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 317,
+                                                    lineNumber: 383,
                                                     columnNumber: 35
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2d$off$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__EyeOff$3e$__["EyeOff"], {
                                                     size: 18,
                                                     color: C.gray
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 317,
+                                                    lineNumber: 383,
                                                     columnNumber: 73
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 316,
+                                                lineNumber: 382,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1865,23 +1931,23 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                     fill: isEnAvant ? C.yellow : "transparent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 320,
+                                                    lineNumber: 386,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 319,
+                                                lineNumber: 385,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 315,
+                                        lineNumber: 381,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 314,
+                                    lineNumber: 380,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1904,13 +1970,13 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                             children: s.saison
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 327,
+                                            lineNumber: 393,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 325,
+                                    lineNumber: 391,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1923,7 +1989,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                     children: formatAge(s.tranchesAge)
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 330,
+                                    lineNumber: 396,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1951,7 +2017,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 336,
+                                                    lineNumber: 402,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1964,13 +2030,13 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 337,
+                                                    lineNumber: 403,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 335,
+                                            lineNumber: 401,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1991,18 +2057,18 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 340,
+                                                lineNumber: 406,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 339,
+                                            lineNumber: 405,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 334,
+                                    lineNumber: 400,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2014,7 +2080,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                     children: formatSejourDates(s.dateDebut, s.dateFin)
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 344,
+                                    lineNumber: 410,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2030,7 +2096,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 348,
+                                    lineNumber: 414,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2056,12 +2122,12 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                         size: 15
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                        lineNumber: 351,
+                                                        lineNumber: 417,
                                                         columnNumber: 69
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 351,
+                                                    lineNumber: 417,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2071,12 +2137,12 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                         size: 15
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                        lineNumber: 352,
+                                                        lineNumber: 418,
                                                         columnNumber: 71
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 352,
+                                                    lineNumber: 418,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2086,18 +2152,18 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                         size: 15
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                        lineNumber: 353,
+                                                        lineNumber: 419,
                                                         columnNumber: 72
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 353,
+                                                    lineNumber: 419,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 350,
+                                            lineNumber: 416,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2111,12 +2177,12 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                 size: 15
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 355,
+                                                lineNumber: 421,
                                                 columnNumber: 108
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 355,
+                                            lineNumber: 421,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2132,41 +2198,41 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                                                 size: 15
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 356,
+                                                lineNumber: 422,
                                                 columnNumber: 161
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 356,
+                                            lineNumber: 422,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 349,
+                                    lineNumber: 415,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, s.id, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 312,
+                            lineNumber: 378,
                             columnNumber: 15
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 301,
+                    lineNumber: 367,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-            lineNumber: 289,
+            lineNumber: 355,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 288,
+        lineNumber: 354,
         columnNumber: 5
     }, this);
 }
@@ -2229,7 +2295,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 384,
+                                lineNumber: 450,
                                 columnNumber: 29
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Image$3e$__["Image"], {
                                 size: 32,
@@ -2243,7 +2309,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 384,
+                                lineNumber: 450,
                                 columnNumber: 160
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2273,19 +2339,19 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             color: "#10b981"
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 388,
+                                            lineNumber: 454,
                                             columnNumber: 31
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2d$off$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__EyeOff$3e$__["EyeOff"], {
                                             size: 14,
                                             color: C.gray
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 388,
+                                            lineNumber: 454,
                                             columnNumber: 69
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 387,
+                                        lineNumber: 453,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2307,18 +2373,18 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             fill: isEnAvant ? C.yellow : "transparent"
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 391,
+                                            lineNumber: 457,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 390,
+                                        lineNumber: 456,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 386,
+                                lineNumber: 452,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2340,13 +2406,13 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 395,
+                                lineNumber: 461,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 383,
+                        lineNumber: 449,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2374,7 +2440,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                         children: s.titre
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 400,
+                                        lineNumber: 466,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2390,13 +2456,13 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                         children: s.saison
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 401,
+                                        lineNumber: 467,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 399,
+                                lineNumber: 465,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2422,7 +2488,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                                 color: C.saffron
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 406,
+                                                lineNumber: 472,
                                                 columnNumber: 19
                                             }, this),
                                             " ",
@@ -2430,7 +2496,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 405,
+                                        lineNumber: 471,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2448,7 +2514,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                                 color: "#10b981"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 409,
+                                                lineNumber: 475,
                                                 columnNumber: 19
                                             }, this),
                                             " ",
@@ -2456,7 +2522,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 408,
+                                        lineNumber: 474,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2474,7 +2540,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                                 color: C.teal
                                             }, void 0, false, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 412,
+                                                lineNumber: 478,
                                                 columnNumber: 19
                                             }, this),
                                             " ",
@@ -2482,13 +2548,13 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 411,
+                                        lineNumber: 477,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 404,
+                                lineNumber: 470,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2516,7 +2582,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 418,
+                                                lineNumber: 484,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2530,13 +2596,13 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                lineNumber: 419,
+                                                lineNumber: 485,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 417,
+                                        lineNumber: 483,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2556,24 +2622,24 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 422,
+                                            lineNumber: 488,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 421,
+                                        lineNumber: 487,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 416,
+                                lineNumber: 482,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 398,
+                        lineNumber: 464,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2599,12 +2665,12 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 429,
+                                            lineNumber: 495,
                                             columnNumber: 74
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 429,
+                                        lineNumber: 495,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2614,18 +2680,18 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 430,
+                                            lineNumber: 496,
                                             columnNumber: 75
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 430,
+                                        lineNumber: 496,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 428,
+                                lineNumber: 494,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2645,12 +2711,12 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 433,
+                                            lineNumber: 499,
                                             columnNumber: 106
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 433,
+                                        lineNumber: 499,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2665,36 +2731,36 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 434,
+                                            lineNumber: 500,
                                             columnNumber: 132
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                        lineNumber: 434,
+                                        lineNumber: 500,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                lineNumber: 432,
+                                lineNumber: 498,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                        lineNumber: 427,
+                        lineNumber: 493,
                         columnNumber: 13
                     }, this)
                 ]
             }, s.id, true, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 381,
+                lineNumber: 447,
                 columnNumber: 11
             }, this);
         })
     }, void 0, false, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 371,
+        lineNumber: 437,
         columnNumber: 5
     }, this);
 }
@@ -2750,7 +2816,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
       `
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 486,
+                lineNumber: 552,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2791,7 +2857,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 496,
+                                            lineNumber: 562,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2802,13 +2868,13 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             children: "Données Neon en temps réel."
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 501,
+                                            lineNumber: 567,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 495,
+                                    lineNumber: 561,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2828,7 +2894,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 504,
+                                            lineNumber: 570,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2848,19 +2914,19 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             onBlur: (e)=>e.target.style.borderColor = C.lightGray
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 505,
+                                            lineNumber: 571,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 503,
+                                    lineNumber: 569,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 494,
+                            lineNumber: 560,
                             columnNumber: 11
                         }, this),
                         activeTab === "dashboard" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -2880,7 +2946,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             color: C.saffron
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 512,
+                                            lineNumber: 578,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -2890,7 +2956,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             color: "#10b981"
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 513,
+                                            lineNumber: 579,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -2900,7 +2966,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             color: C.teal
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 514,
+                                            lineNumber: 580,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(StatCard, {
@@ -2910,20 +2976,20 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             color: C.yellow
                                         }, void 0, false, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 515,
+                                            lineNumber: 581,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 511,
+                                    lineNumber: 577,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TableInscriptions, {
                                     data: inscriptions
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 517,
+                                    lineNumber: 583,
                                     columnNumber: 15
                                 }, this)
                             ]
@@ -2959,7 +3025,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 526,
+                                                    lineNumber: 592,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2976,7 +3042,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             color: C.gray
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 529,
+                                                            lineNumber: 595,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FilterDropdown, {
@@ -2995,7 +3061,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             defaultLabel: "Tous les statuts"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 530,
+                                                            lineNumber: 596,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FilterDropdown, {
@@ -3022,7 +3088,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             defaultLabel: "Toutes les saisons"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 539,
+                                                            lineNumber: 605,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FilterDropdown, {
@@ -3035,19 +3101,19 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             defaultLabel: "Tous les âges"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 550,
+                                                            lineNumber: 616,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 528,
+                                                    lineNumber: 594,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 525,
+                                            lineNumber: 591,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3071,7 +3137,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                     children: "+ Séjour"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 560,
+                                                    lineNumber: 626,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3088,7 +3154,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                     children: "+ Sortie Sénior"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 561,
+                                                    lineNumber: 627,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3115,12 +3181,12 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                                 size: 18
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                                lineNumber: 563,
+                                                                lineNumber: 629,
                                                                 columnNumber: 277
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 563,
+                                                            lineNumber: 629,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3138,30 +3204,30 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                                 size: 18
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                                lineNumber: 564,
+                                                                lineNumber: 630,
                                                                 columnNumber: 274
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 564,
+                                                            lineNumber: 630,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 562,
+                                                    lineNumber: 628,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 559,
+                                            lineNumber: 625,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 523,
+                                    lineNumber: 589,
                                     columnNumber: 15
                                 }, this),
                                 viewMode === "table" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TableSejours, {
@@ -3172,7 +3238,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                     onToggleEnAvant: handleToggleEnAvant
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 570,
+                                    lineNumber: 636,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GridSejours, {
                                     data: sejoursFiltres,
@@ -3182,7 +3248,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                     onToggleEnAvant: handleToggleEnAvant
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 571,
+                                    lineNumber: 637,
                                     columnNumber: 17
                                 }, this)
                             ]
@@ -3214,7 +3280,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 579,
+                                            lineNumber: 645,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3237,7 +3303,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             size: 14
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 581,
+                                                            lineNumber: 647,
                                                             columnNumber: 90
                                                         }, this),
                                                         " ",
@@ -3245,7 +3311,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 581,
+                                                    lineNumber: 647,
                                                     columnNumber: 22
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3259,7 +3325,7 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                             size: 14
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                            lineNumber: 582,
+                                                            lineNumber: 648,
                                                             columnNumber: 90
                                                         }, this),
                                                         " ",
@@ -3267,35 +3333,35 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 648,
                                                     columnNumber: 22
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                            lineNumber: 580,
+                                            lineNumber: 646,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, c.id, true, {
                                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                                    lineNumber: 578,
+                                    lineNumber: 644,
                                     columnNumber: 17
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                            lineNumber: 576,
+                            lineNumber: 642,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                    lineNumber: 492,
+                    lineNumber: 558,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 491,
+                lineNumber: 557,
                 columnNumber: 7
             }, this),
             sejourEnEdition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ModalSejour, {
@@ -3305,13 +3371,13 @@ function AdminDashboardClient({ stats, inscriptions, sejours, clients }) {
                 setIsSubmitting: setIsSubmitting
             }, void 0, false, {
                 fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-                lineNumber: 592,
+                lineNumber: 658,
                 columnNumber: 27
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/admin/AdminDashboardClient.jsx",
-        lineNumber: 484,
+        lineNumber: 550,
         columnNumber: 5
     }, this);
 }

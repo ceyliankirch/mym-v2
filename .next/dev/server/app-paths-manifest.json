@@ -1,7 +1,10 @@
 {
   "/admin/page": "app/admin/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/faq/page": "app/faq/page.js",
   "/page": "app/page.js",
   "/qui-sommes-nous/page": "app/qui-sommes-nous/page.js",
   "/sejours-enfants-ados/page": "app/sejours-enfants-ados/page.js",
+  "/sejours-scolaires/page": "app/sejours-scolaires/page.js",
   "/sorties-seniors/page": "app/sorties-seniors/page.js"
 }
