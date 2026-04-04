@@ -55,7 +55,7 @@ const C = {
     teal: "#114C5A",
     lilac: "#EFDEF9",
     white: "#ffffff",
-    pink: "#f63656",
+    pink: "#95005a",
     arctic: "#F1F6F4"
 };
 const NAV = [
@@ -382,8 +382,8 @@ function Navbar() {
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/contact",
                                     style: {
-                                        background: C.yellow,
-                                        color: C.teal,
+                                        background: C.pink,
+                                        color: C.white,
                                         border: "none",
                                         padding: "10px 22px",
                                         borderRadius: "999px",
@@ -615,7 +615,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 /* ─── PALETTE LOCALE ─────────────────────────────────────────────────────── */ const C = {
     yellow: "#FFC801",
     saffron: "#FF9932",
-    teal: "#114C5A",
+    teal: "#0c343e",
     white: "#ffffff"
 };
 const NAV = [
@@ -698,7 +698,6 @@ function Footer() {
             background: C.teal,
             color: C.white,
             padding: "64px 32px 32px",
-            borderRadius: "40px 40px 0 0",
             fontFamily: "var(--font-montserrat), sans-serif"
         },
         children: [
@@ -767,70 +766,34 @@ function Footer() {
                                             marginBottom: "16px"
                                         },
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                src: "/mym-logo-192.png",
+                                                alt: "Logo Make Your Moment",
                                                 style: {
-                                                    width: "40px",
-                                                    height: "40px",
-                                                    borderRadius: "14px",
-                                                    background: C.yellow,
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    flexShrink: 0
-                                                },
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    style: {
-                                                        color: C.teal,
-                                                        fontWeight: 900,
-                                                        fontSize: "1.1rem"
-                                                    },
-                                                    children: "M"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 99,
-                                                    columnNumber: 17
-                                                }, this)
+                                                    width: "48px"
+                                                }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
                                                 lineNumber: 98,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        style: {
-                                                            fontSize: "10px",
-                                                            fontWeight: 800,
-                                                            letterSpacing: "2px",
-                                                            textTransform: "uppercase",
-                                                            color: C.white,
-                                                            lineHeight: 1.2
-                                                        },
-                                                        children: "Make Your"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 102,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        style: {
-                                                            fontSize: "10px",
-                                                            fontWeight: 800,
-                                                            letterSpacing: "2px",
-                                                            textTransform: "uppercase",
-                                                            color: C.yellow,
-                                                            lineHeight: 1.2
-                                                        },
-                                                        children: "Moment"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 103,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    style: {
+                                                        fontSize: "20px",
+                                                        fontWeight: 800,
+                                                        color: C.white,
+                                                        lineHeight: 1.2
+                                                    },
+                                                    children: "Make Your Moment"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/Footer.jsx",
+                                                    lineNumber: 100,
+                                                    columnNumber: 17
+                                                }, this)
+                                            }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 101,
+                                                lineNumber: 99,
                                                 columnNumber: 15
                                             }, this)
                                         ]
@@ -850,7 +813,7 @@ function Footer() {
                                         children: "Séjours inoubliables pour enfants, ados et séniors depuis Sucy-en-Brie."
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 106,
+                                        lineNumber: 103,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -877,7 +840,7 @@ function Footer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 110,
+                                                lineNumber: 107,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -896,18 +859,18 @@ function Footer() {
                                                     size: 14
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 112,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 112,
+                                                lineNumber: 109,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 109,
+                                        lineNumber: 106,
                                         columnNumber: 13
                                     }, this)
                                 ]
@@ -921,7 +884,7 @@ function Footer() {
                                 links: NAV
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 121,
+                                lineNumber: 118,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(FooterCol, {
@@ -935,7 +898,7 @@ function Footer() {
                                 ]
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 124,
+                                lineNumber: 121,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -952,7 +915,7 @@ function Footer() {
                                         children: "Contact"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 128,
+                                        lineNumber: 125,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -993,7 +956,7 @@ function Footer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 136,
+                                                        lineNumber: 133,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1005,18 +968,18 @@ function Footer() {
                                                         children: t
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 137,
+                                                        lineNumber: 134,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, i, true, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 135,
+                                                lineNumber: 132,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 129,
+                                        lineNumber: 126,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1061,23 +1024,23 @@ function Footer() {
                                                     size: 14
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 147,
+                                                    lineNumber: 144,
                                                     columnNumber: 19
                                                 }, this)
                                             }, i, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 143,
+                                                lineNumber: 140,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 141,
+                                        lineNumber: 138,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 127,
+                                lineNumber: 124,
                                 columnNumber: 11
                             }, this)
                         ]
@@ -1110,7 +1073,7 @@ function Footer() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 156,
+                                lineNumber: 153,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1136,18 +1099,18 @@ function Footer() {
                                         children: l
                                     }, i, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 159,
+                                        lineNumber: 156,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 157,
+                                lineNumber: 154,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Footer.jsx",
-                        lineNumber: 155,
+                        lineNumber: 152,
                         columnNumber: 9
                     }, this)
                 ]

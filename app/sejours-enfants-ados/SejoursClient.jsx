@@ -1,9 +1,10 @@
+// app/sejours-enfants-ados/SejoursClient.jsx
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   MapPin, Calendar, Users, Clock, Search, X, SunMedium,
-  Snowflake, Flower2, Waves, Globe, Landmark, Mountain, Anchor, ChevronRight, ArrowRight, Leaf, Heart
+  Snowflake, Flower2, Globe, Heart, ChevronDown, ArrowRight, Leaf, ChevronRight
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -52,13 +53,12 @@ const formatSejourDates = (startStr, endStr) => {
   return `Du ${startDay} au ${endDay} ${startMonth}`;
 };
 
-// Calcul automatique de la durée en jours
 const getDuree = (startStr, endStr) => {
   if (!startStr || !endStr) return "À définir";
   const start = new Date(startStr);
   const end = new Date(endStr);
   const diffTime = Math.abs(end - start);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 pour inclure le premier jour
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   return diffDays === 1 ? "1 jour" : `${diffDays} jours`;
 };
 
@@ -98,13 +98,13 @@ function SejourCard({ s, idx }) {
   const [liked, setLiked] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
   
-  // Calcul places restantes si l'info count est dispo (optionnel, selon ton backend)
-  const nbInscrits = s._count?.inscriptions || s.inscriptions?.length || 0;
-  const placesRestantes = s.places > 0 ? s.places - nbInscrits : null;
+  // Calcul provisoire
+  const placesRestantes = s.places; 
   const urgent = placesRestantes !== null && placesRestantes <= 3 && placesRestantes > 0;
 
   return (
-    <Link href={`/sejours/${s.id}`} style={{textDecoration:"none"}}
+    // ⚡ Lien corrigé
+    <Link href={`/sejours-enfants-ados/${s.id}`} style={{textDecoration:"none"}}
       onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
       <div style={{
         background:C.white, borderRadius:"24px", overflow:"hidden", cursor:"pointer",
@@ -113,6 +113,7 @@ function SejourCard({ s, idx }) {
         transition:"all .3s ease",
         animation:`fadeUp .5s ease both`, animationDelay:`${idx*0.07}s`,
         position:"relative",
+        display: "flex", flexDirection: "column"
       }}>
         {urgent&&(
           <div style={{position:"absolute",top:"12px",left:"12px",zIndex:5,background:"#ef4444",borderRadius:"999px",padding:"3px 10px"}}>
@@ -137,13 +138,13 @@ function SejourCard({ s, idx }) {
           </div>
         </div>
 
-        <div style={{padding:"18px 20px 20px"}}>
+        <div style={{padding:"18px 20px 20px", flex: 1, display: "flex", flexDirection: "column"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px",marginBottom:"4px"}}>
             <h3 style={{fontSize:"14px",fontWeight:800,color:C.teal,lineHeight:1.3,margin:0}}>{s.titre}</h3>
             <span style={{fontSize:"15px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
           </div>
           
-          <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"12px", marginBottom:"16px"}}>
+          <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"12px", marginBottom:"16px", flex: 1}}>
              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
                <Calendar size={12} style={{color:C.saffron,flexShrink:0}}/>
                <span style={{fontSize:"11px",color:"#8aa",fontWeight:600}}>{formatSejourDates(s.dateDebut, s.dateFin)}</span>
@@ -161,11 +162,10 @@ function SejourCard({ s, idx }) {
           <div style={{
             width:"100%",background:hovered?C.yellow:C.teal,color:hovered?C.teal:C.white,
             fontSize:"11px",fontWeight:800,letterSpacing:".8px",textTransform:"uppercase",
-            borderRadius:"999px",padding:"10px",border:"none",cursor:"pointer",
-            display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",
+            borderRadius:"999px",padding:"10px",textAlign: "center",
             transition:"all .2s",
           }}>
-            Voir le séjour <ArrowRight size={11}/>
+            Voir le séjour
           </div>
         </div>
       </div>
@@ -186,8 +186,12 @@ export default function SejoursClient({ sejoursFromDb }) {
     return()=>window.removeEventListener("scroll",fn);
   },[]);
 
-  // 1. Ne garder que les séjours publiés
-  const allSejours = sejoursFromDb?.filter(s => s.statut === "Publié") || [];
+  // 1. Ne garder que les séjours publiés et qui ne sont pas QUE seniors
+  const allSejours = sejoursFromDb?.filter(s => s.statut === "Publié").filter(s => {
+      const age = (s.tranchesAge || "").toLowerCase();
+      // On enlève ceux qui sont strictement pour les seniors (pour ça, on a la page Seniors)
+      return !(age.includes("senior") || age.includes("sénior"));
+  }) || [];
 
   // 2. Appliquer les filtres
   const filtered = allSejours.filter(s => {
@@ -215,7 +219,7 @@ export default function SejoursClient({ sejoursFromDb }) {
         <div style={{position:"absolute",bottom:"-40px",left:"10%",width:"200px",height:"200px",borderRadius:"50%",background:"rgba(255,200,1,0.05)"}}/>
 
         <div style={{maxWidth:"1320px",margin:"0 auto",position:"relative",zIndex:1}}>
-          <Breadcrumb items={[{label:"Accueil",href:"/"},{label:"Tous les séjours"}]}/>
+          <Breadcrumb items={[{label:"Accueil",href:"/"},{label:"Colonies & Séjours"}]}/>
 
           <div style={{textAlign:"center",marginBottom:"40px"}}>
             <div style={{display:"inline-flex",alignItems:"center",gap:"8px",background:"rgba(255,200,1,0.15)",borderRadius:"999px",padding:"8px 16px",marginBottom:"20px"}}>
@@ -226,7 +230,7 @@ export default function SejoursClient({ sejoursFromDb }) {
               Tous nos <span style={{color:C.yellow}}>séjours</span>
             </h1>
             <p style={{fontSize:"15px",color:"rgba(255,255,255,0.65)",maxWidth:"520px",margin:"0 auto",lineHeight:1.8}}>
-              Des aventures inoubliables pour enfants, ados et séniors — encadrées par des passionnés.
+              Des aventures inoubliables pour enfants et ados — encadrées par des passionnés diplômés.
             </p>
           </div>
 
@@ -253,7 +257,7 @@ export default function SejoursClient({ sejoursFromDb }) {
           {[
             {n:`${allSejours.length}`,label:"séjours disponibles"},
             {n:"4",label:"saisons"},
-            {n:"3",label:"catégories d'âge"},
+            {n:"2",label:"catégories d'âge"},
             {n:"500+",label:"familles satisfaites"},
           ].map(({n,label},i)=>(
             <div key={i} style={{display:"flex",alignItems:"center",gap:"10px"}}>
@@ -275,7 +279,7 @@ export default function SejoursClient({ sejoursFromDb }) {
             </p>
 
             <div style={{display:"flex",alignItems:"center",gap:"6px",background:C.white,borderRadius:"16px",padding:"8px",boxShadow:"0 4px 16px rgba(17,76,90,0.05)",flexWrap:"wrap"}}>
-              {CATS.map(c=>(
+              {[{id:"tous",label:"Tous"},{id:"enfants",label:"Enfants"},{id:"ados",label:"Ados"}].map(c=>(
                 <button key={c.id} onClick={()=>setCat(c.id)} style={{fontSize:"12px",fontWeight:700,borderRadius:"12px",padding:"8px 16px",border:"none",cursor:"pointer",transition:"all .2s",background:cat===c.id?C.yellow:"transparent",color:C.teal}}>
                   {c.label}
                 </button>

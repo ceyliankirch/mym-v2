@@ -13,7 +13,7 @@ const C = {
   teal:    "#114C5A",
   lilac:   "#EFDEF9",
   white:   "#ffffff",
-  pink:    "#f63656",
+  pink:    "#95005a",
   arctic:  "#F1F6F4",
 };
 
@@ -170,7 +170,7 @@ export default function Navbar() {
 
           {/* Actions DESKTOP */}
           <div className="desktop-only" style={{ gap: "10px", alignItems: "center", flexShrink: 0 }}>
-             <Link href="/contact" style={{ background: C.yellow, color: C.teal, border: "none", padding: "10px 22px", borderRadius: "999px", fontSize: "14px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 6px 20px rgba(255,200,1,0.3)", textDecoration: "none" }}>
+             <Link href="/contact" style={{ background: C.pink, color: C.white, border: "none", padding: "10px 22px", borderRadius: "999px", fontSize: "14px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 6px 20px rgba(255,200,1,0.3)", textDecoration: "none" }}>
               Contactez-nous <Mail size={13} />
             </Link>
           </div>

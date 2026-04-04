@@ -13,8 +13,9 @@ import {
 const C = {
   yellow:  "#FFC801",
   saffron: "#FF9932",
-  teal:    "#114C5A",
+  teal:    "#0d323c",
   tealMid: "#1A6B7C",
+  red:     "#9c0039",
   lilac:   "#EFDEF9",
   arctic:  "#F1F6F4",
   white:   "#ffffff",
@@ -226,7 +227,7 @@ export default function HomeClient({ sejoursFromDb }) {
         * { box-sizing: border-box; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         .hero-bg {
-          background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80');
+          background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('/mym-hero-cover.webp');
           background-size: cover;
           background-position: center;
         }
@@ -336,20 +337,16 @@ export default function HomeClient({ sejoursFromDb }) {
         <div style={{ maxWidth: "1320px", margin: "0 auto", display: "flex", alignItems: "center", gap: "80px", flexWrap: "wrap" }}>
           <div style={{ flexShrink: 0, width: "46%", position: "relative", height: "480px", minWidth: "280px" }}>
             <div style={{ position: "absolute", top: 0, left: 0, width: "68%", height: "71%", borderRadius: "24px", overflow: "hidden", boxShadow: "0 20px 56px rgba(17,76,90,0.14)" }}>
-              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=700&q=80" alt="équipe" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src="/team-01.webp" alt="équipe" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div style={{ position: "absolute", bottom: 0, right: 0, width: "57%", height: "55%", borderRadius: "24px", overflow: "hidden", boxShadow: "0 16px 48px rgba(17,76,90,0.10)", border: `4px solid ${C.white}` }}>
-              <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=700&q=80" alt="activité" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-            <div style={{ position: "absolute", bottom: "32%", left: "58%", background: C.yellow, borderRadius: "18px", padding: "16px 20px", boxShadow: "0 12px 36px rgba(255,200,1,0.4)", zIndex: 10 }}>
-              <p style={{ color: C.teal, fontWeight: 900, fontSize: "1.6rem", lineHeight: 1 }}>500+</p>
-              <p style={{ color: C.teal, fontSize: "10px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1.5px", marginTop: "3px", opacity: 0.8 }}>Familles</p>
+              <img src="/team-02.webp" alt="activité" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           </div>
 
           <div style={{ flex: 1, minWidth: "280px" }}>
             <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "14px" }}>Notre association</p>
-            <h2 style={{ fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: "20px", fontSize: "clamp(1.8rem,3vw,2.4rem)", color: C.teal }}>
+            <h2 style={{ fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: "20px", fontSize: "clamp(1.8rem,3vw,2.4rem)", color: C.red }}>
               Qui sommes-nous ?
             </h2>
             <p style={{ fontSize: "14px", color: "#5a7a84", lineHeight: 1.9, marginBottom: "12px", fontWeight: 500 }}>
@@ -422,42 +419,6 @@ export default function HomeClient({ sejoursFromDb }) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
             {AVIS.map((a, i) => <ReviewCard key={i} a={a} i={i} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA Banner ──────────────────────────────────────────────────────── */}
-      <section style={{ padding: "40px 32px 100px" }}>
-        <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
-          <div style={{ background: C.teal, borderRadius: "32px", padding: "64px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "40px", flexWrap: "wrap", boxShadow: "0 24px 80px rgba(17,76,90,0.25)" }}>
-            <div>
-              <h2 style={{ fontWeight: 900, color: C.white, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "20px", fontSize: "clamp(2rem,3vw,2.5rem)" }}>
-                Prêt à vivre l'aventure ?
-              </h2>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
-                {[
-                  { Icon: CreditCard, text: "Paiement 8× sans frais" },
-                  { Icon: Shield, text: "Places limitées" },
-                  { Icon: Award, text: "100% en ligne" },
-                ].map(({ Icon: Ic, text }, i) => (
-                  <span key={i} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>
-                    <Ic size={16} style={{ color: C.yellow }} />{text}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", flexShrink: 0 }}>
-              <button style={{ display: "flex", alignItems: "center", gap: "8px", background: C.yellow, color: C.teal, fontSize: "14px", fontWeight: 800, borderRadius: "999px", padding: "18px 36px", border: "none", cursor: "pointer", boxShadow: "0 8px 24px rgba(255,200,1,0.4)", transition: "all .2s" }}
-                onMouseEnter={e => { e.currentTarget.style.background = C.saffron; e.currentTarget.style.color = C.white; }}
-                onMouseLeave={e => { e.currentTarget.style.background = C.yellow; e.currentTarget.style.color = C.teal; }}>
-                Voir les séjours <ArrowRight size={16} />
-              </button>
-              <button style={{ display: "flex", alignItems: "center", gap: "8px", background: "transparent", color: C.white, fontSize: "14px", fontWeight: 700, borderRadius: "999px", padding: "18px 36px", border: "2px solid rgba(255,255,255,0.25)", cursor: "pointer", transition: "all .2s" }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                Nous contacter <ChevronRight size={16} />
-              </button>
-            </div>
           </div>
         </div>
       </section>

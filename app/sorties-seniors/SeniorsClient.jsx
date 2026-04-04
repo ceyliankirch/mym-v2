@@ -9,7 +9,7 @@ import {
 /* ─── PALETTE ────────────────────────────────────────────────────────────── */
 const C = {
   yellow:  "#FFC801",
-  saffron: "#FF9932",
+  saffron: "#aa004a",
   teal:    "#114C5A",
   tealMid: "#1A6B7C",
   lilac:   "#EFDEF9",
@@ -177,7 +177,7 @@ export default function SeniorsClient({ sejoursFromDb }) {
           {/* Image */}
           <div style={{ flex: "1 1 400px", position: "relative", height: "480px" }}>
             <div style={{ position: "absolute", top: "20px", right: "20px", width: "90%", height: "90%", borderRadius: "32px", overflow: "hidden", boxShadow: "0 24px 64px rgba(17,76,90,0.15)" }}>
-              <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80" alt="Seniors heureux" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src="/seniors-hero-img.webp" alt="Seniors heureux" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             {/* Décoration jaune */}
             <div style={{ position: "absolute", bottom: "10%", left: "0", width: "120px", height: "120px", borderRadius: "50%", border: `16px solid ${C.arctic}`, background: C.yellow, display: "flex", alignItems: "center", justifyContent: "center" }}>

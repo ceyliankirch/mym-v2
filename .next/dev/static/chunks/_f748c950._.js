@@ -29,7 +29,7 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 ;
 /* ─── PALETTE ────────────────────────────────────────────────────────────── */ const C = {
     yellow: "#FFC801",
-    saffron: "#FF9932",
+    saffron: "#aa004a",
     teal: "#114C5A",
     tealMid: "#1A6B7C",
     lilac: "#EFDEF9",
@@ -636,7 +636,7 @@ function SeniorsClient({ sejoursFromDb }) {
                                         boxShadow: "0 24px 64px rgba(17,76,90,0.15)"
                                     },
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80",
+                                        src: "/seniors-hero-img.webp",
                                         alt: "Seniors heureux",
                                         style: {
                                             width: "100%",

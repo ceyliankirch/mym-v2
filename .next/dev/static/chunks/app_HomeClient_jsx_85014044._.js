@@ -36,8 +36,9 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 /* ─── PALETTE DE COULEURS ────────────────────────────────────────── */ const C = {
     yellow: "#FFC801",
     saffron: "#FF9932",
-    teal: "#114C5A",
+    teal: "#0d323c",
     tealMid: "#1A6B7C",
+    red: "#9c0039",
     lilac: "#EFDEF9",
     arctic: "#F1F6F4",
     white: "#ffffff"
@@ -167,7 +168,7 @@ const matchCategory = (s, cat)=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 80,
+        lineNumber: 81,
         columnNumber: 5
     }, this);
 }
@@ -196,7 +197,7 @@ function BtnOutline({ children, large, light }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 90,
+        lineNumber: 91,
         columnNumber: 5
     }, this);
 }
@@ -249,7 +250,7 @@ _c1 = BtnOutline;
                             }
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 119,
+                            lineNumber: 120,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -273,7 +274,7 @@ _c1 = BtnOutline;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 122,
+                                    lineNumber: 123,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -286,13 +287,13 @@ _c1 = BtnOutline;
                                     children: s.saison
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 123,
+                                    lineNumber: 124,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 121,
+                            lineNumber: 122,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -323,18 +324,18 @@ _c1 = BtnOutline;
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 128,
+                                lineNumber: 129,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 126,
+                            lineNumber: 127,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 118,
+                    lineNumber: 119,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -363,7 +364,7 @@ _c1 = BtnOutline;
                                     children: s.titre
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 134,
+                                    lineNumber: 135,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -378,13 +379,13 @@ _c1 = BtnOutline;
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 135,
+                                    lineNumber: 136,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 133,
+                            lineNumber: 134,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -402,7 +403,7 @@ _c1 = BtnOutline;
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 138,
+                                    lineNumber: 139,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -414,13 +415,13 @@ _c1 = BtnOutline;
                                     children: s.lieu || "Lieu à définir"
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 139,
+                                    lineNumber: 140,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 137,
+                            lineNumber: 138,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -439,7 +440,7 @@ _c1 = BtnOutline;
                                     size: 12
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 142,
+                                    lineNumber: 143,
                                     columnNumber: 13
                                 }, this),
                                 " ",
@@ -447,7 +448,7 @@ _c1 = BtnOutline;
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 141,
+                            lineNumber: 142,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -466,24 +467,24 @@ _c1 = BtnOutline;
                             children: "Voir le séjour"
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 145,
+                            lineNumber: 146,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 132,
+                    lineNumber: 133,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/HomeClient.jsx",
-            lineNumber: 109,
+            lineNumber: 110,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 106,
+        lineNumber: 107,
         columnNumber: 5
     }, this));
 }
@@ -524,7 +525,7 @@ _c2 = SejourCard;
                     }
                 }, void 0, false, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 168,
+                    lineNumber: 169,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -535,7 +536,7 @@ _c2 = SejourCard;
                     }
                 }, void 0, false, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 169,
+                    lineNumber: 170,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -553,7 +554,7 @@ _c2 = SejourCard;
                     children: "À LA UNE"
                 }, void 0, false, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 170,
+                    lineNumber: 171,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -574,7 +575,7 @@ _c2 = SejourCard;
                             children: s.titre
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 174,
+                            lineNumber: 175,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -597,7 +598,7 @@ _c2 = SejourCard;
                                             size: 12
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 177,
+                                            lineNumber: 178,
                                             columnNumber: 15
                                         }, this),
                                         " ",
@@ -605,7 +606,7 @@ _c2 = SejourCard;
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 176,
+                                    lineNumber: 177,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -619,30 +620,30 @@ _c2 = SejourCard;
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 179,
+                                    lineNumber: 180,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 175,
+                            lineNumber: 176,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 173,
+                    lineNumber: 174,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/HomeClient.jsx",
-            lineNumber: 163,
+            lineNumber: 164,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 161,
+        lineNumber: 162,
         columnNumber: 5
     }, this));
 }
@@ -679,12 +680,12 @@ function ReviewCard({ a, i }) {
                         }
                     }, j, false, {
                         fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 193,
+                        lineNumber: 194,
                         columnNumber: 38
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 192,
+                lineNumber: 193,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -702,7 +703,7 @@ function ReviewCard({ a, i }) {
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 195,
+                lineNumber: 196,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -729,7 +730,7 @@ function ReviewCard({ a, i }) {
                         children: a.initiale
                     }, void 0, false, {
                         fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 197,
+                        lineNumber: 198,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -743,7 +744,7 @@ function ReviewCard({ a, i }) {
                                 children: a.nom
                             }, void 0, false, {
                                 fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 201,
+                                lineNumber: 202,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -755,25 +756,25 @@ function ReviewCard({ a, i }) {
                                 children: a.date
                             }, void 0, false, {
                                 fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 202,
+                                lineNumber: 203,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 200,
+                        lineNumber: 201,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 196,
+                lineNumber: 197,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 190,
+        lineNumber: 191,
         columnNumber: 5
     }, this);
 }
@@ -805,7 +806,7 @@ function HomeClient({ sejoursFromDb }) {
         * { box-sizing: border-box; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         .hero-bg {
-          background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80');
+          background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('/mym-hero-cover.webp');
           background-size: cover;
           background-position: center;
         }
@@ -814,7 +815,7 @@ function HomeClient({ sejoursFromDb }) {
       `
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 224,
+                lineNumber: 225,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -868,7 +869,7 @@ function HomeClient({ sejoursFromDb }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 244,
+                                                lineNumber: 245,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -880,13 +881,13 @@ function HomeClient({ sejoursFromDb }) {
                                                 children: "ASSOCIATION MAKE YOUR MOMENT"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 245,
+                                                lineNumber: 246,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 243,
+                                        lineNumber: 244,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -901,7 +902,7 @@ function HomeClient({ sejoursFromDb }) {
                                             "Créez des souvenirs ",
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 248,
+                                                lineNumber: 249,
                                                 columnNumber: 35
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -911,13 +912,13 @@ function HomeClient({ sejoursFromDb }) {
                                                 children: "extraordinaires."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 249,
+                                                lineNumber: 250,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 247,
+                                        lineNumber: 248,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -932,7 +933,7 @@ function HomeClient({ sejoursFromDb }) {
                                         children: "Des colonies de vacances, séjours scolaires et sorties séniors encadrés par des passionnés, pour une aventure humaine inoubliable."
                                     }, void 0, false, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 251,
+                                        lineNumber: 252,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -950,13 +951,13 @@ function HomeClient({ sejoursFromDb }) {
                                                         size: 14
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/HomeClient.jsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 256,
                                                         columnNumber: 47
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 255,
+                                                lineNumber: 256,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BtnOutline, {
@@ -968,25 +969,25 @@ function HomeClient({ sejoursFromDb }) {
                                                         size: 14
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/HomeClient.jsx",
-                                                        lineNumber: 256,
+                                                        lineNumber: 257,
                                                         columnNumber: 55
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 256,
+                                                lineNumber: 257,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 254,
+                                        lineNumber: 255,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 242,
+                                lineNumber: 243,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1002,18 +1003,18 @@ function HomeClient({ sejoursFromDb }) {
                                         s: s
                                     }, s.id, false, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 262,
+                                        lineNumber: 263,
                                         columnNumber: 40
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 261,
+                                lineNumber: 262,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 239,
+                        lineNumber: 240,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1064,7 +1065,7 @@ function HomeClient({ sejoursFromDb }) {
                                                     children: "Destination"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 271,
+                                                    lineNumber: 272,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1083,19 +1084,19 @@ function HomeClient({ sejoursFromDb }) {
                                                             color: "#ccc"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/HomeClient.jsx",
-                                                            lineNumber: 272,
+                                                            lineNumber: 273,
                                                             columnNumber: 156
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 272,
+                                                    lineNumber: 273,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 270,
+                                            lineNumber: 271,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1107,7 +1108,7 @@ function HomeClient({ sejoursFromDb }) {
                                             className: "hidden sm:block"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 274,
+                                            lineNumber: 275,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1126,7 +1127,7 @@ function HomeClient({ sejoursFromDb }) {
                                                     children: "Âge"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 276,
+                                                    lineNumber: 277,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1145,19 +1146,19 @@ function HomeClient({ sejoursFromDb }) {
                                                             color: "#ccc"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/HomeClient.jsx",
-                                                            lineNumber: 277,
+                                                            lineNumber: 278,
                                                             columnNumber: 146
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 278,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 275,
+                                            lineNumber: 276,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1169,7 +1170,7 @@ function HomeClient({ sejoursFromDb }) {
                                             className: "hidden sm:block"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 279,
+                                            lineNumber: 280,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1188,7 +1189,7 @@ function HomeClient({ sejoursFromDb }) {
                                                     children: "Saison"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 281,
+                                                    lineNumber: 282,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1207,25 +1208,25 @@ function HomeClient({ sejoursFromDb }) {
                                                             color: "#ccc"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/HomeClient.jsx",
-                                                            lineNumber: 282,
+                                                            lineNumber: 283,
                                                             columnNumber: 146
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 282,
+                                                    lineNumber: 283,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 280,
+                                            lineNumber: 281,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 269,
+                                    lineNumber: 270,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1249,29 +1250,29 @@ function HomeClient({ sejoursFromDb }) {
                                         size: 22
                                     }, void 0, false, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 287,
+                                        lineNumber: 288,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 285,
+                                    lineNumber: 286,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 268,
+                            lineNumber: 269,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 267,
+                        lineNumber: 268,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 238,
+                lineNumber: 239,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1305,7 +1306,7 @@ function HomeClient({ sejoursFromDb }) {
                                             children: "Découvrez nos séjours"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 298,
+                                            lineNumber: 299,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1322,13 +1323,13 @@ function HomeClient({ sejoursFromDb }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 299,
+                                            lineNumber: 300,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 297,
+                                    lineNumber: 298,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1373,18 +1374,18 @@ function HomeClient({ sejoursFromDb }) {
                                             children: tab.label
                                         }, tab.id, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 308,
+                                            lineNumber: 309,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 301,
+                                    lineNumber: 302,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 296,
+                            lineNumber: 297,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1398,12 +1399,12 @@ function HomeClient({ sejoursFromDb }) {
                                     idx: i
                                 }, s.id, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 321,
+                                    lineNumber: 322,
                                     columnNumber: 30
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 318,
+                            lineNumber: 319,
                             columnNumber: 11
                         }, this),
                         allSejours.filter((s)=>matchCategory(s, cat)).length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1423,7 +1424,7 @@ function HomeClient({ sejoursFromDb }) {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 327,
+                                    lineNumber: 328,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1435,24 +1436,24 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "Aucun séjour pour cette catégorie pour le moment."
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 328,
+                                    lineNumber: 329,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 326,
+                            lineNumber: 327,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 295,
+                    lineNumber: 296,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 294,
+                lineNumber: 295,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1491,7 +1492,7 @@ function HomeClient({ sejoursFromDb }) {
                                         boxShadow: "0 20px 56px rgba(17,76,90,0.14)"
                                     },
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=700&q=80",
+                                        src: "/team-01.webp",
                                         alt: "équipe",
                                         style: {
                                             width: "100%",
@@ -1500,12 +1501,12 @@ function HomeClient({ sejoursFromDb }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 339,
+                                        lineNumber: 340,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 338,
+                                    lineNumber: 339,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1521,7 +1522,7 @@ function HomeClient({ sejoursFromDb }) {
                                         border: `4px solid ${C.white}`
                                     },
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=700&q=80",
+                                        src: "/team-02.webp",
                                         alt: "activité",
                                         style: {
                                             width: "100%",
@@ -1530,65 +1531,18 @@ function HomeClient({ sejoursFromDb }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 342,
+                                        lineNumber: 343,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 341,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    style: {
-                                        position: "absolute",
-                                        bottom: "32%",
-                                        left: "58%",
-                                        background: C.yellow,
-                                        borderRadius: "18px",
-                                        padding: "16px 20px",
-                                        boxShadow: "0 12px 36px rgba(255,200,1,0.4)",
-                                        zIndex: 10
-                                    },
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            style: {
-                                                color: C.teal,
-                                                fontWeight: 900,
-                                                fontSize: "1.6rem",
-                                                lineHeight: 1
-                                            },
-                                            children: "500+"
-                                        }, void 0, false, {
-                                            fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 345,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            style: {
-                                                color: C.teal,
-                                                fontSize: "10px",
-                                                fontWeight: 800,
-                                                textTransform: "uppercase",
-                                                letterSpacing: "1.5px",
-                                                marginTop: "3px",
-                                                opacity: 0.8
-                                            },
-                                            children: "Familles"
-                                        }, void 0, false, {
-                                            fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 346,
-                                            columnNumber: 15
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 344,
+                                    lineNumber: 342,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 337,
+                            lineNumber: 338,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1609,7 +1563,7 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "Notre association"
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 351,
+                                    lineNumber: 348,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1619,12 +1573,12 @@ function HomeClient({ sejoursFromDb }) {
                                         lineHeight: 1.15,
                                         marginBottom: "20px",
                                         fontSize: "clamp(1.8rem,3vw,2.4rem)",
-                                        color: C.teal
+                                        color: C.red
                                     },
                                     children: "Qui sommes-nous ?"
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 352,
+                                    lineNumber: 349,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1638,7 +1592,7 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "L'idée principale de l'association est de créer des séjours en lien avec les aspirations du public. À un âge où les enfants débordent de curiosité, il est essentiel de nourrir leur appétence."
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 355,
+                                    lineNumber: 352,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1652,7 +1606,7 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "Nous proposons aussi des sorties pour nos aînés, en veillant à leur confort, leur sécurité et leur plaisir dans une ambiance bienveillante."
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 358,
+                                    lineNumber: 355,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1706,12 +1660,12 @@ function HomeClient({ sejoursFromDb }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/HomeClient.jsx",
-                                                        lineNumber: 369,
+                                                        lineNumber: 366,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 368,
+                                                    lineNumber: 365,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1729,7 +1683,7 @@ function HomeClient({ sejoursFromDb }) {
                                                             children: title
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/HomeClient.jsx",
-                                                            lineNumber: 372,
+                                                            lineNumber: 369,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1742,24 +1696,24 @@ function HomeClient({ sejoursFromDb }) {
                                                             children: desc
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/HomeClient.jsx",
-                                                            lineNumber: 373,
+                                                            lineNumber: 370,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 371,
+                                                    lineNumber: 368,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, i, true, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 367,
+                                            lineNumber: 364,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 361,
+                                    lineNumber: 358,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
@@ -1770,30 +1724,30 @@ function HomeClient({ sejoursFromDb }) {
                                             size: 14
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 378,
+                                            lineNumber: 375,
                                             columnNumber: 36
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 378,
+                                    lineNumber: 375,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 350,
+                            lineNumber: 347,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 336,
+                    lineNumber: 337,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 335,
+                lineNumber: 336,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1825,7 +1779,7 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "Simple & rapide"
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 387,
+                                    lineNumber: 384,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1838,13 +1792,13 @@ function HomeClient({ sejoursFromDb }) {
                                     children: "Comment ça marche ?"
                                 }, void 0, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 388,
+                                    lineNumber: 385,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 386,
+                            lineNumber: 383,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1898,7 +1852,7 @@ function HomeClient({ sejoursFromDb }) {
                                             children: num
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 397,
+                                            lineNumber: 394,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1920,12 +1874,12 @@ function HomeClient({ sejoursFromDb }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 399,
+                                                lineNumber: 396,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 398,
+                                            lineNumber: 395,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1939,7 +1893,7 @@ function HomeClient({ sejoursFromDb }) {
                                             children: title
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 401,
+                                            lineNumber: 398,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1953,29 +1907,29 @@ function HomeClient({ sejoursFromDb }) {
                                             children: desc
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 402,
+                                            lineNumber: 399,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, i, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 396,
+                                    lineNumber: 393,
                                     columnNumber: 15
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 390,
+                            lineNumber: 387,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 385,
+                    lineNumber: 382,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 384,
+                lineNumber: 381,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -2013,7 +1967,7 @@ function HomeClient({ sejoursFromDb }) {
                                             children: "Témoignages"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 414,
+                                            lineNumber: 411,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -2026,13 +1980,13 @@ function HomeClient({ sejoursFromDb }) {
                                             children: "Ils nous font confiance"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 415,
+                                            lineNumber: 412,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 413,
+                                    lineNumber: 410,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2058,12 +2012,12 @@ function HomeClient({ sejoursFromDb }) {
                                                     color: C.yellow
                                                 }, i, false, {
                                                     fileName: "[project]/app/HomeClient.jsx",
-                                                    lineNumber: 418,
+                                                    lineNumber: 415,
                                                     columnNumber: 89
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 418,
+                                            lineNumber: 415,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2075,7 +2029,7 @@ function HomeClient({ sejoursFromDb }) {
                                             children: "4.8"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 419,
+                                            lineNumber: 416,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2087,19 +2041,19 @@ function HomeClient({ sejoursFromDb }) {
                                             children: "/ 5 · 200+ avis"
                                         }, void 0, false, {
                                             fileName: "[project]/app/HomeClient.jsx",
-                                            lineNumber: 420,
+                                            lineNumber: 417,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 417,
+                                    lineNumber: 414,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 412,
+                            lineNumber: 409,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2113,226 +2067,29 @@ function HomeClient({ sejoursFromDb }) {
                                     i: i
                                 }, i, false, {
                                     fileName: "[project]/app/HomeClient.jsx",
-                                    lineNumber: 424,
+                                    lineNumber: 421,
                                     columnNumber: 33
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/HomeClient.jsx",
-                            lineNumber: 423,
+                            lineNumber: 420,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 411,
+                    lineNumber: 408,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 410,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                style: {
-                    padding: "40px 32px 100px"
-                },
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    style: {
-                        maxWidth: "1320px",
-                        margin: "0 auto"
-                    },
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        style: {
-                            background: C.teal,
-                            borderRadius: "32px",
-                            padding: "64px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            gap: "40px",
-                            flexWrap: "wrap",
-                            boxShadow: "0 24px 80px rgba(17,76,90,0.25)"
-                        },
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                        style: {
-                                            fontWeight: 900,
-                                            color: C.white,
-                                            letterSpacing: "-1px",
-                                            lineHeight: 1.2,
-                                            marginBottom: "20px",
-                                            fontSize: "clamp(2rem,3vw,2.5rem)"
-                                        },
-                                        children: "Prêt à vivre l'aventure ?"
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 434,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        style: {
-                                            display: "flex",
-                                            flexWrap: "wrap",
-                                            gap: "24px"
-                                        },
-                                        children: [
-                                            {
-                                                Icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$credit$2d$card$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CreditCard$3e$__["CreditCard"],
-                                                text: "Paiement 8× sans frais"
-                                            },
-                                            {
-                                                Icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__["Shield"],
-                                                text: "Places limitées"
-                                            },
-                                            {
-                                                Icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$award$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Award$3e$__["Award"],
-                                                text: "100% en ligne"
-                                            }
-                                        ].map(({ Icon: Ic, text }, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                style: {
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: "8px",
-                                                    fontSize: "14px",
-                                                    color: "rgba(255,255,255,0.7)",
-                                                    fontWeight: 600
-                                                },
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Ic, {
-                                                        size: 16,
-                                                        style: {
-                                                            color: C.yellow
-                                                        }
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/HomeClient.jsx",
-                                                        lineNumber: 444,
-                                                        columnNumber: 21
-                                                    }, this),
-                                                    text
-                                                ]
-                                            }, i, true, {
-                                                fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 443,
-                                                columnNumber: 19
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 437,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 433,
-                                columnNumber: 13
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: {
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    gap: "16px",
-                                    flexShrink: 0
-                                },
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        style: {
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            background: C.yellow,
-                                            color: C.teal,
-                                            fontSize: "14px",
-                                            fontWeight: 800,
-                                            borderRadius: "999px",
-                                            padding: "18px 36px",
-                                            border: "none",
-                                            cursor: "pointer",
-                                            boxShadow: "0 8px 24px rgba(255,200,1,0.4)",
-                                            transition: "all .2s"
-                                        },
-                                        onMouseEnter: (e)=>{
-                                            e.currentTarget.style.background = C.saffron;
-                                            e.currentTarget.style.color = C.white;
-                                        },
-                                        onMouseLeave: (e)=>{
-                                            e.currentTarget.style.background = C.yellow;
-                                            e.currentTarget.style.color = C.teal;
-                                        },
-                                        children: [
-                                            "Voir les séjours ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                                size: 16
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 453,
-                                                columnNumber: 34
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 450,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        style: {
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            background: "transparent",
-                                            color: C.white,
-                                            fontSize: "14px",
-                                            fontWeight: 700,
-                                            borderRadius: "999px",
-                                            padding: "18px 36px",
-                                            border: "2px solid rgba(255,255,255,0.25)",
-                                            cursor: "pointer",
-                                            transition: "all .2s"
-                                        },
-                                        onMouseEnter: (e)=>e.currentTarget.style.background = "rgba(255,255,255,0.1)",
-                                        onMouseLeave: (e)=>e.currentTarget.style.background = "transparent",
-                                        children: [
-                                            "Nous contacter ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
-                                                size: 16
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/HomeClient.jsx",
-                                                lineNumber: 458,
-                                                columnNumber: 32
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/HomeClient.jsx",
-                                        lineNumber: 455,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/HomeClient.jsx",
-                                lineNumber: 449,
-                                columnNumber: 13
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/app/HomeClient.jsx",
-                        lineNumber: 432,
-                        columnNumber: 11
-                    }, this)
-                }, void 0, false, {
-                    fileName: "[project]/app/HomeClient.jsx",
-                    lineNumber: 431,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/app/HomeClient.jsx",
-                lineNumber: 430,
+                lineNumber: 407,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/HomeClient.jsx",
-        lineNumber: 223,
+        lineNumber: 224,
         columnNumber: 5
     }, this);
 }

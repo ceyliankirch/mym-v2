@@ -10,7 +10,7 @@ import {
 const C = {
   yellow:  "#FFC801",
   saffron: "#FF9932",
-  teal:    "#114C5A",
+  teal:    "#0c343e",
   white:   "#ffffff",
 };
 
@@ -43,7 +43,7 @@ export default function Footer() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="footer-wrapper" style={{ background: C.teal, color: C.white, padding: "64px 32px 32px", borderRadius: "40px 40px 0 0", fontFamily: "var(--font-montserrat), sans-serif" }}>
+    <footer className="footer-wrapper" style={{ background: C.teal, color: C.white, padding: "64px 32px 32px", fontFamily: "var(--font-montserrat), sans-serif" }}>
       
       {/* ── STYLES RESPONSIVES INJECTÉS ──────────────────────────────────── */}
       <style>{`
@@ -95,12 +95,9 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <div style={{ width: "40px", height: "40px", borderRadius: "14px", background: C.yellow, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ color: C.teal, fontWeight: 900, fontSize: "1.1rem" }}>M</span>
-              </div>
+              <img src="/mym-logo-192.png" alt="Logo Make Your Moment" style={{ width: "48px"}} />
               <div>
-                <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", color: C.white, lineHeight: 1.2 }}>Make Your</div>
-                <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", color: C.yellow, lineHeight: 1.2 }}>Moment</div>
+                <div style={{ fontSize: "20px", fontWeight: 800, color: C.white, lineHeight: 1.2 }}>Make Your Moment</div>
               </div>
             </div>
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, marginBottom: "20px", maxWidth: "300px" }}>
