@@ -1,8 +1,9 @@
+// app/actions/sejours.js
 "use server";
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { put, del } from "@vercel/blob"; // 📸 Importation de l'outil de stockage Vercel
+import { put, del } from "@vercel/blob";
 
 // ➕ CRÉER
 export async function creerSejour(formData) {
@@ -15,20 +16,33 @@ export async function creerSejour(formData) {
   const places = parseInt(formData.get("places")) || 0;
   const tranchesAge = formData.get("tranchesAge");
   
-  // On récupère tous les prix saisis (formData.getAll récupère la liste des inputs avec le même name)
+  // ⚡ Nouveaux champs récupérés du formulaire
+  const shortDescription = formData.get("shortDescription") || "";
+  const programme = formData.get("programme") || "";
+  const infosPratiques = formData.get("infosPratiques") || "";
+  const adresseComplete = formData.get("adresseComplete") || "";
+  const formSchema = formData.get("formSchema") || "";
+  
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
-  const prixPrincipal = prixArray[0] || 0; // On stocke le premier prix comme prix de référence
+  const prixPrincipal = prixArray[0] || 0;
 
-  // Gestion de l'image avec Vercel Blob
+  // Gestion de l'image de couverture
   const imageFile = formData.get("image");
   let imageUrl = null;
 
   if (imageFile && imageFile.size > 0) {
-    // On envoie l'image sur les serveurs de Vercel
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, {
-      access: 'public',
-    });
+    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
     imageUrl = blob.url;
+  }
+
+  // ⚡ Gestion de la Galerie (Multiples images)
+  const galerieFiles = formData.getAll("galerie"); 
+  const galerieUrls = [];
+  for (const file of galerieFiles) {
+    if (file && file.size > 0) {
+      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
+      galerieUrls.push(blob.url);
+    }
   }
 
   await prisma.sejour.create({
@@ -43,10 +57,18 @@ export async function creerSejour(formData) {
       tranchesAge,
       prix: prixPrincipal,
       imageUrl,
+      // ⚡ Sauvegarde des nouveaux champs
+      shortDescription,
+      programme,
+      infosPratiques,
+      adresseComplete,
+      formSchema,
+      galerie: galerieUrls,
     },
   });
 
   revalidatePath("/admin");
+  revalidatePath("/sejours-enfants-ados");
 }
 
 // ✏️ MODIFIER
@@ -62,25 +84,49 @@ export async function modifierSejour(id, formData) {
   const places = parseInt(formData.get("places")) || 0;
   const tranchesAge = formData.get("tranchesAge");
   
+  // ⚡ Nouveaux champs récupérés du formulaire
+  const shortDescription = formData.get("shortDescription") || "";
+  const programme = formData.get("programme") || "";
+  const infosPratiques = formData.get("infosPratiques") || "";
+  const adresseComplete = formData.get("adresseComplete") || "";
+  const formSchema = formData.get("formSchema") || "";
+
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
   const prixPrincipal = prixArray[0] || 0;
 
-  // Gestion de l'image
+  // Gestion de l'image de couverture
   const imageFile = formData.get("image");
-  let imageUrl = sejourActuel.imageUrl; // Par défaut on garde l'ancienne
+  let imageUrl = sejourActuel.imageUrl;
 
-  // Si une nouvelle image est sélectionnée
   if (imageFile && imageFile.size > 0) {
-    // 1. On supprime l'ancienne image sur Vercel Blob pour ne pas encombrer le stockage
     if (sejourActuel.imageUrl) {
       try { await del(sejourActuel.imageUrl); } catch (e) { console.error("Erreur suppression ancien blob", e); }
     }
-    // 2. On upload la nouvelle
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, {
-      access: 'public',
-    });
+    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
     imageUrl = blob.url;
   }
+
+  // ⚡ Gestion de la Galerie lors d'une modification
+  const galerieFiles = formData.getAll("galerie"); // Les NOUVELLES images uploadées
+  const anciennesUrls = formData.getAll("anciennesGalerie"); // Les anciennes images CONSERVÉES
+
+  // 🧹 Nettoyage Vercel : On supprime les images que l'utilisateur a retirées de la galerie
+  const removedUrls = (sejourActuel.galerie || []).filter(url => !anciennesUrls.includes(url));
+  for (const url of removedUrls) {
+     try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+  }
+
+  // Upload des nouvelles images
+  const nouvellesUrls = [];
+  for (const file of galerieFiles) {
+    if (file && file.size > 0) {
+      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
+      nouvellesUrls.push(blob.url);
+    }
+  }
+
+  // On fusionne les anciennes qu'on a gardées + les nouvelles
+  const finalGalerie = [...anciennesUrls, ...nouvellesUrls];
 
   await prisma.sejour.update({
     where: { id },
@@ -95,20 +141,35 @@ export async function modifierSejour(id, formData) {
       tranchesAge,
       prix: prixPrincipal,
       imageUrl,
+      // ⚡ Sauvegarde des nouveaux champs
+      shortDescription,
+      programme,
+      infosPratiques,
+      adresseComplete,
+      formSchema,
+      galerie: finalGalerie,
     },
   });
 
   revalidatePath("/admin");
+  revalidatePath("/sejours-enfants-ados");
+  revalidatePath(`/sejours-enfants-ados/${id}`);
 }
 
 // 🗑️ SUPPRIMER
 export async function supprimerSejour(id) {
-  // On récupère le séjour pour avoir l'URL de l'image
   const sejour = await prisma.sejour.findUnique({ where: { id } });
 
-  // On nettoie l'image sur Vercel Blob avant de supprimer le record en base
+  // On nettoie l'image principale
   if (sejour?.imageUrl) {
     try { await del(sejour.imageUrl); } catch (e) { console.error("Erreur suppression blob", e); }
+  }
+
+  // ⚡ On nettoie aussi toutes les images de la galerie sur Vercel !
+  if (sejour?.galerie && sejour.galerie.length > 0) {
+    for (const url of sejour.galerie) {
+      try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+    }
   }
 
   await prisma.sejour.delete({
@@ -116,21 +177,25 @@ export async function supprimerSejour(id) {
   });
   
   revalidatePath("/admin");
+  revalidatePath("/sejours-enfants-ados");
 }
 
+// 🔄 STATUT
 export async function toggleStatut(id, nouveauStatut) {
   await prisma.sejour.update({
     where: { id },
     data: { statut: nouveauStatut },
   });
   revalidatePath("/admin");
+  revalidatePath("/sejours-enfants-ados");
 }
 
-// ⭐ METTRE À L'AFFICHE (Oui / Non)
+// ⭐ METTRE À L'AFFICHE
 export async function toggleEnAvant(id, enAvant) {
   await prisma.sejour.update({
     where: { id },
     data: { enAvant: enAvant },
   });
   revalidatePath("/admin");
+  revalidatePath("/sejours-enfants-ados");
 }

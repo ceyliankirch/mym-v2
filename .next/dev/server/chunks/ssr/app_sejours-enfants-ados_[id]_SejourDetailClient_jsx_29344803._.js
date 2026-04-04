@@ -16,6 +16,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield.js [app-ssr] (ecmascript) <export default as Shield>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$credit$2d$card$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CreditCard$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/credit-card.js [app-ssr] (ecmascript) <export default as CreditCard>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$award$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Award$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/award.js [app-ssr] (ecmascript) <export default as Award>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-right.js [app-ssr] (ecmascript) <export default as ChevronRight>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-right.js [app-ssr] (ecmascript) <export default as ArrowRight>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeft$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-left.js [app-ssr] (ecmascript) <export default as ArrowLeft>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-check.js [app-ssr] (ecmascript) <export default as CheckCircle2>");
@@ -23,6 +24,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/mail.js [app-ssr] (ecmascript) <export default as Mail>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$heart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Heart$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/heart.js [app-ssr] (ecmascript) <export default as Heart>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$share$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Share2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/share-2.js [app-ssr] (ecmascript) <export default as Share2>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$left$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronLeft$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-left.js [app-ssr] (ecmascript) <export default as ChevronLeft>");
 // app/sejours-enfants-ados/[id]/SejourDetailClient.jsx
 "use client";
 ;
@@ -36,7 +38,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
     tealMid: "#1A6B7C",
     lilac: "#EFDEF9",
     arctic: "#F1F6F4",
-    white: "#ffffff"
+    white: "#ffffff",
+    gray: "#8aaa",
+    lightGray: "#e2e8f0"
 };
 /* ─── UTILS ──────────────────────────────────────────────────────────────── */ const formatAge = (age)=>{
     if (!age) return "Tous âges";
@@ -133,12 +137,12 @@ function Header({ scrolled }) {
                                 children: "M"
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 66,
+                                lineNumber: 68,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 65,
+                            lineNumber: 67,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -155,7 +159,7 @@ function Header({ scrolled }) {
                                     children: "Make Your"
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 69,
+                                    lineNumber: 71,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -170,19 +174,19 @@ function Header({ scrolled }) {
                                     children: "Moment"
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 70,
+                                    lineNumber: 72,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 68,
+                            lineNumber: 70,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                    lineNumber: 64,
+                    lineNumber: 66,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -211,12 +215,12 @@ function Header({ scrolled }) {
                             children: l
                         }, i, false, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 76,
+                            lineNumber: 78,
                             columnNumber: 13
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                    lineNumber: 74,
+                    lineNumber: 76,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -239,24 +243,445 @@ function Header({ scrolled }) {
                             size: 13
                         }, void 0, false, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 83,
+                            lineNumber: 85,
                             columnNumber: 23
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                    lineNumber: 82,
+                    lineNumber: 84,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-            lineNumber: 63,
+            lineNumber: 65,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-        lineNumber: 57,
+        lineNumber: 59,
+        columnNumber: 5
+    }, this);
+}
+/* ─── DICTIONNAIRE DES COORDONNÉES (POURCENTAGES SUR LE SVG) ─── */ // Rappel : Tu peux ajouter d'autres villes ici au fur et à mesure !
+const FRANCE_COORDS = {
+    "strasbourg": {
+        top: "35%",
+        left: "85%"
+    },
+    "paris": {
+        top: "30%",
+        left: "53%"
+    },
+    "lyon": {
+        top: "58%",
+        left: "70%"
+    },
+    "marseille": {
+        top: "82%",
+        left: "74%"
+    },
+    "bordeaux": {
+        top: "68%",
+        left: "35%"
+    },
+    "toulouse": {
+        top: "82%",
+        left: "48%"
+    },
+    "lille": {
+        top: "15%",
+        left: "62%"
+    },
+    "nantes": {
+        top: "50%",
+        left: "30%"
+    },
+    "rennes": {
+        top: "42%",
+        left: "28%"
+    },
+    "montpellier": {
+        top: "82%",
+        left: "64%"
+    },
+    "nice": {
+        top: "80%",
+        left: "85%"
+    },
+    "biarritz": {
+        top: "80%",
+        left: "28%"
+    },
+    "vieux-boucau": {
+        top: "78%",
+        left: "28%"
+    },
+    "default": {
+        top: "50%",
+        left: "50%"
+    } // Centre exact si ville inconnue
+};
+// Fonction pour trouver les coordonnées d'une ville (ignore les accents et majuscules)
+function getCoordinates(ville) {
+    if (!ville) return FRANCE_COORDS.default;
+    const normalized = ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const foundKey = Object.keys(FRANCE_COORDS).find((k)=>normalized.includes(k));
+    return foundKey ? FRANCE_COORDS[foundKey] : FRANCE_COORDS.default;
+}
+/* ─── COMPOSANT : CARTE FRANCE PIN ────────────────────────────────────────── */ function FranceMapPin({ imageUrl, lieu }) {
+    const villeCourte = lieu ? lieu.split(',')[0].trim() : "France";
+    // On récupère les coordonnées X/Y (top/left) dynamiquement
+    const coords = getCoordinates(villeCourte);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        style: {
+            position: "relative",
+            width: "100%",
+            height: "480px",
+            background: "#f8fafc",
+            borderRadius: "32px",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "32px",
+            border: `1px solid ${C.lightGray}`
+        },
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                style: {
+                    position: "relative",
+                    width: "100%",
+                    maxWidth: "480px",
+                    height: "100%"
+                },
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                        src: "/france.svg",
+                        alt: "Carte de la France",
+                        style: {
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            opacity: 0.08,
+                            objectFit: "contain",
+                            pointerEvents: "none"
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 135,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            position: "absolute",
+                            top: coords.top,
+                            left: coords.left,
+                            transform: "translate(-50%, -50%)",
+                            zIndex: 10
+                        },
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: {
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: "100px",
+                                    height: "100px",
+                                    borderRadius: "50%",
+                                    background: `${C.yellow}12`,
+                                    border: `1px solid ${C.yellow}25`,
+                                    animation: "pulse-soft 3s infinite",
+                                    pointerEvents: "none"
+                                }
+                            }, void 0, false, {
+                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                lineNumber: 158,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: {
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: "160px",
+                                    height: "160px",
+                                    borderRadius: "50%",
+                                    border: `1px solid ${C.yellow}15`,
+                                    animation: "pulse-soft 3s infinite 1.5s",
+                                    pointerEvents: "none"
+                                }
+                            }, void 0, false, {
+                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                lineNumber: 160,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: {
+                                    width: "50px",
+                                    height: "50px",
+                                    borderRadius: "50%",
+                                    border: `3px solid ${C.white}`,
+                                    boxShadow: "0 6px 16px rgba(17,76,90,0.12)",
+                                    overflow: "hidden",
+                                    background: C.arctic,
+                                    position: "relative",
+                                    zIndex: 5
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                    src: imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+                                    style: {
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover"
+                                    },
+                                    alt: "Point d'intérêt"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                    lineNumber: 174,
+                                    columnNumber: 13
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                lineNumber: 163,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 148,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 132,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                style: {
+                    position: "absolute",
+                    top: "32px",
+                    left: "32px",
+                    pointerEvents: "none"
+                },
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        style: {
+                            fontSize: "11px",
+                            fontWeight: 800,
+                            color: C.saffron,
+                            textTransform: "uppercase",
+                            letterSpacing: "2px",
+                            marginBottom: "6px"
+                        },
+                        children: "Localisation"
+                    }, void 0, false, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 182,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                        style: {
+                            fontSize: "24px",
+                            fontWeight: 900,
+                            color: C.teal
+                        },
+                        children: "Au cœur du séjour"
+                    }, void 0, false, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 183,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 181,
+                columnNumber: 7
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+        lineNumber: 129,
+        columnNumber: 5
+    }, this);
+}
+/* ─── GALERIE DYNAMIQUE (NON-ROGNÉE) ────────────────────────────────────────── */ function Galerie({ images }) {
+    const [active, setActive] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(0);
+    if (!images || images.length === 0) return null;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        style: {
+            background: C.white,
+            borderRadius: "20px",
+            padding: "28px",
+            boxShadow: "0 2px 16px rgba(17,76,90,0.06)",
+            marginBottom: "24px"
+        },
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                style: {
+                    fontSize: "18px",
+                    fontWeight: 900,
+                    color: C.teal,
+                    marginBottom: "20px"
+                },
+                children: "Galerie Photos"
+            }, void 0, false, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 195,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                style: {
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    height: "400px",
+                    marginBottom: "16px",
+                    position: "relative",
+                    background: C.arctic
+                },
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                        src: images[active],
+                        alt: "galerie",
+                        style: {
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain"
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 199,
+                        columnNumber: 9
+                    }, this),
+                    images.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setActive((p)=>(p - 1 + images.length) % images.length),
+                                style: {
+                                    position: "absolute",
+                                    left: "16px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    background: "rgba(255,255,255,0.9)",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: "40px",
+                                    height: "40px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$left$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronLeft$3e$__["ChevronLeft"], {
+                                    size: 20,
+                                    style: {
+                                        color: C.teal
+                                    }
+                                }, void 0, false, {
+                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                    lineNumber: 203,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                lineNumber: 202,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setActive((p)=>(p + 1) % images.length),
+                                style: {
+                                    position: "absolute",
+                                    right: "16px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    background: "rgba(255,255,255,0.9)",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: "40px",
+                                    height: "40px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                    size: 20,
+                                    style: {
+                                        color: C.teal
+                                    }
+                                }, void 0, false, {
+                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                    lineNumber: 206,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                lineNumber: 205,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 198,
+                columnNumber: 7
+            }, this),
+            images.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                style: {
+                    display: "flex",
+                    gap: "12px",
+                    overflowX: "auto",
+                    paddingBottom: "8px"
+                },
+                children: images.map((img, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        onClick: ()=>setActive(i),
+                        style: {
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            height: "72px",
+                            width: "108px",
+                            flexShrink: 0,
+                            cursor: "pointer",
+                            border: active === i ? `3px solid ${C.yellow}` : "3px solid transparent",
+                            transition: "border .2s",
+                            background: C.arctic
+                        },
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                            src: img,
+                            alt: "",
+                            style: {
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover"
+                            }
+                        }, void 0, false, {
+                            fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                            lineNumber: 217,
+                            columnNumber: 15
+                        }, this)
+                    }, i, false, {
+                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                        lineNumber: 216,
+                        columnNumber: 13
+                    }, this))
+            }, void 0, false, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 214,
+                columnNumber: 9
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+        lineNumber: 194,
         columnNumber: 5
     }, this);
 }
@@ -295,7 +720,7 @@ function Header({ scrolled }) {
                         children: "Prix par personne"
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 102,
+                        lineNumber: 237,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -317,12 +742,12 @@ function Header({ scrolled }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 104,
+                            lineNumber: 239,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 103,
+                        lineNumber: 238,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -334,13 +759,13 @@ function Header({ scrolled }) {
                         children: "Paiement jusqu'à 8× sans frais possible"
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 106,
+                        lineNumber: 241,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 101,
+                lineNumber: 236,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -401,12 +826,12 @@ function Header({ scrolled }) {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 120,
+                                    lineNumber: 254,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 119,
+                                lineNumber: 253,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -422,7 +847,7 @@ function Header({ scrolled }) {
                                         children: label
                                     }, void 0, false, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 123,
+                                        lineNumber: 257,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -434,24 +859,24 @@ function Header({ scrolled }) {
                                         children: val
                                     }, void 0, false, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 124,
+                                        lineNumber: 258,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 122,
+                                lineNumber: 256,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 118,
+                        lineNumber: 252,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 110,
+                lineNumber: 244,
                 columnNumber: 7
             }, this),
             urgent && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -473,7 +898,7 @@ function Header({ scrolled }) {
                         children: "⚡"
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 133,
+                        lineNumber: 266,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -489,19 +914,17 @@ function Header({ scrolled }) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 134,
+                        lineNumber: 267,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 132,
+                lineNumber: 265,
                 columnNumber: 9
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                href: "#",
-                target: "_blank",
-                rel: "noopener noreferrer",
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                href: `/inscription/${sejour.id}`,
                 style: {
                     display: "flex",
                     alignItems: "center",
@@ -509,12 +932,12 @@ function Header({ scrolled }) {
                     gap: "8px",
                     background: C.yellow,
                     color: C.teal,
-                    fontSize: "13px",
+                    fontSize: "14px",
                     fontWeight: 800,
                     borderRadius: "999px",
                     padding: "16px",
                     textDecoration: "none",
-                    marginBottom: "12px",
+                    marginBottom: "8px",
                     boxShadow: "0 6px 20px rgba(255,200,1,0.35)",
                     width: "100%",
                     transition: "all 0.2s"
@@ -522,18 +945,32 @@ function Header({ scrolled }) {
                 onMouseEnter: (e)=>e.currentTarget.style.background = C.saffron,
                 onMouseLeave: (e)=>e.currentTarget.style.background = C.yellow,
                 children: [
-                    "Demander une inscription ",
+                    "S'inscrire à ce séjour ",
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                        size: 14
+                        size: 16
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 142,
-                        columnNumber: 34
+                        lineNumber: 274,
+                        columnNumber: 32
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 139,
+                lineNumber: 271,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                style: {
+                    fontSize: "10px",
+                    color: "#8aaa",
+                    textAlign: "center",
+                    marginBottom: "16px",
+                    fontWeight: 600
+                },
+                children: "🔒 Création de compte requise pour s'inscrire"
+            }, void 0, false, {
+                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                lineNumber: 276,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -569,14 +1006,14 @@ function Header({ scrolled }) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 148,
+                                lineNumber: 282,
                                 columnNumber: 11
                             }, this),
                             " Favoris"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 147,
+                        lineNumber: 281,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -605,20 +1042,20 @@ function Header({ scrolled }) {
                                 size: 13
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 151,
+                                lineNumber: 285,
                                 columnNumber: 11
                             }, this),
                             " Partager"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 150,
+                        lineNumber: 284,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 146,
+                lineNumber: 280,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -640,7 +1077,7 @@ function Header({ scrolled }) {
                         children: "Une question ?"
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 157,
+                        lineNumber: 290,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -660,7 +1097,7 @@ function Header({ scrolled }) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 159,
+                                lineNumber: 292,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -672,13 +1109,13 @@ function Header({ scrolled }) {
                                 children: "+33 6 98 96 50 02"
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 159,
+                                lineNumber: 292,
                                 columnNumber: 52
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 158,
+                        lineNumber: 291,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -697,7 +1134,7 @@ function Header({ scrolled }) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 162,
+                                lineNumber: 295,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -709,25 +1146,25 @@ function Header({ scrolled }) {
                                 children: "mym.makeyourmoment@gmail.com"
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 162,
+                                lineNumber: 295,
                                 columnNumber: 51
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 161,
+                        lineNumber: 294,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 156,
+                lineNumber: 289,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-        lineNumber: 99,
+        lineNumber: 235,
         columnNumber: 5
     }, this);
 }
@@ -774,14 +1211,14 @@ function SejourDetailClient({ sejour, autresSejours }) {
       `
             }, void 0, false, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 190,
+                lineNumber: 323,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Header, {
                 scrolled: scrolled
             }, void 0, false, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 200,
+                lineNumber: 333,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -801,7 +1238,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 204,
+                        lineNumber: 337,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -812,7 +1249,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 205,
+                        lineNumber: 338,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -844,19 +1281,19 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                     size: 12
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 210,
+                                    lineNumber: 342,
                                     columnNumber: 13
                                 }, this),
                                 " Tous les séjours"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 209,
+                            lineNumber: 341,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 208,
+                        lineNumber: 340,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -897,12 +1334,12 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: formatAge(sejour.tranchesAge)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 219,
+                                                lineNumber: 350,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 218,
+                                            lineNumber: 349,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -920,12 +1357,12 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: getDuree(sejour.dateDebut, sejour.dateFin)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 222,
+                                                lineNumber: 353,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 221,
+                                            lineNumber: 352,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -946,7 +1383,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                    lineNumber: 225,
+                                                    lineNumber: 356,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -958,19 +1395,19 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                     children: sejour.saison || "Saison à définir"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                    lineNumber: 226,
+                                                    lineNumber: 357,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 224,
+                                            lineNumber: 355,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 217,
+                                    lineNumber: 348,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -984,7 +1421,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                     children: sejour.titre
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 230,
+                                    lineNumber: 361,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1001,7 +1438,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 234,
+                                            lineNumber: 365,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1013,30 +1450,30 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                             children: sejour.lieu || "Lieu à définir"
                                         }, void 0, false, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 235,
+                                            lineNumber: 366,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 233,
+                                    lineNumber: 364,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                            lineNumber: 216,
+                            lineNumber: 347,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 215,
+                        lineNumber: 346,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 203,
+                lineNumber: 336,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1078,7 +1515,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: "En bref"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 249,
+                                                lineNumber: 380,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1088,18 +1525,10 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                     lineHeight: 1.8,
                                                     fontWeight: 600
                                                 },
-                                                children: [
-                                                    "Ce séjour ",
-                                                    sejour.saison?.toLowerCase() || "exceptionnel",
-                                                    " organisé par Make Your Moment emmènera les jeunes à ",
-                                                    sejour.lieu,
-                                                    " pour ",
-                                                    getDuree(sejour.dateDebut, sejour.dateFin),
-                                                    " d'activités inoubliables."
-                                                ]
-                                            }, void 0, true, {
+                                                children: sejour.shortDescription || `Ce séjour ${sejour.saison?.toLowerCase() || "exceptionnel"} organisé par Make Your Moment emmènera les jeunes à ${sejour.lieu || "une superbe destination"} pour ${getDuree(sejour.dateDebut, sejour.dateFin)} d'activités inoubliables.`
+                                            }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 250,
+                                                lineNumber: 382,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1145,7 +1574,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 263,
+                                                                lineNumber: 394,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1157,24 +1586,24 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                                 children: text
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 264,
+                                                                lineNumber: 395,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, i, true, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 262,
+                                                        lineNumber: 393,
                                                         columnNumber: 19
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 255,
+                                                lineNumber: 386,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 248,
+                                        lineNumber: 379,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1182,7 +1611,8 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                             background: C.white,
                                             borderRadius: "20px",
                                             overflow: "hidden",
-                                            boxShadow: "0 2px 16px rgba(17,76,90,0.06)"
+                                            boxShadow: "0 2px 16px rgba(17,76,90,0.06)",
+                                            marginBottom: "24px"
                                         },
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1210,12 +1640,12 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                         children: t.label
                                                     }, t.id, false, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 275,
+                                                        lineNumber: 405,
                                                         columnNumber: 19
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 273,
+                                                lineNumber: 403,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1225,152 +1655,126 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: [
                                                     activeTab === "programme" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "rich-text",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                    children: "Au programme de ce séjour :"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                    lineNumber: 291,
-                                                                    columnNumber: 24
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 291,
-                                                                columnNumber: 21
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: "Ce champ pourra être rempli depuis le tableau de bord administrateur dans une prochaine version. En attendant, n'hésitez pas à nous contacter par téléphone pour obtenir le programme détaillé de cette destination !"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 292,
-                                                                columnNumber: 21
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                        dangerouslySetInnerHTML: {
+                                                            __html: sejour.programme || "<p>Le programme de ce séjour sera très prochainement disponible.</p>"
+                                                        }
+                                                    }, void 0, false, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 290,
+                                                        lineNumber: 419,
                                                         columnNumber: 19
                                                     }, this),
                                                     activeTab === "pratique" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "rich-text",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                    children: "Informations pratiques :"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                    lineNumber: 297,
-                                                                    columnNumber: 24
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 297,
-                                                                columnNumber: 21
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: "- Les lieux de départ et de retour vous seront communiqués lors de l'inscription."
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 298,
-                                                                columnNumber: 21
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: "- Trousseau et liste du matériel nécessaires envoyés 3 semaines avant le départ."
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 299,
-                                                                columnNumber: 21
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                children: "- Suivi quotidien du séjour via notre groupe privé pour les parents."
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                lineNumber: 300,
-                                                                columnNumber: 21
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                        dangerouslySetInnerHTML: {
+                                                            __html: sejour.infosPratiques || "<p>Les informations pratiques vous seront communiquées ultérieurement.</p>"
+                                                        }
+                                                    }, void 0, false, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 296,
+                                                        lineNumber: 422,
                                                         columnNumber: 19
                                                     }, this),
                                                     activeTab === "cadre" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "rich-text",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            children: "Les participants seront hébergés dans une structure agréée et sécurisée, parfaitement adaptée à l'accueil de groupes et aux activités prévues."
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                            lineNumber: 305,
-                                                            columnNumber: 22
-                                                        }, this)
+                                                        dangerouslySetInnerHTML: {
+                                                            __html: sejour.cadreDeVie || "<p>Les détails sur l'hébergement et le cadre de vie seront bientôt disponibles.</p>"
+                                                        }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 304,
+                                                        lineNumber: 425,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 288,
+                                                lineNumber: 417,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 271,
+                                        lineNumber: 402,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(FranceMapPin, {
+                                        imageUrl: sejour.imageUrl,
+                                        lieu: sejour.lieu
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                        lineNumber: 431,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Galerie, {
+                                        images: sejour.galerie
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                        lineNumber: 434,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         style: {
                                             marginTop: "32px",
-                                            display: "none"
+                                            display: "none",
+                                            flexDirection: "column",
+                                            gap: "8px"
                                         },
                                         className: "mobile-cta",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                                            href: "#",
-                                            target: "_blank",
-                                            rel: "noopener noreferrer",
-                                            style: {
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                gap: "8px",
-                                                background: C.yellow,
-                                                color: C.teal,
-                                                fontSize: "14px",
-                                                fontWeight: 800,
-                                                borderRadius: "999px",
-                                                padding: "18px",
-                                                textDecoration: "none",
-                                                boxShadow: "0 6px 20px rgba(255,200,1,0.35)"
-                                            },
-                                            children: [
-                                                "S'inscrire — ",
-                                                sejour.prix || 0,
-                                                "€ ",
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                                    size: 14
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                    lineNumber: 315,
-                                                    columnNumber: 50
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 313,
-                                            columnNumber: 15
-                                        }, this)
-                                    }, void 0, false, {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                                href: `/inscription/${sejour.id}`,
+                                                style: {
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    gap: "8px",
+                                                    background: C.yellow,
+                                                    color: C.teal,
+                                                    fontSize: "14px",
+                                                    fontWeight: 800,
+                                                    borderRadius: "999px",
+                                                    padding: "18px",
+                                                    textDecoration: "none",
+                                                    boxShadow: "0 6px 20px rgba(255,200,1,0.35)"
+                                                },
+                                                children: [
+                                                    "S'inscrire — ",
+                                                    sejour.prix || 0,
+                                                    "€ ",
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
+                                                        size: 14
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                                        lineNumber: 440,
+                                                        columnNumber: 50
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                                lineNumber: 438,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                style: {
+                                                    fontSize: "11px",
+                                                    color: "#8aaa",
+                                                    textAlign: "center",
+                                                    fontWeight: 600
+                                                },
+                                                children: "🔒 Création de compte requise"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
+                                                lineNumber: 442,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 312,
+                                        lineNumber: 437,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 246,
+                                lineNumber: 377,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1379,18 +1783,18 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                     sejour: sejour
                                 }, void 0, false, {
                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                    lineNumber: 322,
+                                    lineNumber: 450,
                                     columnNumber: 14
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 321,
+                                lineNumber: 449,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 243,
+                        lineNumber: 374,
                         columnNumber: 9
                     }, this),
                     autresSejours && autresSejours.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1420,7 +1824,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: "À découvrir aussi"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 331,
+                                                lineNumber: 459,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1433,13 +1837,13 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 children: "Séjours similaires"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 332,
+                                                lineNumber: 460,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 330,
+                                        lineNumber: 458,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1463,19 +1867,19 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                 size: 14
                                             }, void 0, false, {
                                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                lineNumber: 335,
+                                                lineNumber: 463,
                                                 columnNumber: 27
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 334,
+                                        lineNumber: 462,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 329,
+                                lineNumber: 457,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1515,12 +1919,12 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                        lineNumber: 346,
+                                                        lineNumber: 474,
                                                         columnNumber: 23
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                    lineNumber: 345,
+                                                    lineNumber: 473,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1538,7 +1942,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                             children: s.titre
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                            lineNumber: 349,
+                                                            lineNumber: 477,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1555,7 +1959,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                            lineNumber: 350,
+                                                            lineNumber: 478,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1577,7 +1981,7 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                    lineNumber: 352,
+                                                                    lineNumber: 480,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1589,53 +1993,53 @@ function SejourDetailClient({ sejour, autresSejours }) {
                                                                     children: formatAge(s.tranchesAge)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                                    lineNumber: 353,
+                                                                    lineNumber: 481,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                            lineNumber: 351,
+                                                            lineNumber: 479,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                                    lineNumber: 348,
+                                                    lineNumber: 476,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                            lineNumber: 342,
+                                            lineNumber: 470,
                                             columnNumber: 19
                                         }, this)
                                     }, s.id, false, {
                                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                        lineNumber: 341,
+                                        lineNumber: 469,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                                lineNumber: 339,
+                                lineNumber: 467,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                        lineNumber: 328,
+                        lineNumber: 456,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-                lineNumber: 242,
+                lineNumber: 373,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/sejours-enfants-ados/[id]/SejourDetailClient.jsx",
-        lineNumber: 189,
+        lineNumber: 322,
         columnNumber: 5
     }, this);
 }

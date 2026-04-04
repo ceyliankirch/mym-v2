@@ -10,7 +10,7 @@ export default async function AdminPage() {
     console.log("📡 Admin : Récupération des données depuis Neon...");
 
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-    const [sejours, inscriptions, clientsCount] = await Promise.all([
+    const [sejours, inscriptions, clientsCount, animateurs] = await Promise.all([
       prisma.sejour.findMany({ 
         orderBy: { createdAt: "desc" } 
       }),
@@ -22,6 +22,10 @@ export default async function AdminPage() {
         orderBy: { createdAt: "desc" },
       }),
       prisma.client.count(),
+      // ⚡ NOUVEAU : Récupération de l'équipe
+      prisma.animateur.findMany({ 
+        orderBy: { createdAt: "asc" } 
+      }),
     ]);
 
     // Calcul des statistiques (KPIs)
@@ -37,6 +41,7 @@ export default async function AdminPage() {
         stats={stats} 
         sejours={sejours} 
         inscriptions={inscriptions} 
+        animateurs={animateurs} // ⚡ NOUVEAU : On passe les animateurs au client
       />
     );
   } catch (error) {

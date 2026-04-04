@@ -25,6 +25,12 @@ model Sejour {
   statut       String    @default("Brouillon") 
   enAvant      Boolean   @default(false)
   tranchesAge  String?   // Pour stocker "6-12 ans" par exemple
+  shortDescription String?
+  programme        String?
+  infosPratiques   String?
+  adresseComplete  String?
+  galerie          String[] // Tableau d'URLs pour tes 10 photos max
+  formSchema       String?  // Le JSON du constructeur de formulaire
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
 }
@@ -59,4 +65,13 @@ model Inscription {
 
   sejourId    String
   sejour      Sejour   @relation(fields: [sejourId], references: [id])
+}
+
+model Animateur {
+  id          String   @id @default(cuid())
+  nom         String
+  role        String   @default("Animateur") // ex: Directeur, Animateur BAFA...
+  bio         String?  // Petite description
+  imageUrl    String?  // Photo de profil
+  createdAt   DateTime @default(now())
 }

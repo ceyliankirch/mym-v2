@@ -70,7 +70,7 @@ async function AdminPage() {
     try {
         console.log("📡 Admin : Récupération des données depuis Neon...");
         // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-        const [sejours, inscriptions, clientsCount] = await Promise.all([
+        const [sejours, inscriptions, clientsCount, animateurs] = await Promise.all([
             __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].sejour.findMany({
                 orderBy: {
                     createdAt: "desc"
@@ -85,7 +85,13 @@ async function AdminPage() {
                     createdAt: "desc"
                 }
             }),
-            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].client.count()
+            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].client.count(),
+            // ⚡ NOUVEAU : Récupération de l'équipe
+            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].animateur.findMany({
+                orderBy: {
+                    createdAt: "asc"
+                }
+            })
         ]);
         // Calcul des statistiques (KPIs)
         const stats = {
@@ -97,10 +103,11 @@ async function AdminPage() {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$admin$2f$AdminDashboardClient$2e$jsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
             stats: stats,
             sejours: sejours,
-            inscriptions: inscriptions
+            inscriptions: inscriptions,
+            animateurs: animateurs
         }, void 0, false, {
             fileName: "[project]/app/admin/page.jsx",
-            lineNumber: 36,
+            lineNumber: 40,
             columnNumber: 7
         }, this);
     } catch (error) {
@@ -113,7 +120,7 @@ async function AdminPage() {
                     children: "Erreur de connexion"
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 46,
+                    lineNumber: 51,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -121,7 +128,7 @@ async function AdminPage() {
                     children: "Impossible de charger les données. Vérifie la console de ton terminal."
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 47,
+                    lineNumber: 52,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
@@ -129,13 +136,13 @@ async function AdminPage() {
                     children: error.message
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 50,
+                    lineNumber: 55,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/admin/page.jsx",
-            lineNumber: 45,
+            lineNumber: 50,
             columnNumber: 7
         }, this);
     }

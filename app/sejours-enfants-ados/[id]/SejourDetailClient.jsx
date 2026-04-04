@@ -17,6 +17,8 @@ const C = {
   lilac:   "#EFDEF9",
   arctic:  "#F1F6F4",
   white:   "#ffffff",
+  gray:    "#8aaa",
+  lightGray: "#e2e8f0"
 };
 
 /* ─── UTILS ──────────────────────────────────────────────────────────────── */
@@ -52,6 +54,174 @@ const getDuree = (startStr, endStr) => {
 /* ─── NAV ───────────────────────────────────────────────────────────────────── */
 const NAV = ["Accueil","Séjours","Qui sommes-nous","Séniors","Contact","FAQ"];
 
+function Header({ scrolled }) {
+  return (
+    <header style={{
+      position:"sticky",top:0,zIndex:100,
+      background: scrolled?"rgba(241,246,244,.97)":"white",
+      boxShadow:"0 2px 24px rgba(17,76,90,0.08)",
+      transition:"all .3s",
+    }}>
+      <div style={{maxWidth:"1320px",margin:"0 auto",padding:"12px 32px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"24px"}}>
+        <Link href="/" style={{display:"flex",alignItems:"center",gap:"10px",textDecoration:"none",flexShrink:0}}>
+          <div style={{width:"40px",height:"40px",borderRadius:"14px",background:C.yellow,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <span style={{color:C.teal,fontWeight:900,fontSize:"1.1rem"}}>M</span>
+          </div>
+          <div>
+            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:"2px",textTransform:"uppercase",color:C.teal,lineHeight:1.2}}>Make Your</div>
+            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:"2px",textTransform:"uppercase",color:C.saffron,lineHeight:1.2}}>Moment</div>
+          </div>
+        </Link>
+
+        <nav style={{display:"flex",alignItems:"center",gap:"2px",background:C.white,borderRadius:"999px",padding:"6px",boxShadow:"0 2px 12px rgba(17,76,90,0.08)"}} className="hidden lg:flex">
+          {NAV.map((l,i)=>(
+            <Link key={i} href={i===1?"/sejours-enfants-ados":i===0?"/":"#"} style={{fontSize:"11px",fontWeight:i===1?800:700,padding:"8px 16px",borderRadius:"999px",textDecoration:"none",background:i===1?C.yellow:"transparent",color:C.teal,transition:"all .2s"}}>
+              {l}
+            </Link>
+          ))}
+        </nav>
+
+        <Link href="/contact" style={{display:"flex",alignItems:"center",gap:"8px",background:C.teal,color:C.yellow,fontSize:"11px",fontWeight:700,borderRadius:"999px",padding:"10px 22px",textDecoration:"none"}}>
+          Nous écrire <ArrowRight size={13}/>
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+/* ─── DICTIONNAIRE DES COORDONNÉES (POURCENTAGES SUR LE SVG) ─── */
+// Rappel : Tu peux ajouter d'autres villes ici au fur et à mesure !
+const FRANCE_COORDS = {
+  "strasbourg": { top: "35%", left: "85%" },
+  "paris": { top: "30%", left: "53%" },
+  "lyon": { top: "58%", left: "70%" },
+  "marseille": { top: "82%", left: "74%" },
+  "bordeaux": { top: "68%", left: "35%" },
+  "toulouse": { top: "82%", left: "48%" },
+  "lille": { top: "15%", left: "62%" },
+  "nantes": { top: "50%", left: "30%" },
+  "rennes": { top: "42%", left: "28%" },
+  "montpellier": { top: "82%", left: "64%" },
+  "nice": { top: "80%", left: "85%" },
+  "biarritz": { top: "80%", left: "28%" },
+  "vieux-boucau": { top: "78%", left: "28%" },
+  "default": { top: "50%", left: "50%" } // Centre exact si ville inconnue
+};
+
+// Fonction pour trouver les coordonnées d'une ville (ignore les accents et majuscules)
+function getCoordinates(ville) {
+  if (!ville) return FRANCE_COORDS.default;
+  const normalized = ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const foundKey = Object.keys(FRANCE_COORDS).find(k => normalized.includes(k));
+  return foundKey ? FRANCE_COORDS[foundKey] : FRANCE_COORDS.default;
+}
+
+
+
+/* ─── COMPOSANT : CARTE FRANCE PIN ────────────────────────────────────────── */
+function FranceMapPin({ imageUrl, lieu }) {
+  const villeCourte = lieu ? lieu.split(',')[0].trim() : "France";
+  
+  // On récupère les coordonnées X/Y (top/left) dynamiquement
+  const coords = getCoordinates(villeCourte);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "480px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "32px", border: `1px solid ${C.lightGray}` }}>
+      
+      {/* Container carré pour que les pourcentages s'alignent parfaitement avec le SVG */}
+      <div style={{ position: "relative", width: "100%", maxWidth: "480px", height: "100%" }}>
+        
+        {/* SVG DE LA FRANCE EN FOND */}
+        <img 
+          src="/france.svg" 
+          alt="Carte de la France" 
+          style={{ 
+            position: "absolute", 
+            top: 0, left: 0, width: "100%", height: "100%", 
+            opacity: 0.08, // Opacité très subtile
+            objectFit: "contain",
+            pointerEvents: "none"
+          }} 
+        />
+        
+        {/* LE GROUPE DU PIN (Positionné dynamiquement avec 'top' et 'left') */}
+        <div style={{ 
+          position: "absolute", 
+          top: coords.top, 
+          left: coords.left, 
+          transform: "translate(-50%, -50%)", // Centre parfaitement le pin sur le point
+          zIndex: 10 
+        }}>
+          
+          {/* ⚡ ANIMATIONS RADIO (Ondes derrière le Pin) */}
+          {/* Onde 1 */}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100px", height: "100px", borderRadius: "50%", background: `${C.yellow}12`, border: `1px solid ${C.yellow}25`, animation: "pulse-soft 3s infinite", pointerEvents: "none" }} />
+          {/* Onde 2 */}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "160px", height: "160px", borderRadius: "50%", border: `1px solid ${C.yellow}15`, animation: "pulse-soft 3s infinite 1.5s", pointerEvents: "none" }} />
+
+          {/* ⚡ LE PIN MINIATURE (Réduit à 50px, sans texte) */}
+          <div style={{ 
+            width: "50px", 
+            height: "50px", 
+            borderRadius: "50%", 
+            border: `3px solid ${C.white}`, // Bordure affinée
+            boxShadow: "0 6px 16px rgba(17,76,90,0.12)", // Ombre adoucie
+            overflow: "hidden", 
+            background: C.arctic, 
+            position: "relative", 
+            zIndex: 5 
+          }}>
+            <img src={imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Point d'intérêt" />
+          </div>
+
+        </div>
+      </div>
+
+      {/* Overlay Texte en haut à gauche */}
+      <div style={{ position: "absolute", top: "32px", left: "32px", pointerEvents: "none" }}>
+        <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>Localisation</p>
+        <h3 style={{ fontSize: "24px", fontWeight: 900, color: C.teal }}>Au cœur du séjour</h3>
+      </div>
+    </div>
+  );
+}
+
+/* ─── GALERIE DYNAMIQUE (NON-ROGNÉE) ────────────────────────────────────────── */
+function Galerie({ images }) {
+  const [active, setActive] = useState(0);
+  if (!images || images.length === 0) return null;
+  return (
+    <div style={{background:C.white, borderRadius:"20px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", marginBottom: "24px"}}>
+      <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"20px"}}>Galerie Photos</h3>
+      
+      {/* Image principale au ratio original */}
+      <div style={{borderRadius:"16px",overflow:"hidden",height:"400px",marginBottom:"16px",position:"relative", background: C.arctic}}>
+        <img src={images[active]} alt="galerie" style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+        {images.length > 1 && (
+          <>
+            <button onClick={()=>setActive(p=>(p-1+images.length)%images.length)} style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.9)",border:"none",borderRadius:"50%",width:"40px",height:"40px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.1)"}}>
+              <ChevronLeft size={20} style={{color:C.teal}}/>
+            </button>
+            <button onClick={()=>setActive(p=>(p+1)%images.length)} style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.9)",border:"none",borderRadius:"50%",width:"40px",height:"40px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.1)"}}>
+              <ChevronRight size={20} style={{color:C.teal}}/>
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Miniatures */}
+      {images.length > 1 && (
+        <div style={{display:"flex",gap:"12px",overflowX:"auto",paddingBottom:"8px"}}>
+          {images.map((img,i)=>(
+            <div key={i} onClick={()=>setActive(i)} style={{borderRadius:"12px",overflow:"hidden",height:"72px",width:"108px",flexShrink:0,cursor:"pointer",border:active===i?`3px solid ${C.yellow}`:"3px solid transparent",transition:"border .2s", background: C.arctic}}>
+              <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ─── STICKY CTA SIDEBAR ────────────────────────────────────────────────────── */
 function StickySidebar({ sejour }) {
@@ -63,7 +233,6 @@ function StickySidebar({ sejour }) {
 
   return (
     <div style={{position:"sticky",top:"90px",background:C.white,borderRadius:"24px",padding:"28px",boxShadow:"0 8px 40px rgba(17,76,90,0.12)"}}>
-      {/* Prix */}
       <div style={{marginBottom:"20px",paddingBottom:"20px",borderBottom:`1px solid ${C.arctic}`}}>
         <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"1px"}}>Prix par personne</p>
         <div style={{display:"flex",alignItems:"baseline",gap:"8px"}}>
@@ -72,7 +241,6 @@ function StickySidebar({ sejour }) {
         <p style={{fontSize:"11px",color:"#8aa",marginTop:"4px"}}>Paiement jusqu'à 8× sans frais possible</p>
       </div>
 
-      {/* Infos clés */}
       <div style={{display:"flex",flexDirection:"column",gap:"12px",marginBottom:"20px"}}>
         {[
           {Icon:Calendar, label:"Dates", val:formatSejourDates(sejour.dateDebut, sejour.dateFin)},
@@ -93,7 +261,6 @@ function StickySidebar({ sejour }) {
         ))}
       </div>
 
-      {/* Urgence */}
       {urgent&&(
         <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:"12px",padding:"10px 14px",marginBottom:"16px",display:"flex",alignItems:"center",gap:"8px"}}>
           <span style={{fontSize:"16px"}}>⚡</span>
@@ -101,14 +268,15 @@ function StickySidebar({ sejour }) {
         </div>
       )}
 
-      {/* CTA inscription */}
-      <a href="#" target="_blank" rel="noopener noreferrer"
-        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"13px",fontWeight:800,borderRadius:"999px",padding:"16px",textDecoration:"none",marginBottom:"12px",boxShadow:"0 6px 20px rgba(255,200,1,0.35)",width:"100%", transition:"all 0.2s"}}
+      <Link href={`/inscription/${sejour.id}`}
+        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"16px",textDecoration:"none",marginBottom:"8px",boxShadow:"0 6px 20px rgba(255,200,1,0.35)",width:"100%", transition:"all 0.2s"}}
         onMouseEnter={e => e.currentTarget.style.background = C.saffron} onMouseLeave={e => e.currentTarget.style.background = C.yellow}>
-        Demander une inscription <ArrowRight size={14}/>
-      </a>
+        S'inscrire à ce séjour <ArrowRight size={16}/>
+      </Link>
+      <p style={{fontSize:"10px", color:"#8aaa", textAlign:"center", marginBottom:"16px", fontWeight:600}}>
+        🔒 Création de compte requise pour s'inscrire
+      </p>
 
-      {/* Actions secondaires */}
       <div style={{display:"flex",gap:"8px"}}>
         <button onClick={()=>setLiked(!liked)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",background:C.arctic,border:"none",borderRadius:"999px",padding:"10px",cursor:"pointer",fontSize:"11px",fontWeight:700,color:liked?"#ef4444":C.teal,fontFamily:"Montserrat,sans-serif"}}>
           <Heart size={13} style={{fill:liked?"#ef4444":"none",color:liked?"#ef4444":C.teal}}/> Favoris
@@ -118,7 +286,6 @@ function StickySidebar({ sejour }) {
         </button>
       </div>
 
-      {/* Contact */}
       <div style={{marginTop:"20px",paddingTop:"20px",borderTop:`1px solid ${C.arctic}`}}>
         <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"10px",textTransform:"uppercase",letterSpacing:"1px"}}>Une question ?</p>
         <a href="tel:+33698965002" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
@@ -163,20 +330,19 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
         .rich-text br{display:block;margin:4px 0;}
       `}</style>
 
+      <Header scrolled={scrolled}/>
 
       {/* ── BANNIERE ──────────────────────────────────────────────────────── */}
       <section style={{position:"relative",height:"460px",overflow:"hidden"}}>
         <img src={sejour.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600"} alt={sejour.titre} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(17,76,90,0.85) 0%,rgba(17,76,90,0.15) 50%,transparent 100%)"}}/>
 
-        {/* Breadcrumb flottant */}
         <div style={{position:"absolute",top:"24px",left:"32px",display:"flex",alignItems:"center",gap:"8px"}}>
           <Link href="/sejours-enfants-ados" style={{display:"flex",alignItems:"center",gap:"6px",background:"rgba(255,255,255,0.15)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"6px 14px",textDecoration:"none",color:"white",fontSize:"12px",fontWeight:600}}>
             <ArrowLeft size={12}/> Tous les séjours
           </Link>
         </div>
 
-        {/* Info bas de bannière */}
         <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"28px 32px"}}>
           <div style={{maxWidth:"1320px",margin:"0 auto"}}>
             <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
@@ -212,11 +378,11 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
             {/* Résumé */}
             <div style={{background:C.white,borderRadius:"20px",padding:"28px",marginBottom:"24px",boxShadow:"0 2px 16px rgba(17,76,90,0.06)"}}>
               <p style={{fontSize:"11px",fontWeight:800,color:C.saffron,textTransform:"uppercase",letterSpacing:"2px",marginBottom:"10px"}}>En bref</p>
+              
               <p style={{fontSize:"15px",color:"#5a7a84",lineHeight:1.8,fontWeight:600}}>
-                 Ce séjour {sejour.saison?.toLowerCase() || "exceptionnel"} organisé par Make Your Moment emmènera les jeunes à {sejour.lieu} pour {getDuree(sejour.dateDebut, sejour.dateFin)} d'activités inoubliables.
+                 {sejour.shortDescription || `Ce séjour ${sejour.saison?.toLowerCase() || "exceptionnel"} organisé par Make Your Moment emmènera les jeunes à ${sejour.lieu || "une superbe destination"} pour ${getDuree(sejour.dateDebut, sejour.dateFin)} d'activités inoubliables.`}
               </p>
 
-              {/* Badges garanties */}
               <div style={{display:"flex",flexWrap:"wrap",gap:"10px",marginTop:"24px",paddingTop:"24px",borderTop:`1px solid ${C.arctic}`}}>
                 {[
                   {Icon:Shield,     text:"Déclaration DDCS"},
@@ -233,8 +399,7 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
             </div>
 
             {/* Tabs */}
-            <div style={{background:C.white,borderRadius:"20px",overflow:"hidden",boxShadow:"0 2px 16px rgba(17,76,90,0.06)"}}>
-              {/* Tab nav */}
+            <div style={{background:C.white,borderRadius:"20px",overflow:"hidden",boxShadow:"0 2px 16px rgba(17,76,90,0.06)", marginBottom: "24px"}}>
               <div style={{display:"flex",borderBottom:`1px solid ${C.arctic}`, overflowX: "auto"}}>
                 {TABS.map(t=>(
                   <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{
@@ -249,36 +414,34 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
                 ))}
               </div>
 
-              {/* Tab content */}
               <div style={{padding:"32px"}}>
                 {activeTab==="programme"&&(
-                  <div className="rich-text">
-                    <p><strong>Au programme de ce séjour :</strong></p>
-                    <p>Ce champ pourra être rempli depuis le tableau de bord administrateur dans une prochaine version. En attendant, n'hésitez pas à nous contacter par téléphone pour obtenir le programme détaillé de cette destination !</p>
-                  </div>
+                  <div className="rich-text" dangerouslySetInnerHTML={{ __html: sejour.programme || "<p>Le programme de ce séjour sera très prochainement disponible.</p>" }} />
                 )}
                 {activeTab==="pratique"&&(
-                  <div className="rich-text">
-                    <p><strong>Informations pratiques :</strong></p>
-                    <p>- Les lieux de départ et de retour vous seront communiqués lors de l'inscription.</p>
-                    <p>- Trousseau et liste du matériel nécessaires envoyés 3 semaines avant le départ.</p>
-                    <p>- Suivi quotidien du séjour via notre groupe privé pour les parents.</p>
-                  </div>
+                  <div className="rich-text" dangerouslySetInnerHTML={{ __html: sejour.infosPratiques || "<p>Les informations pratiques vous seront communiquées ultérieurement.</p>" }} />
                 )}
                 {activeTab==="cadre"&&(
-                  <div className="rich-text">
-                     <p>Les participants seront hébergés dans une structure agréée et sécurisée, parfaitement adaptée à l'accueil de groupes et aux activités prévues.</p>
-                  </div>
+                  <div className="rich-text" dangerouslySetInnerHTML={{ __html: sejour.cadreDeVie || "<p>Les détails sur l'hébergement et le cadre de vie seront bientôt disponibles.</p>" }} />
                 )}
               </div>
             </div>
 
+            {/* ⚡ CARTE FRANCE AVEC PIN IMAGE (CORRIGÉE) */}
+            <FranceMapPin imageUrl={sejour.imageUrl} lieu={sejour.lieu} />
+
+            {/* ⚡ GALERIE PHOTOS (Non Rognée) */}
+            <Galerie images={sejour.galerie} />
+
             {/* CTA mobile */}
-            <div style={{marginTop:"32px",display:"none"}} className="mobile-cta">
-              <a href="#" target="_blank" rel="noopener noreferrer"
+            <div style={{marginTop:"32px",display:"none", flexDirection:"column", gap:"8px"}} className="mobile-cta">
+              <Link href={`/inscription/${sejour.id}`}
                 style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"18px",textDecoration:"none",boxShadow:"0 6px 20px rgba(255,200,1,0.35)"}}>
                 S'inscrire — {sejour.prix || 0}€ <ArrowRight size={14}/>
-              </a>
+              </Link>
+              <p style={{fontSize:"11px", color:"#8aaa", textAlign:"center", fontWeight:600}}>
+                🔒 Création de compte requise
+              </p>
             </div>
           </div>
 
