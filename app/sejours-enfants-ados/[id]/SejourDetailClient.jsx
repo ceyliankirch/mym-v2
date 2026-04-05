@@ -51,64 +51,18 @@ const getDuree = (startStr, endStr) => {
   return diffDays === 1 ? "1 jour" : `${diffDays} jours`;
 };
 
-/* ─── NAV ───────────────────────────────────────────────────────────────────── */
-const NAV = ["Accueil","Séjours","Qui sommes-nous","Séniors","Contact","FAQ"];
-
-function Header({ scrolled }) {
-  return (
-    <header style={{
-      position:"sticky",top:0,zIndex:100,
-      background: scrolled?"rgba(241,246,244,.97)":"white",
-      boxShadow:"0 2px 24px rgba(17,76,90,0.08)",
-      transition:"all .3s",
-    }}>
-      <div style={{maxWidth:"1320px",margin:"0 auto",padding:"12px 32px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"24px"}}>
-        <Link href="/" style={{display:"flex",alignItems:"center",gap:"10px",textDecoration:"none",flexShrink:0}}>
-          <div style={{width:"40px",height:"40px",borderRadius:"14px",background:C.yellow,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <span style={{color:C.teal,fontWeight:900,fontSize:"1.1rem"}}>M</span>
-          </div>
-          <div>
-            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:"2px",textTransform:"uppercase",color:C.teal,lineHeight:1.2}}>Make Your</div>
-            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:"2px",textTransform:"uppercase",color:C.saffron,lineHeight:1.2}}>Moment</div>
-          </div>
-        </Link>
-
-        <nav style={{display:"flex",alignItems:"center",gap:"2px",background:C.white,borderRadius:"999px",padding:"6px",boxShadow:"0 2px 12px rgba(17,76,90,0.08)"}} className="hidden lg:flex">
-          {NAV.map((l,i)=>(
-            <Link key={i} href={i===1?"/sejours-enfants-ados":i===0?"/":"#"} style={{fontSize:"11px",fontWeight:i===1?800:700,padding:"8px 16px",borderRadius:"999px",textDecoration:"none",background:i===1?C.yellow:"transparent",color:C.teal,transition:"all .2s"}}>
-              {l}
-            </Link>
-          ))}
-        </nav>
-
-        <Link href="/contact" style={{display:"flex",alignItems:"center",gap:"8px",background:C.teal,color:C.yellow,fontSize:"11px",fontWeight:700,borderRadius:"999px",padding:"10px 22px",textDecoration:"none"}}>
-          Nous écrire <ArrowRight size={13}/>
-        </Link>
-      </div>
-    </header>
-  );
-}
-
 /* ─── DICTIONNAIRE DES COORDONNÉES (POURCENTAGES SUR LE SVG) ─── */
-// Rappel : Tu peux ajouter d'autres villes ici au fur et à mesure !
 const FRANCE_COORDS = {
-  "strasbourg": { top: "35%", left: "85%" },
-  "paris": { top: "30%", left: "53%" },
-  "lyon": { top: "58%", left: "70%" },
-  "marseille": { top: "82%", left: "74%" },
-  "bordeaux": { top: "68%", left: "35%" },
-  "toulouse": { top: "82%", left: "48%" },
-  "lille": { top: "15%", left: "62%" },
-  "nantes": { top: "50%", left: "30%" },
-  "rennes": { top: "42%", left: "28%" },
-  "montpellier": { top: "82%", left: "64%" },
-  "nice": { top: "80%", left: "85%" },
-  "biarritz": { top: "80%", left: "28%" },
-  "vieux-boucau": { top: "78%", left: "28%" },
-  "default": { top: "50%", left: "50%" } // Centre exact si ville inconnue
+  "strasbourg": { top: "35%", left: "88%" },
+  "vincennes": { top: "31%", left: "54%" },
+  "meaux": { top: "30%", left: "58%" },
+  "chapelle": { top: "52%", left: "82%" }, 
+  "elancourt": { top: "32%", left: "51%" },
+  "deauville": { top: "25%", left: "42%" },
+  "vieux-boucau": { top: "78%", left: "28%" }, 
+  "default": { top: "50%", left: "50%" }
 };
 
-// Fonction pour trouver les coordonnées d'une ville (ignore les accents et majuscules)
 function getCoordinates(ville) {
   if (!ville) return FRANCE_COORDS.default;
   const normalized = ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -116,68 +70,32 @@ function getCoordinates(ville) {
   return foundKey ? FRANCE_COORDS[foundKey] : FRANCE_COORDS.default;
 }
 
-
-
 /* ─── COMPOSANT : CARTE FRANCE PIN ────────────────────────────────────────── */
 function FranceMapPin({ imageUrl, lieu }) {
   const villeCourte = lieu ? lieu.split(',')[0].trim() : "France";
-  
-  // On récupère les coordonnées X/Y (top/left) dynamiquement
   const coords = getCoordinates(villeCourte);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "480px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "32px", border: `1px solid ${C.lightGray}` }}>
       
-      {/* Container carré pour que les pourcentages s'alignent parfaitement avec le SVG */}
       <div style={{ position: "relative", width: "100%", maxWidth: "480px", height: "100%" }}>
+        <img src="/france.svg" alt="Carte de la France" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.08, objectFit: "contain", pointerEvents: "none" }} />
         
-        {/* SVG DE LA FRANCE EN FOND */}
-        <img 
-          src="/france.svg" 
-          alt="Carte de la France" 
-          style={{ 
-            position: "absolute", 
-            top: 0, left: 0, width: "100%", height: "100%", 
-            opacity: 0.08, // Opacité très subtile
-            objectFit: "contain",
-            pointerEvents: "none"
-          }} 
-        />
-        
-        {/* LE GROUPE DU PIN (Positionné dynamiquement avec 'top' et 'left') */}
-        <div style={{ 
-          position: "absolute", 
-          top: coords.top, 
-          left: coords.left, 
-          transform: "translate(-50%, -50%)", // Centre parfaitement le pin sur le point
-          zIndex: 10 
-        }}>
+        <div style={{ position: "absolute", top: coords.top, left: coords.left, transform: "translate(-50%, -50%)", zIndex: 10 }}>
           
           {/* ⚡ ANIMATIONS RADIO (Ondes derrière le Pin) */}
           {/* Onde 1 */}
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100px", height: "100px", borderRadius: "50%", background: `${C.yellow}12`, border: `1px solid ${C.yellow}25`, animation: "pulse-soft 3s infinite", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "90px", height: "90px", borderRadius: "50%", background: `${C.yellow}15`, border: `1px solid ${C.yellow}30`, animation: "pulse-soft 3s infinite", pointerEvents: "none" }} />
           {/* Onde 2 */}
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "160px", height: "160px", borderRadius: "50%", border: `1px solid ${C.yellow}15`, animation: "pulse-soft 3s infinite 1.5s", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "150px", height: "150px", borderRadius: "50%", border: `1px solid ${C.yellow}20`, animation: "pulse-soft 3s infinite 1.5s", pointerEvents: "none" }} />
 
-          {/* ⚡ LE PIN MINIATURE (Réduit à 50px, sans texte) */}
-          <div style={{ 
-            width: "50px", 
-            height: "50px", 
-            borderRadius: "50%", 
-            border: `3px solid ${C.white}`, // Bordure affinée
-            boxShadow: "0 6px 16px rgba(17,76,90,0.12)", // Ombre adoucie
-            overflow: "hidden", 
-            background: C.arctic, 
-            position: "relative", 
-            zIndex: 5 
-          }}>
+          {/* LE PIN MINIATURE */}
+          <div style={{ width: "50px", height: "50px", borderRadius: "50%", border: `3px solid ${C.white}`, boxShadow: "0 6px 16px rgba(17,76,90,0.12)", overflow: "hidden", background: C.arctic, position: "relative", zIndex: 5 }}>
             <img src={imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Point d'intérêt" />
           </div>
-
         </div>
       </div>
 
-      {/* Overlay Texte en haut à gauche */}
       <div style={{ position: "absolute", top: "32px", left: "32px", pointerEvents: "none" }}>
         <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>Localisation</p>
         <h3 style={{ fontSize: "24px", fontWeight: 900, color: C.teal }}>Au cœur du séjour</h3>
@@ -186,7 +104,7 @@ function FranceMapPin({ imageUrl, lieu }) {
   );
 }
 
-/* ─── GALERIE DYNAMIQUE (NON-ROGNÉE) ────────────────────────────────────────── */
+/* ─── GALERIE DYNAMIQUE ───────────────────────────────────────────────────── */
 function Galerie({ images }) {
   const [active, setActive] = useState(0);
   if (!images || images.length === 0) return null;
@@ -194,7 +112,6 @@ function Galerie({ images }) {
     <div style={{background:C.white, borderRadius:"20px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", marginBottom: "24px"}}>
       <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"20px"}}>Galerie Photos</h3>
       
-      {/* Image principale au ratio original */}
       <div style={{borderRadius:"16px",overflow:"hidden",height:"400px",marginBottom:"16px",position:"relative", background: C.arctic}}>
         <img src={images[active]} alt="galerie" style={{width:"100%",height:"100%",objectFit:"contain"}}/>
         {images.length > 1 && (
@@ -209,7 +126,6 @@ function Galerie({ images }) {
         )}
       </div>
 
-      {/* Miniatures */}
       {images.length > 1 && (
         <div style={{display:"flex",gap:"12px",overflowX:"auto",paddingBottom:"8px"}}>
           {images.map((img,i)=>(
@@ -227,7 +143,6 @@ function Galerie({ images }) {
 function StickySidebar({ sejour }) {
   const [liked, setLiked] = useState(false);
   const placesTotales = sejour.places || 0;
-  // Calcul temporaire (à remplacer plus tard par les vraies inscriptions DB)
   const placesRestantes = placesTotales; 
   const urgent = placesRestantes <= 3 && placesRestantes > 0;
 
@@ -320,6 +235,7 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
 
   return (
     <div style={{fontFamily:"'Montserrat',sans-serif",background:C.arctic,color:C.teal,overflowX:"hidden"}}>
+      
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
         *{font-family:'Montserrat',sans-serif;box-sizing:border-box;}
@@ -328,9 +244,54 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
         .rich-text strong{font-weight:800;color:#114C5A;}
         .rich-text u{text-decoration:underline;}
         .rich-text br{display:block;margin:4px 0;}
-      `}</style>
 
-      <Header scrolled={scrolled}/>
+        /* ⚡ L'ANIMATION CRUCIALE POUR LE RADAR (pulse-soft) */
+        @keyframes pulse-soft {
+          0% {
+            transform: translate(-50%, -50%) scale(0.95);
+            opacity: 0.9;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
+          }
+        }
+
+        /* Grille principale : 1 seule colonne par défaut (mobile / tablette) */
+        .layout-container {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+
+        /* La barre de droite est cachée sur les petits écrans */
+        .sidebar-wrapper {
+          display: none;
+        }
+
+        /* Le bouton CTA Mobile est visible par défaut */
+        .mobile-cta-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 32px;
+        }
+
+        /* Quand l'écran est assez grand (Desktop), on passe à 2 colonnes ! */
+        @media (min-width: 1024px) {
+          .layout-container {
+            grid-template-columns: 1fr 380px;
+            gap: 48px;
+          }
+          .sidebar-wrapper {
+            display: block;
+          }
+          .mobile-cta-wrapper {
+            display: none;
+          }
+        }
+      `}</style>
 
       {/* ── BANNIERE ──────────────────────────────────────────────────────── */}
       <section style={{position:"relative",height:"460px",overflow:"hidden"}}>
@@ -371,10 +332,12 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
 
       {/* ── CONTENT ───────────────────────────────────────────────────────── */}
       <div style={{maxWidth:"1320px",margin:"0 auto",padding:"48px 32px", paddingBottom: "100px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 380px",gap:"48px",alignItems:"start"}}>
+        
+        <div className="layout-container">
 
           {/* ── COL GAUCHE ─────────────────────────────────────────────────── */}
-          <div>
+          <div style={{ minWidth: 0 }}>
+            
             {/* Résumé */}
             <div style={{background:C.white,borderRadius:"20px",padding:"28px",marginBottom:"24px",boxShadow:"0 2px 16px rgba(17,76,90,0.06)"}}>
               <p style={{fontSize:"11px",fontWeight:800,color:C.saffron,textTransform:"uppercase",letterSpacing:"2px",marginBottom:"10px"}}>En bref</p>
@@ -427,14 +390,14 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
               </div>
             </div>
 
-            {/* ⚡ CARTE FRANCE AVEC PIN IMAGE (CORRIGÉE) */}
+            {/* CARTE FRANCE */}
             <FranceMapPin imageUrl={sejour.imageUrl} lieu={sejour.lieu} />
 
-            {/* ⚡ GALERIE PHOTOS (Non Rognée) */}
+            {/* GALERIE PHOTOS */}
             <Galerie images={sejour.galerie} />
 
             {/* CTA mobile */}
-            <div style={{marginTop:"32px",display:"none", flexDirection:"column", gap:"8px"}} className="mobile-cta">
+            <div className="mobile-cta-wrapper">
               <Link href={`/inscription/${sejour.id}`}
                 style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"18px",textDecoration:"none",boxShadow:"0 6px 20px rgba(255,200,1,0.35)"}}>
                 S'inscrire — {sejour.prix || 0}€ <ArrowRight size={14}/>
@@ -446,7 +409,7 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
           </div>
 
           {/* ── COL DROITE — SIDEBAR ────────────────────────────────────────── */}
-          <div className="hidden md:block">
+          <div className="sidebar-wrapper">
              <StickySidebar sejour={sejour}/>
           </div>
         </div>

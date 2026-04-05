@@ -1,21 +1,12 @@
 {
   "app": {
-    "[project]/app/_not-found/page": [
-      "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
-    ],
-    "[project]/app/admin/page": [
+    "[project]/app/inscription/[id]/page": [
       "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
     ],
     "[project]/app/page": [
       "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
     ],
-    "[project]/app/qui-sommes-nous/page": [
-      "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
-    ],
     "[project]/app/sejours-enfants-ados/[id]/page": [
-      "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
-    ],
-    "[project]/app/sejours-enfants-ados/page": [
       "static/media/e8f2fbee2754df70-s.p.9b7a96b4.woff2"
     ]
   },
