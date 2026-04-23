@@ -1,0 +1,11 @@
+[00:00:01.178] Server  LOG     ✓ Ready in 859ms
+[00:00:06.979] Server  LOG     🚀 PRISMA : Démarrage en mode NATIF (Sans Adaptateur) !
+[00:00:08.256] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:07.261] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./app/espace-famille/EspaceFamilleClient.jsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:03:07.387] Server  LOG     ✓ Compiled in 92ms
+[00:03:07.739] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:16.269] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./app/espace-famille/EspaceFamilleClient.jsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:05:16.377] Server  LOG     ✓ Compiled in 44ms
+[00:05:16.762] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:33.524] Server  LOG     📡 Admin : Récupération des données depuis Neon...
+[00:05:56.755] Server  LOG     📡 Admin : Récupération des données depuis Neon...

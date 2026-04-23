@@ -1,0 +1,20 @@
+{
+  "node": {
+    "40eca645d15c4fc7e4f50863014333b24caacbabc9": {
+      "workers": {
+        "app/qui-sommes-nous/page": {
+          "moduleId": "[project]/.next-internal/server/app/qui-sommes-nous/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/auth.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "registerUser",
+          "filename": "app/actions/auth.js"
+        }
+      },
+      "layer": {
+        "app/qui-sommes-nous/page": "action-browser"
+      },
+      "exportedName": "registerUser",
+      "filename": "app/actions/auth.js"
+    }
+  },
+  "edge": {}
+}

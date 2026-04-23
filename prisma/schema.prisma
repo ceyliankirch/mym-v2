@@ -53,18 +53,22 @@ model Client {
 model Inscription {
   id          String   @id @default(cuid())
   montantPaye Float    @default(0)
-  
-  // ⚡ NOUVEAU CHAMP (Optionnel mais recommandé)
   statut      String   @default("Confirmé")
-  
   createdAt   DateTime @default(now())
-
-  // Clés étrangères et relations
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id])
-
+  documents   Document[]
   sejourId    String
   sejour      Sejour   @relation(fields: [sejourId], references: [id])
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  nom           String      // ex: "Fiche Sanitaire"
+  url           String?     // URL du fichier (ex: S3 ou Supabase Storage)
+  statut        String      @default("MANQUANT") // VALIDE, EN_COURS, MANQUANT
+  inscriptionId String
+  inscription   Inscription @relation(fields: [inscriptionId], references: [id])
 }
 
 model Animateur {
@@ -72,6 +76,7 @@ model Animateur {
   nom         String
   role        String   @default("Animateur") // ex: Directeur, Animateur BAFA...
   bio         String?  // Petite description
+  ordre       Int?
   imageUrl    String?  // Photo de profil
   createdAt   DateTime @default(now())
 }
@@ -87,7 +92,7 @@ model User {
   telephone     String?
   password      String?   // Mot de passe crypté
   image         String?
-  role          String    @default("PARENT") // Peut être "PARENT" ou "ADMIN"
+  role          String    @default("PARENT") 
   
   accounts      Account[]
   sessions      Session[]

@@ -121,7 +121,9 @@ export default function Navbar() {
     return fallbackName.substring(0, 2).toUpperCase();
   };
 
-  const isAdmin = session?.user?.role === "ADMIN";
+  // ⚡ MODIFICATION ICI : On normalise la casse et on vérifie les deux rôles
+  const userRole = session?.user?.role?.toUpperCase();
+  const isAdmin = userRole === "ADMIN" || userRole === "ADMINISTRATEUR";
 
   return (
     <div style={{ position: "relative", zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
@@ -224,7 +226,7 @@ export default function Navbar() {
                         style={{ position: "absolute", top: "110%", right: 0, background: C.white, borderRadius: "20px", padding: "8px", width: "220px", boxShadow: "0 10px 40px rgba(0,0,0,0.1)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column", gap: "4px" }}
                       >
                         <Link 
-                          href={isAdmin ? "/admin" : "/profil"} 
+                          href={isAdmin ? "/admin" : "/espace-famille"} 
                           onClick={() => setDropdownOpen(false)}
                           style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: C.teal, textDecoration: "none", display: "flex", alignItems: "center", gap: "10px", transition: "background 0.2s" }}
                           onMouseOver={e => e.currentTarget.style.background = C.arctic} onMouseOut={e => e.currentTarget.style.background = "transparent"}
