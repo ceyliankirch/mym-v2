@@ -123,7 +123,7 @@ export default function Navbar() {
 
   // ⚡ MODIFICATION ICI : On normalise la casse et on vérifie les deux rôles
   const userRole = session?.user?.role?.toUpperCase();
-  const isAdmin = userRole === "ADMIN" || userRole === "ADMINISTRATEUR";
+  const isAdmin = userRole === "admin" || userRole === "administrateur";
 
   return (
     <div style={{ position: "relative", zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
