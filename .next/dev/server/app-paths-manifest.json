@@ -1,6 +1,5 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/admin/page": "app/admin/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/espace-famille/page": "app/espace-famille/page.js"
+  "/espace-famille/page": "app/espace-famille/page.js",
+  "/page": "app/page.js"
 }

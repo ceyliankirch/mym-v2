@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  GraduationCap, CreditCard, Award, Menu, X, Mail, User, LogOut, LayoutDashboard, Home 
+  GraduationCap, CreditCard, Award, Menu, X, Mail, User, LogOut, LayoutDashboard, Home, Star 
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import AuthModal from "@/components/AuthModal";
@@ -27,6 +27,14 @@ const NAV = [
   { label: "Séjours enfants / ados", href: "/sejours-enfants-ados" },
   { label: "Sorties séniors", href: "/sorties-seniors" },
   { label: "FAQ", href: "/faq" }
+];
+
+/* ─── DÉFINITION DES OPTIONS DU TICKER ───────────────────────────────────── */
+const TICKER_ITEMS = [
+  { text: "Encadré par des enseignants", icon: GraduationCap },
+  { text: "Paiement 8× sans frais", icon: CreditCard },
+  { text: "Association Jeunesse & Sports", icon: Award },
+  { text: "Chèques Vacances acceptés", icon: Star }
 ];
 
 /* ─── LE COMPOSANT DE LIEN ANIMÉ (DESKTOP) ──────────────────────────────── */
@@ -111,26 +119,23 @@ export default function Navbar() {
   // Helper pour récupérer les initiales (Prénom + Nom)
   const getInitials = () => {
     if (!session?.user) return "U";
-    
     if (session.user.prenom && session.user.nom) {
       return `${session.user.prenom[0]}${session.user.nom[0]}`.toUpperCase();
     }
-    
-    // Fallback de sécurité
     const fallbackName = session.user.name || session.user.email || "User";
     return fallbackName.substring(0, 2).toUpperCase();
   };
 
-  // ⚡ MODIFICATION ICI : On normalise la casse et on vérifie les deux rôles
+  // Normalisation du rôle et vérification
   const userRole = session?.user?.role?.toUpperCase();
-  const isAdmin = userRole === "admin" || userRole === "administrateur";
+  const isAdmin = userRole === "ADMIN" || userRole === "ADMINISTRATEUR";
 
   return (
     <div style={{ position: "relative", zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
       
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        .my-ticker { animation: ticker 45s linear infinite; display: flex; white-space: nowrap; }
+        .my-ticker { animation: ticker 90s linear infinite; display: flex; white-space: nowrap; }
         
         .desktop-only { display: flex; }
         .mobile-only { display: none; }
@@ -139,20 +144,47 @@ export default function Navbar() {
           .desktop-only { display: none !important; }
           .mobile-only { display: flex !important; }
         }
-      `}</style>
+      `}} />
 
-      {/* ── Ticker ── */}
-      <div style={{ background: C.teal, height: "36px", overflow: "hidden", display: "flex", alignItems: "center" }}>
-        <div className="my-ticker">
-          {[...Array(10)].map((_, i) => (
-            <span key={i} style={{ padding: "0 48px", fontSize: "10px", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: C.saffron, display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-              <GraduationCap size={12} /> Encadré par des enseignants diplômés
-              <span style={{ opacity: .35, margin: "0 10px" }}>·</span>
-              <CreditCard size={12} /> Paiement 8× sans frais
-              <span style={{ opacity: .35, margin: "0 10px" }}>·</span>
-              <Award size={12} /> Association Jeunesse &amp; Sports
-              <span style={{ opacity: 0, margin: "0 40px" }}>—</span>
-            </span>
+      {/* ── Ticker Design Pink (Épuré) ── */}
+      <div style={{ 
+        background: `linear-gradient(135deg, ${C.pink}, #6b0041)`, /* Fond Pink avec léger dégradé */
+        color: C.white, /* Texte blanc */
+        height: "38px", 
+        overflow: "hidden", 
+        display: "flex" 
+      }}>
+        <div className="my-ticker" style={{ height: "100%" }}>
+          {[...Array(8)].map((_, i) => (
+            <div key={i} style={{ display: "flex", flexShrink: 0, height: "100%" }}>
+              {TICKER_ITEMS.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div 
+                    key={idx}
+                    style={{
+                      padding: "0 45px", // Gère l'espacement entre les éléments
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%", 
+                    }}
+                  >
+                    <span style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase"
+                    }}>
+                      <Icon size={14} /> {item.text}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           ))}
         </div>
       </div>
@@ -197,8 +229,8 @@ export default function Navbar() {
                       width: "42px", 
                       height: "42px", 
                       borderRadius: "50%", 
-                      background: "#e2e8f0", // Fond gris clair
-                      color: "#0d323c",      // Initiales foncées
+                      background: "#e2e8f0",
+                      color: "#0d323c",
                       fontSize: "14px", 
                       fontWeight: 800, 
                       border: `2px solid ${C.white}`, 
