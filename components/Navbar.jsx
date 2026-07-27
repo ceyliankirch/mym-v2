@@ -258,8 +258,8 @@ export default function Navbar() {
                         transition={{ duration: 0.15 }}
                         style={{ position: "absolute", top: "110%", right: 0, background: C.white, borderRadius: "20px", padding: "8px", width: "220px", boxShadow: "0 10px 40px rgba(0,0,0,0.1)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column", gap: "4px" }}
                       >
-                        <Link 
-                          href={isAdmin ? "/admin" : "/espace-famille"} 
+                        <Link
+                          href={isAdmin ? "/admin" : "/espace-famille"}
                           onClick={() => setDropdownOpen(false)}
                           style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: C.teal, textDecoration: "none", display: "flex", alignItems: "center", gap: "10px", transition: "background 0.2s" }}
                           onMouseOver={e => e.currentTarget.style.background = C.arctic} onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -267,10 +267,22 @@ export default function Navbar() {
                           {isAdmin ? <LayoutDashboard size={16} color={C.saffron} /> : <Home size={16} color={C.saffron} />}
                           {isAdmin ? "Tableau de Bord" : "Espace Famille"}
                         </Link>
-                        
+
+                        {isAdmin && (
+                          <Link
+                            href="/espace-famille"
+                            onClick={() => setDropdownOpen(false)}
+                            style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: C.teal, textDecoration: "none", display: "flex", alignItems: "center", gap: "10px", transition: "background 0.2s" }}
+                            onMouseOver={e => e.currentTarget.style.background = C.arctic} onMouseOut={e => e.currentTarget.style.background = "transparent"}
+                          >
+                            <Home size={16} color={C.saffron} />
+                            Espace Famille
+                          </Link>
+                        )}
+
                         <div style={{ height: "1px", background: C.lightGray, margin: "4px 8px" }} />
-                        
-                        <button 
+
+                        <button
                           onClick={() => signOut({ callbackUrl: "/" })}
                           style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "#ef4444", textDecoration: "none", display: "flex", alignItems: "center", gap: "10px", background: "transparent", border: "none", cursor: "pointer", textAlign: "left", transition: "background 0.2s" }}
                           onMouseOver={e => e.currentTarget.style.background = "#fef2f2"} onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -330,13 +342,21 @@ export default function Navbar() {
                 
                 {session ? (
                   <>
-                    <Link 
-                      href={isAdmin ? "/admin" : "/profil"} onClick={() => setMenuOpen(false)}
+                    <Link
+                      href={isAdmin ? "/admin" : "/espace-famille"} onClick={() => setMenuOpen(false)}
                       style={{ background: C.arctic, color: C.teal, padding: "16px", borderRadius: "16px", fontSize: "16px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", textDecoration: "none" }}
                     >
                       {isAdmin ? <LayoutDashboard size={18} /> : <Home size={18} />} {isAdmin ? "Tableau de Bord" : "Espace Famille"}
                     </Link>
-                    <button 
+                    {isAdmin && (
+                      <Link
+                        href="/espace-famille" onClick={() => setMenuOpen(false)}
+                        style={{ background: C.arctic, color: C.teal, padding: "16px", borderRadius: "16px", fontSize: "16px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", textDecoration: "none" }}
+                      >
+                        <Home size={18} /> Espace Famille
+                      </Link>
+                    )}
+                    <button
                       onClick={() => { signOut(); setMenuOpen(false); }}
                       style={{ background: "#fef2f2", color: "#ef4444", border: "none", padding: "16px", borderRadius: "16px", fontSize: "16px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", cursor: "pointer" }}
                     >
