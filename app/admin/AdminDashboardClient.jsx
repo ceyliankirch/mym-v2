@@ -12,12 +12,15 @@ import {
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare
 } from "lucide-react";
 
-import AdminLayout from "./AdminLayout"; 
+import AdminLayout from "./AdminLayout";
+import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
 import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant } from "../actions/sejours";
 // ⚡ IMPORTS ANIMATEURS
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
+// ⚡ IMPORTS DOCUMENTS
+import { validerDocument, rejeterDocument } from "../actions/documents";
 
 /* ── CONSTANTES GLOBALES ── */
 const C = {
@@ -257,10 +260,13 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
   const isEditing = sejourData !== "nouveau" && sejourData !== "nouveau-senior";
   const defaultAge = sejourData === "nouveau-senior" ? "Séniors" : "";
   
-  const [tab, setTab] = useState("infos"); 
+  const [tab, setTab] = useState("infos");
   const [prixOptions, setPrixOptions] = useState(isEditing && sejourData.prix ? [sejourData.prix] : [0]);
   const [compressedImage, setCompressedImage] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
+  const [documentsRequis, setDocumentsRequis] = useState(
+    isEditing && sejourData.documentsRequis ? sejourData.documentsRequis : []
+  );
 
   const DEFAULT_FORM = [
     { id: "1", type: "section", label: "Informations du représentant légal", required: false },
@@ -316,7 +322,8 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           {[
             { id: "infos", label: "Infos de base" },
             { id: "details", label: "Détails & Galerie" },
-            { id: "form", label: "Formulaire d'inscription" }
+            { id: "form", label: "Formulaire d'inscription" },
+            { id: "documents", label: "Documents requis" }
           ].map(t => (
             <button key={t.id} type="button" onClick={() => setTab(t.id)} style={{
               padding: "12px 20px", fontSize: "13px", fontWeight: 800, border: "none", background: "transparent", cursor: "pointer", transition: "all 0.2s",
@@ -333,11 +340,12 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           setIsSubmitting(true);
           if (compressedImage) formData.set("image", compressedImage);
           galleryFiles.forEach((file) => { formData.append("galerie", file); });
-          
+
           // ⚡ ON INJECTE LE FORMULAIRE JSON DANS UN CHAMP CACHÉ
           formData.set("formSchema", JSON.stringify(formFields));
+          formData.set("documentsRequis", JSON.stringify(documentsRequis));
 
-          if (isEditing) { await modifierSejour(sejourData.id, formData); } 
+          if (isEditing) { await modifierSejour(sejourData.id, formData); }
           else { await creerSejour(formData); }
           
           setIsSubmitting(false);
@@ -471,7 +479,36 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <button type="button" onClick={() => addField("section")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", padding: "10px", borderRadius: "10px", background: C.teal, border: `1px solid ${C.teal}`, color: C.yellow, fontSize: "12px", fontWeight: 700, cursor: "pointer" }}><AlignLeft size={14}/> Section</button>
             </div>
           </div>
-          
+
+          <div style={{ display: tab === "documents" ? "flex" : "none", flexDirection: "column", gap: "16px" }}>
+            <div style={{ background: C.arctic, padding: "16px", borderRadius: "16px", marginBottom: "8px" }}>
+              <h4 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, marginBottom: "4px" }}>Documents requis</h4>
+              <p style={{ fontSize: "12px", color: C.gray, lineHeight: 1.5 }}>
+                Sélectionnez les documents que les familles devront fournir pour s'inscrire à ce séjour.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {CATALOGUE_DOCUMENTS.map((doc) => (
+                <label key={doc} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: C.arctic, borderRadius: "12px", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={documentsRequis.includes(doc)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setDocumentsRequis([...documentsRequis, doc]);
+                      } else {
+                        setDocumentsRequis(documentsRequis.filter((d) => d !== doc));
+                      }
+                    }}
+                    style={{ cursor: "pointer", width: "16px", height: "16px" }}
+                  />
+                  <span style={{ fontSize: "14px", fontWeight: 600, color: C.teal }}>{doc}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", paddingTop: "20px", borderTop: `1px solid ${C.arctic}` }}>
             <button type="button" onClick={() => setSejourEnEdition(null)} style={{ cursor: "pointer", background: "none", border: "none", color: C.gray, fontWeight: 700 }}>Annuler</button>
             <button type="submit" disabled={isSubmitting} style={{ background: C.yellow, color: C.teal, padding: "14px 28px", borderRadius: "999px", border: "none", fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 16px rgba(255,200,1,0.3)" }}>
@@ -772,6 +809,86 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} /> : 
                 <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} />}
             </>
+          )}
+
+          {activeTab === "inscriptions" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {inscriptions?.length === 0 ? (
+                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
+                  <FileText size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
+                  <p>Aucune inscription pour le moment.</p>
+                </div>
+              ) : (
+                inscriptions.map(ins => (
+                  <div key={ins.id} style={{ background: C.white, padding: "24px", borderRadius: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "16px" }}>
+                      <div>
+                        <h3 style={{ fontSize: "16px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>
+                          {ins.enfant?.prenom} {ins.enfant?.nom}
+                        </h3>
+                        <p style={{ fontSize: "14px", color: C.gray }}>
+                          <strong>Séjour :</strong> {ins.sejour?.titre}
+                        </p>
+                        <p style={{ fontSize: "14px", color: C.gray }}>
+                          <strong>Parent :</strong> {ins.client?.nom} {ins.client?.prenom}
+                        </p>
+                      </div>
+                      <span style={{ background: ins.statut === "Confirmé" ? "#d1fae5" : "#fef3c7", color: ins.statut === "Confirmé" ? "#065f46" : "#92400e", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700 }}>
+                        {ins.statut}
+                      </span>
+                    </div>
+
+                    <div style={{ marginTop: "16px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>
+                      <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, marginBottom: "12px" }}>Documents requis :</p>
+                      {ins.enfant?.documents?.length === 0 ? (
+                        <p style={{ fontSize: "13px", color: C.gray }}>Aucun document requis</p>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          {ins.enfant?.documents?.map(doc => {
+                            const statusColor = doc.statut === "VALIDE" ? "#10b981" : doc.statut === "EN_COURS" ? "#f59e0b" : "#ef4444";
+                            const statusBg = doc.statut === "VALIDE" ? "#d1fae5" : doc.statut === "EN_COURS" ? "#fef3c7" : "#fee2e2";
+                            return (
+                              <div key={doc.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", background: C.arctic, borderRadius: "8px" }}>
+                                <div style={{ flex: 1 }}>
+                                  <p style={{ fontSize: "13px", fontWeight: 600, color: C.teal }}>{doc.type}</p>
+                                  <p style={{ fontSize: "12px", color: C.gray }}>
+                                    <span style={{ background: statusBg, color: statusColor, padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>
+                                      {doc.statut}
+                                    </span>
+                                  </p>
+                                </div>
+                                {doc.statut === "EN_COURS" && (
+                                  <div style={{ display: "flex", gap: "8px" }}>
+                                    <button
+                                      onClick={async () => {
+                                        await validerDocument(doc.id);
+                                        window.location.reload();
+                                      }}
+                                      style={{ background: "#d1fae5", border: "none", color: "#065f46", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
+                                    >
+                                      Valider
+                                    </button>
+                                    <button
+                                      onClick={async () => {
+                                        await rejeterDocument(doc.id);
+                                        window.location.reload();
+                                      }}
+                                      style={{ background: "#fee2e2", border: "none", color: "#991b1b", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
+                                    >
+                                      Rejeter
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
 
           {activeTab === "clients" && (

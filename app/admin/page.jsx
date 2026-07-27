@@ -16,8 +16,9 @@ export default async function AdminPage() {
       }),
       prisma.inscription.findMany({
         include: {
-          client: true, // Récupère les infos du client lié
-          sejour: true, // Récupère les infos du séjour lié
+          client: true,
+          enfant: { include: { documents: true } },
+          sejour: true,
         },
         orderBy: { createdAt: "desc" },
       }),

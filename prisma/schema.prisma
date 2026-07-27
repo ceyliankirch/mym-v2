@@ -22,7 +22,7 @@ model Sejour {
   imageUrl     String?   // Obligatoire pour stocker le lien Vercel Blob
   places       Int       @default(0)
   prix         Float     @default(0)
-  statut       String    @default("Brouillon") 
+  statut       String    @default("Brouillon")
   enAvant      Boolean   @default(false)
   tranchesAge  String?   // Pour stocker "6-12 ans" par exemple
   shortDescription String?
@@ -31,6 +31,7 @@ model Sejour {
   adresseComplete  String?
   galerie          String[] // Tableau d'URLs pour tes 10 photos max
   formSchema       String?  // Le JSON du constructeur de formulaire
+  documentsRequis  String[] @default([]) // Sous-ensemble du catalogue fixe
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
 }
@@ -39,36 +40,53 @@ model Client {
   id           String        @id @default(cuid())
   nom          String
   prenom       String?
-  
-  // ⚡ NOUVEAUX CHAMPS POUR LE DASHBOARD
   email        String?       @unique
   telephone    String?
+  userId       String?       @unique
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   createdAt    DateTime      @default(now())
-  
-  // Relation : Un client peut avoir plusieurs inscriptions
+
+  enfants      Enfant[]
   inscriptions Inscription[]
 }
 
 model Inscription {
   id          String   @id @default(cuid())
   montantPaye Float    @default(0)
-  statut      String   @default("Confirmé")
+  statut      String   @default("En attente")
   createdAt   DateTime @default(now())
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id])
-  documents   Document[]
+  enfantId    String
+  enfant      Enfant   @relation(fields: [enfantId], references: [id])
   sejourId    String
   sejour      Sejour   @relation(fields: [sejourId], references: [id])
 }
 
+model Enfant {
+  id            String        @id @default(cuid())
+  prenom        String
+  nom           String
+  dateNaissance DateTime?
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  documents     Document[]
+  inscriptions  Inscription[]
+  createdAt     DateTime      @default(now())
+}
+
 model Document {
-  id            String      @id @default(cuid())
-  nom           String      // ex: "Fiche Sanitaire"
-  url           String?     // URL du fichier (ex: S3 ou Supabase Storage)
-  statut        String      @default("MANQUANT") // VALIDE, EN_COURS, MANQUANT
-  inscriptionId String
-  inscription   Inscription @relation(fields: [inscriptionId], references: [id])
+  id        String   @id @default(cuid())
+  type      String   // une des 5 valeurs du catalogue fixe
+  url       String?
+  statut    String   @default("MANQUANT") // MANQUANT, EN_COURS, VALIDE
+  enfantId  String
+  enfant    Enfant   @relation(fields: [enfantId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([enfantId, type])
 }
 
 model Animateur {
@@ -92,11 +110,12 @@ model User {
   telephone     String?
   password      String?   // Mot de passe crypté
   image         String?
-  role          String    @default("PARENT") 
-  
+  role          String    @default("PARENT")
+
   accounts      Account[]
   sessions      Session[]
-  
+  client        Client?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

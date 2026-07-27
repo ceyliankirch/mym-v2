@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, ArrowUpRight, ChevronRight, ChevronLeft, MapPin, Calendar, Users, Star,
   Award, CreditCard, Shield, Mountain, Waves, Globe, Landmark,
-  Phone, Mail, Instagram, Facebook, Menu, X, Search,
-  GraduationCap, SunMedium, Snowflake, Flower2, Anchor, Heart, ChevronDown,
+  Phone, Mail, Instagram, Facebook, Menu, X, Search, Camera,
+  GraduationCap, Sun, Snowflake, Flower2, Anchor, Heart, ChevronDown,
   CheckCircle2, Clock, Leaf, Map, Grid
 } from "lucide-react";
 
@@ -30,6 +30,19 @@ const AVIS = [
   { initiale:"L", nom:"L. Tressard",   date:"Juillet 2023",  note:5, texte:"Ma fille est rentrée ravie, pleine de souvenirs. Une quantité d'activités énorme — de vrais réveils tôt !" },
   { initiale:"C", nom:"C. Baschmidt",  date:"Février 2024",  note:5, texte:"Merci pour ces belles vacances et le compte rendu quotidien très apprécié par toutes les familles." },
 ];
+
+const GALLERY_PREVIEW = [
+  { id: 1, src: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800", alt: "Enfants souriants en colonie" },
+  { id: 2, src: "https://images.unsplash.com/photo-1527617899952-53c4b4a0c137?w=800", alt: "Groupe d'adolescents en randonnée" },
+  { id: 3, src: "https://images.unsplash.com/photo-1549989476-69a92fa57c36?w=800", alt: "Seniors visitant un monument" },
+  { id: 4, src: "https://images.unsplash.com/photo-1503919545821-a0a3a8826604?w=800", alt: "Activité manuelle pour enfants" },
+  { id: 5, src: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800", alt: "Paysage de montagne pendant un séjour" },
+  { id: 6, src: "https://images.unsplash.com/photo-1593233393895-353456895c92?w=800", alt: "Seniors déjeunant au restaurant" },
+];
+
+
+
+
 
 /* ─── DICTIONNAIRE DES COORDONNÉES POUR LA CARTE ─────────────────── */
 const FRANCE_COORDS = {
@@ -56,7 +69,7 @@ const getSeasonConfig = (saison) => {
     case 'automne':   return { icon: Leaf, color: C.saffron };
     case 'hiver':     return { icon: Snowflake, color: "#7dd3fc" };
     case 'printemps': return { icon: Flower2, color: "#10b981" };
-    case 'été':       return { icon: SunMedium, color: C.yellow };
+    case 'été':       return { icon: Sun, color: C.yellow };
     default:          return { icon: Globe, color: C.teal };
   }
 };
@@ -121,6 +134,47 @@ function BtnOutline({ children, large, light, href }) {
 
   if (href) return <Link href={href} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}>{children}</Link>;
   return <button onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}>{children}</button>;
+}
+
+/* ─── COMPOSANT : MENU DÉROULANT POUR FILTRES ────────────────────── */
+function FilterDropdown({ label, options, value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(o => o.value === value);
+  const selectedLabel = selectedOption?.label || label;
+  const SelectedIcon = selectedOption?.icon;
+
+  return (
+    <div style={{ position: "relative", cursor: "pointer" }} ref={dropdownRef}>
+      <div onClick={() => setIsOpen(!isOpen)} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {SelectedIcon && <SelectedIcon size={16} color={getSeasonConfig(value).color} />}
+        <div style={{ lineHeight: 1.2 }}>
+          <p style={{ fontSize: "10px", fontWeight: 800, color: "#8aaa", textTransform: "uppercase" }}>{label}</p>
+          <p style={{ fontSize: "14px", fontWeight: 700, color: C.teal }}>{selectedLabel}</p>
+        </div>
+        <ChevronDown size={14} color="#ccc" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}/>
+      </div>
+      {isOpen && (
+        <div style={{ position: "absolute", top: "100%", left: 0, background: C.white, borderRadius: "16px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", zIndex: 20, marginTop: "12px", minWidth: "200px", overflow: "hidden", border: `1px solid ${C.lightGray}` }}>
+          <div onClick={() => { onChange(""); setIsOpen(false); }} style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 600, color: C.gray, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }} onMouseOver={e => e.currentTarget.style.background=C.arctic} onMouseOut={e => e.currentTarget.style.background='transparent'}>{label} (tous)</div>
+          {options.map(opt => (
+            <div key={opt.value} onClick={() => { onChange(opt.value); setIsOpen(false); }} style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: C.teal, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }} onMouseOver={e => e.currentTarget.style.background=C.arctic} onMouseOut={e => e.currentTarget.style.background='transparent'}>{opt.icon && <opt.icon size={16} color={opt.color} />} {opt.label}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ─── COMPOSANT : CARTE DE SÉJOUR (CATALOGUE) ────────────────────── */
@@ -360,6 +414,18 @@ export default function HomeClient({ sejoursFromDb }) {
   
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
   const [viewMode, setViewMode] = useState("grid");
+  const catalogueRef = useRef(null);
+
+  // États pour la barre de recherche du Hero
+  const [heroDestination, setHeroDestination] = useState("");
+  const [heroAge, setHeroAge] = useState("");
+  const [heroSaison, setHeroSaison] = useState("");
+  const [heroSearchTerm, setHeroSearchTerm] = useState("");
+
+  const [activeDestination, setActiveDestination] = useState("");
+  const [activeAge, setActiveAge] = useState("");
+  const [activeSaison, setActiveSaison] = useState("");
+  const [activeSearchTerm, setActiveSearchTerm] = useState("");
 
   useEffect(() => {
     setVisible(true);
@@ -387,8 +453,38 @@ export default function HomeClient({ sejoursFromDb }) {
   const sejoursToDisplay = processedSejours.filter(s => {
     const passCategory = matchCategory(s, cat);
     const passTime = showUpcomingOnly ? !s.isPast : true;
-    return passCategory && passTime;
+
+    // Application des filtres de la barre de recherche
+    const passDestination = !activeDestination || s.lieu === activeDestination;
+    const passAge = !activeAge || s.tranchesAge === activeAge;
+    const passSaison = !activeSaison || s.saison === activeSaison;
+    const passSearch = !activeSearchTerm || 
+      (s.titre && s.titre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) ||
+      (s.lieu && s.lieu.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) ||
+      (s.shortDescription && s.shortDescription.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
+
+
+    return passCategory && passTime && passDestination && passAge && passSaison && passSearch;
   });
+
+  // Options pour les filtres, générées dynamiquement
+  const destinationOptions = [...new Set(processedSejours.map(s => s.lieu).filter(Boolean))].map(lieu => ({ value: lieu, label: lieu }));
+  const ageOptions = [...new Set(processedSejours.map(s => s.tranchesAge).filter(Boolean))].map(age => ({ value: age, label: formatAge(age) }));
+  const saisonOptions = [
+    { value: "Printemps", label: "Printemps", icon: Flower2, color: getSeasonConfig("printemps").color },
+    { value: "Été", label: "Été", icon: Sun, color: getSeasonConfig("été").color },
+    { value: "Automne", label: "Automne", icon: Leaf, color: getSeasonConfig("automne").color },
+    { value: "Hiver", label: "Hiver", icon: Snowflake, color: getSeasonConfig("hiver").color },
+  ];
+
+  const handleSearch = () => {
+    setActiveDestination(heroDestination);
+    setActiveAge(heroAge);
+    setActiveSaison(heroSaison);
+    setActiveSearchTerm(heroSearchTerm);
+
+    catalogueRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div style={{ fontFamily: "'Montserrat', sans-serif", background: C.arctic, color: C.teal, overflowX: "hidden" }}>
@@ -453,25 +549,15 @@ export default function HomeClient({ sejoursFromDb }) {
           </div>
         </div>
 
-        <div style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1000px", zIndex: 10 }}>
-          <div style={{ background: C.white, borderRadius: "100px", padding: "12px 12px 12px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 20px 50px rgba(17,76,90,0.15)", border: "1px solid rgba(0,0,0,0.05)", flexWrap: "wrap", gap: "16px" }}>
-            <div style={{ display: "flex", gap: "40px", flex: 1, flexWrap: "wrap" }}>
-              <div style={{ cursor: "pointer" }}>
-                <p style={{ fontSize: "10px", fontWeight: 800, color: "#8aaa", textTransform: "uppercase", marginBottom: "4px" }}>Destination</p>
-                <p style={{ fontSize: "14px", fontWeight: 700, color: C.teal, display: "flex", alignItems: "center", gap: "6px" }}>Toutes les destinations <ChevronDown size={14} color="#ccc"/></p>
-              </div>
-              <div style={{ width: "1px", height: "30px", background: "#eee" }} className="hidden sm:block" />
-              <div style={{ cursor: "pointer" }}>
-                <p style={{ fontSize: "10px", fontWeight: 800, color: "#8aaa", textTransform: "uppercase", marginBottom: "4px" }}>Âge</p>
-                <p style={{ fontSize: "14px", fontWeight: 700, color: C.teal, display: "flex", alignItems: "center", gap: "6px" }}>Tous les âges <ChevronDown size={14} color="#ccc"/></p>
-              </div>
-              <div style={{ width: "1px", height: "30px", background: "#eee" }} className="hidden sm:block" />
-              <div style={{ cursor: "pointer" }}>
-                <p style={{ fontSize: "10px", fontWeight: 800, color: "#8aaa", textTransform: "uppercase", marginBottom: "4px" }}>Saison</p>
-                <p style={{ fontSize: "14px", fontWeight: 700, color: C.teal, display: "flex", alignItems: "center", gap: "6px" }}>Toute l'année <ChevronDown size={14} color="#ccc"/></p>
-              </div>
-            </div>
-            <button style={{ width: "60px", height: "60px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)" }} 
+        <div style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1100px", zIndex: 10 }}>
+          <div style={{ background: C.white, borderRadius: "100px", padding: "6px 6px 6px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 20px 50px rgba(17,76,90,0.15)", border: "1px solid rgba(0,0,0,0.05)", gap: "24px" }}>
+            <FilterDropdown label="Destination" options={destinationOptions} value={heroDestination} onChange={setHeroDestination} />
+            <FilterDropdown label="Âge" options={ageOptions} value={heroAge} onChange={setHeroAge} />
+            <FilterDropdown label="Saison" options={saisonOptions} value={heroSaison} onChange={setHeroSaison} />
+            <div style={{ width: "1px", height: "30px", background: "#eee" }} className="hidden sm:block" />
+            <input type="text" placeholder="Rechercher par mot-clé..." value={heroSearchTerm} onChange={e => setHeroSearchTerm(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: "14px", fontWeight: 600, color: C.teal, minWidth: "120px" }} />
+            
+            <button onClick={handleSearch} style={{ width: "52px", height: "52px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)", flexShrink: 0 }} 
               onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
               <Search size={22} />
             </button>
@@ -480,7 +566,7 @@ export default function HomeClient({ sejoursFromDb }) {
       </section>
 
       {/* ── SECTION CATALOGUE ────────────────────────────────────────────── */}
-      <section style={{ padding: "140px 32px 100px" }}>
+      <section ref={catalogueRef} style={{ padding: "140px 32px 100px" }}>
         <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "24px" }}>
@@ -597,6 +683,28 @@ export default function HomeClient({ sejoursFromDb }) {
                 <p style={{ fontSize: "14px", lineHeight: 1.7, fontWeight: 500, color: hl ? "rgba(17,76,90,0.7)" : "#8aa", position: "relative" }}>{desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Galerie ─────────────────────────────────────────────────────────── */}
+      <section style={{ padding: "100px 32px", background: C.arctic }}>
+        <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "64px" }}>
+            <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Galerie</p>
+            <h2 style={{ fontWeight: 900, letterSpacing: "-1px", color: C.teal, fontSize: "clamp(2rem,3vw,2.5rem)" }}>Nos plus beaux souvenirs</h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px", marginBottom: "48px" }}>
+            {GALLERY_PREVIEW.map((image, i) => (
+              <div key={image.id} style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 8px 24px rgba(17,76,90,0.08)", aspectRatio: '1 / 1' }}>
+                <img src={image.src} alt={image.alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <Btn large href="/galerie">
+              <Camera size={14} /> Voir toute la galerie
+            </Btn>
           </div>
         </div>
       </section>

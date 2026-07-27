@@ -36,13 +36,24 @@ export async function creerSejour(formData) {
   }
 
   // ⚡ Gestion de la Galerie (Multiples images)
-  const galerieFiles = formData.getAll("galerie"); 
+  const galerieFiles = formData.getAll("galerie");
   const galerieUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
       const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
       galerieUrls.push(blob.url);
     }
+  }
+
+  // ⚡ Gestion des documents requis
+  let documentsRequis = [];
+  try {
+    const docsRequisStr = formData.get("documentsRequis");
+    if (docsRequisStr) {
+      documentsRequis = JSON.parse(docsRequisStr);
+    }
+  } catch (e) {
+    console.error("Erreur parsing documentsRequis", e);
   }
 
   await prisma.sejour.create({
@@ -63,6 +74,7 @@ export async function creerSejour(formData) {
       infosPratiques,
       adresseComplete,
       formSchema,
+      documentsRequis,
       galerie: galerieUrls,
     },
   });
@@ -128,6 +140,17 @@ export async function modifierSejour(id, formData) {
   // On fusionne les anciennes qu'on a gardées + les nouvelles
   const finalGalerie = [...anciennesUrls, ...nouvellesUrls];
 
+  // ⚡ Gestion des documents requis
+  let documentsRequis = sejourActuel.documentsRequis;
+  try {
+    const docsRequisStr = formData.get("documentsRequis");
+    if (docsRequisStr) {
+      documentsRequis = JSON.parse(docsRequisStr);
+    }
+  } catch (e) {
+    console.error("Erreur parsing documentsRequis", e);
+  }
+
   await prisma.sejour.update({
     where: { id },
     data: {
@@ -147,6 +170,7 @@ export async function modifierSejour(id, formData) {
       infosPratiques,
       adresseComplete,
       formSchema,
+      documentsRequis,
       galerie: finalGalerie,
     },
   });
