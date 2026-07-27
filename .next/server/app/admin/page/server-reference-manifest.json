@@ -1,0 +1,170 @@
+{
+  "node": {
+    "408de3680c54cffa152057e01288e3c539e171b22e": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "registerUser",
+          "filename": "app/actions/auth.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "registerUser",
+      "filename": "app/actions/auth.js"
+    },
+    "40a8d2bfc114f2a89f74deaa19f1d3c87d99111786": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "creerSejour",
+          "filename": "app/actions/sejours.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "creerSejour",
+      "filename": "app/actions/sejours.js"
+    },
+    "6036bfc6abaf421c8430802ea7a2d4cfa27b20be76": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "modifierSejour",
+          "filename": "app/actions/sejours.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "modifierSejour",
+      "filename": "app/actions/sejours.js"
+    },
+    "403eec5f2b4ce752e847f5ab9aac1017db62f9cc38": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "supprimerSejour",
+          "filename": "app/actions/sejours.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "supprimerSejour",
+      "filename": "app/actions/sejours.js"
+    },
+    "6026922218c352dffac1faa59af7a3552d200d3b72": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "toggleStatut",
+          "filename": "app/actions/sejours.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "toggleStatut",
+      "filename": "app/actions/sejours.js"
+    },
+    "606d997fd5c231a2db6f7364487b5317f31939bf53": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "toggleEnAvant",
+          "filename": "app/actions/sejours.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "toggleEnAvant",
+      "filename": "app/actions/sejours.js"
+    },
+    "40d4d8b36703e6d8f57719ff16716961ff781d4c0e": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "creerAnimateur",
+          "filename": "app/actions/animateurs.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "creerAnimateur",
+      "filename": "app/actions/animateurs.js"
+    },
+    "60e00c5cf0763d539042c9cdf49876791d7212d5fb": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "modifierAnimateur",
+          "filename": "app/actions/animateurs.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "modifierAnimateur",
+      "filename": "app/actions/animateurs.js"
+    },
+    "40058cc912a10c7c417235e40a6583aff53fd499d0": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "supprimerAnimateur",
+          "filename": "app/actions/animateurs.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "supprimerAnimateur",
+      "filename": "app/actions/animateurs.js"
+    },
+    "40f7ec69478714e5b62fda5cb3f7424ad6dfa3b254": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "validerDocument",
+          "filename": "app/actions/documents.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "validerDocument",
+      "filename": "app/actions/documents.js"
+    },
+    "407c8ee88cf8ffcd45c5a8b1eafaa7bf3d212f4132": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 19646,
+          "async": false,
+          "exportedName": "rejeterDocument",
+          "filename": "app/actions/documents.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "rejeterDocument",
+      "filename": "app/actions/documents.js"
+    }
+  },
+  "edge": {}
+}

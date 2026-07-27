@@ -46,6 +46,7 @@ const { handlers, signIn, signOut, auth } = (0, __TURBOPACK__imported__module__$
     callbacks: {
         async jwt ({ token, user }) {
             if (user) {
+                token.id = user.id;
                 token.role = user.role;
                 token.prenom = user.prenom;
                 token.nom = user.nom;
@@ -54,6 +55,7 @@ const { handlers, signIn, signOut, auth } = (0, __TURBOPACK__imported__module__$
         },
         async session ({ session, token }) {
             if (token) {
+                session.user.id = token.id;
                 session.user.role = token.role;
                 session.user.prenom = token.prenom;
                 session.user.nom = token.nom;
@@ -144,63 +146,77 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$auth$2e$js__$5b$app$2d$rsc$5
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/prisma.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$api$2f$navigation$2e$react$2d$server$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/next/dist/api/navigation.react-server.js [app-rsc] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$components$2f$navigation$2e$react$2d$server$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/components/navigation.react-server.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$actions$2f$inscriptions$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/actions/inscriptions.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$espace$2d$famille$2f$EspaceFamilleClient$2e$jsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/espace-famille/EspaceFamilleClient.jsx [app-rsc] (ecmascript)");
 ;
 ;
 ;
 ;
 ;
+;
 async function EspaceFamillePage() {
-    // 1. Vérification de la session
     const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$auth$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["auth"])();
     if (!session) (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$components$2f$navigation$2e$react$2d$server$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["redirect"])("/");
     const userName = session.user.prenom || session.user.name || "Parent";
-    // 2. Requête Prisma : On récupère toutes les inscriptions du parent, 
-    // avec les séjours et les documents associés.
-    const inscriptions = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].inscription.findMany({
+    const client = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$actions$2f$inscriptions$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getOrCreateClientForUser"])(session.user.id);
+    if (!client) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$espace$2d$famille$2f$EspaceFamilleClient$2e$jsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
+            userName: userName
+        }, void 0, false, {
+            fileName: "[project]/app/espace-famille/page.jsx",
+            lineNumber: 15,
+            columnNumber: 12
+        }, this);
+    }
+    const enfants = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].enfant.findMany({
         where: {
-            userId: session.user.id
+            clientId: client.id
         },
         include: {
-            sejour: true,
-            documents: true
+            documents: true,
+            inscriptions: {
+                include: {
+                    sejour: true
+                },
+                orderBy: {
+                    createdAt: "desc"
+                }
+            }
         },
         orderBy: {
             createdAt: "desc"
         }
     });
-    // --- 3. TRANSFORMATION DES DONNÉES POUR L'INTERFACE ---
-    // FIDÉLITÉ : On compte le nombre d'inscriptions totales
-    const sejoursEffectues = inscriptions.length;
+    // Compter les séjours effectués
+    const sejoursEffectues = enfants.reduce((acc, enfant)=>acc + enfant.inscriptions.length, 0);
     const fidelite = {
-        sejoursEffectues: sejoursEffectues,
+        sejoursEffectues,
         objectif: 5,
         recompense: "Bon de réduction de -5% sur le prochain séjour"
     };
-    // SÉJOURS : On formate les données de la DB pour l'affichage
-    const sejoursAVenir = inscriptions.map((ins)=>({
-            id: ins.id,
-            titre: ins.sejour.titre,
-            enfant: "Votre enfant",
-            dates: "Voir détails du séjour",
-            statut: ins.statut,
-            isValide: ins.statut === "CONFIRME"
-        }));
-    // DOCUMENTS : On regroupe tous les documents de toutes les inscriptions
-    const documents = inscriptions.flatMap((ins)=>ins.documents.map((doc)=>{
-            // Déduction de la couleur (état visuel) selon le statut en DB
+    // Construire la liste des séjours à venir
+    const sejoursAVenir = enfants.flatMap((enfant)=>enfant.inscriptions.map((ins)=>({
+                id: ins.id,
+                titre: ins.sejour.titre,
+                enfant: enfant.prenom,
+                dates: ins.sejour.dateDebut && ins.sejour.dateFin ? `${new Date(ins.sejour.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(ins.sejour.dateFin).toLocaleDateString("fr-FR")}` : "Voir détails du séjour",
+                statut: ins.statut,
+                isValide: ins.statut === "Confirmé"
+            })));
+    // Aplatir et formater les documents
+    const documents = enfants.flatMap((enfant)=>enfant.documents.map((doc)=>{
             let etatVisuel = "warning";
             if (doc.statut === "VALIDE") etatVisuel = "success";
             if (doc.statut === "MANQUANT") etatVisuel = "error";
+            const inscriptionsEnfant = enfant.inscriptions.map((ins)=>ins.sejour.titre).join(", ");
             return {
                 id: doc.id,
-                nom: doc.nom,
-                concerne: ins.sejour.titre,
+                nom: doc.type,
+                concerne: `${enfant.prenom} ${enfant.nom}${inscriptionsEnfant ? ` (${inscriptionsEnfant})` : ""}`,
                 statut: doc.statut,
                 etat: etatVisuel
             };
         }));
-    // NOTIFICATIONS : Calculées dynamiquement si des documents manquent
     const docsManquants = documents.filter((d)=>d.etat === "error");
     const notifications = [];
     if (docsManquants.length > 0) {
@@ -210,16 +226,16 @@ async function EspaceFamillePage() {
             message: `Il manque ${docsManquants.length} document(s) obligatoire(s) pour finaliser vos dossiers.`
         });
     }
-    // 4. On envoie tout au composant Client
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$espace$2d$famille$2f$EspaceFamilleClient$2e$jsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
         userName: userName,
         fidelite: fidelite,
         sejoursAVenir: sejoursAVenir,
         documents: documents,
-        notifications: notifications
+        notifications: notifications,
+        enfants: enfants
     }, void 0, false, {
         fileName: "[project]/app/espace-famille/page.jsx",
-        lineNumber: 76,
+        lineNumber: 88,
         columnNumber: 5
     }, this);
 }
