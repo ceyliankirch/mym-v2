@@ -10,9 +10,9 @@ export default async function AdminPage() {
     console.log("📡 Admin : Récupération des données depuis Neon...");
 
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-    const [sejours, inscriptions, clientsCount, animateurs] = await Promise.all([
-      prisma.sejour.findMany({ 
-        orderBy: { createdAt: "desc" } 
+    const [sejours, inscriptions, clientsCount, animateurs, albums] = await Promise.all([
+      prisma.sejour.findMany({
+        orderBy: { createdAt: "desc" }
       }),
       prisma.inscription.findMany({
         include: {
@@ -24,8 +24,13 @@ export default async function AdminPage() {
       }),
       prisma.client.count(),
       // ⚡ NOUVEAU : Récupération de l'équipe
-      prisma.animateur.findMany({ 
-        orderBy: { createdAt: "asc" } 
+      prisma.animateur.findMany({
+        orderBy: { createdAt: "asc" }
+      }),
+      // ⚡ NOUVEAU : Récupération des albums photos
+      prisma.album.findMany({
+        include: { photos: true, sejour: true },
+        orderBy: { createdAt: "desc" },
       }),
     ]);
 
@@ -38,11 +43,12 @@ export default async function AdminPage() {
     };
 
     return (
-      <AdminDashboardClient 
-        stats={stats} 
-        sejours={sejours} 
-        inscriptions={inscriptions} 
+      <AdminDashboardClient
+        stats={stats}
+        sejours={sejours}
+        inscriptions={inscriptions}
         animateurs={animateurs} // ⚡ NOUVEAU : On passe les animateurs au client
+        albums={albums} // ⚡ NOUVEAU : On passe les albums photos au client
       />
     );
   } catch (error) {

@@ -21,6 +21,8 @@ import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAva
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
+// ⚡ IMPORTS GALERIE
+import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
 
 /* ── CONSTANTES GLOBALES ── */
 const C = {
@@ -38,6 +40,7 @@ const MENU = [
   { id: "dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
   { id: "sejours", label: "Gestion des Séjours", icon: Map },
   { id: "inscriptions", label: "Inscriptions", icon: FileText },
+  { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
@@ -560,6 +563,122 @@ function ModalAnimateur({ data, setEdition, isSubmitting, setIsSubmitting }) {
   );
 }
 
+/* ── MODALE : ALBUM PHOTO (GALERIE) ── */
+function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIsSubmitting }) {
+  const isEditing = albumData !== "nouveau";
+  const [existingPhotos, setExistingPhotos] = useState(isEditing ? (albumData.photos || []) : []);
+  const [newPreviews, setNewPreviews] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFilesChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setIsCompressing(true);
+    const previews = [...newPreviews];
+    const compressedFiles = [...newFiles];
+    for (const file of files) {
+      try {
+        const { file: webpFile, preview } = await compressToWebP(file, 1000);
+        previews.push(preview);
+        compressedFiles.push(webpFile);
+      } catch (err) { console.error(err); }
+    }
+    setNewPreviews(previews); setNewFiles(compressedFiles);
+    setIsCompressing(false);
+  };
+
+  const removeNewFile = (idx) => {
+    setNewPreviews(newPreviews.filter((_, i) => i !== idx));
+    setNewFiles(newFiles.filter((_, i) => i !== idx));
+  };
+
+  const removeExistingPhoto = async (photoId) => {
+    if (!window.confirm("Supprimer définitivement cette photo ?")) return;
+    setExistingPhotos(existingPhotos.filter((p) => p.id !== photoId));
+    await supprimerPhoto(photoId);
+  };
+
+  const toggleFeatured = async (photoId, current) => {
+    setExistingPhotos(existingPhotos.map((p) => p.id === photoId ? { ...p, enAvant: !current } : p));
+    await togglePhotoEnAvant(photoId, !current);
+  };
+
+  return (
+    <div style={{ position: "absolute", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)" }}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
+        <button onClick={() => setAlbumEnEdition(null)} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
+        <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal, marginBottom: "24px" }}>{isEditing ? "Modifier l'album" : "Créer un album photo"}</h2>
+
+        <form action={async (formData) => {
+          setIsSubmitting(true);
+          newFiles.forEach((file) => { formData.append("photos", file); });
+          if (isEditing) await modifierAlbum(albumData.id, formData);
+          else await creerAlbum(formData);
+          setIsSubmitting(false);
+          setAlbumEnEdition(null);
+        }} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Nom de l'album</label>
+            <input type="text" name="titre" defaultValue={isEditing ? albumData.titre : ""} required placeholder="Ex: Colonie Été 2026" style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Séjour lié (optionnel)</label>
+            <select name="sejourId" defaultValue={isEditing ? (albumData.sejourId || "") : ""} style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.arctic, color: C.teal, fontWeight: 600 }}>
+              <option value="">Aucun séjour lié</option>
+              {sejours?.map((s) => (
+                <option key={s.id} value={s.id}>{s.titre}</option>
+              ))}
+            </select>
+          </div>
+
+          {existingPhotos.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Photos actuelles ({existingPhotos.length})</label>
+              <p style={{ fontSize: "11px", color: C.gray }}>Cliquez sur l'étoile pour mettre une photo "à l'affiche" sur la page d'accueil.</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                {existingPhotos.map((p) => (
+                  <div key={p.id} style={{ width: "80px", height: "80px", borderRadius: "12px", overflow: "hidden", position: "relative", border: `1px solid ${p.enAvant ? C.yellow : C.lightGray}` }}>
+                    <img src={p.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="photo album" />
+                    <button type="button" onClick={() => toggleFeatured(p.id, p.enAvant)} title={p.enAvant ? "Retirer de l'affiche" : "Mettre à l'affiche"} style={{ position: "absolute", bottom: "4px", left: "4px", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Star size={12} color={p.enAvant ? C.yellow : "white"} fill={p.enAvant ? C.yellow : "transparent"} /></button>
+                    <button type="button" onClick={() => removeExistingPhoto(p.id)} style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "white" }}><X size={12} /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Ajouter des photos</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+              {newPreviews.map((src, i) => (
+                <div key={i} style={{ width: "80px", height: "80px", borderRadius: "12px", overflow: "hidden", position: "relative", border: `1px solid ${C.lightGray}` }}>
+                  <img src={src} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="nouvelle photo" />
+                  <button type="button" onClick={() => removeNewFile(i)} style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "white" }}><X size={12} /></button>
+                </div>
+              ))}
+              <div onClick={() => fileInputRef.current?.click()} style={{ width: "80px", height: "80px", borderRadius: "12px", border: `2px dashed ${C.gray}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: C.arctic }}>
+                <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleFilesChange} style={{ display: "none" }} />
+                {isCompressing ? <Clock size={20} color={C.saffron} className="animate-spin" /> : <UploadCloud size={20} color={C.gray} />}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", paddingTop: "20px", borderTop: `1px solid ${C.arctic}` }}>
+            <button type="button" onClick={() => setAlbumEnEdition(null)} style={{ cursor: "pointer", background: "none", border: "none", color: C.gray, fontWeight: 700 }}>Annuler</button>
+            <button type="submit" disabled={isSubmitting} style={{ background: C.yellow, color: C.teal, padding: "14px 28px", borderRadius: "999px", border: "none", fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 16px rgba(255,200,1,0.3)" }}>
+              {isSubmitting ? "Enregistrement..." : "Enregistrer l'album"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 /* ── TABLEAUX / GRILLES ── */
 function TableInscriptions({ data }) {
   return (
@@ -702,13 +821,50 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
   );
 }
 
+function GridAlbums({ data, onEdit, onDelete }) {
+  const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
+
+  if (!data || data.length === 0) {
+    return (
+      <div style={{ background: C.white, borderRadius: "24px", padding: "48px", textAlign: "center", color: C.gray }}>
+        <ImageIcon size={40} style={{ opacity: 0.2, marginBottom: "16px", margin: "0 auto" }} />
+        <p>Aucun album photo pour le moment.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "20px" }}>
+      {data.map((album) => (
+        <div key={album.id} style={{ background: C.white, borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column" }}>
+          <div style={{ height: "150px", background: C.arctic, position: "relative", overflow: "hidden" }}>
+            {album.photos?.[0] ? <img src={album.photos[0].url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <ImageIcon size={32} color={C.gray} style={{ opacity: 0.3, position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />}
+            <div style={{ position: "absolute", top: "12px", right: "12px", background: C.white, padding: "6px 10px", borderRadius: "10px", fontSize: "12px", fontWeight: 800, color: C.teal, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>{album.photos?.length || 0} photo{(album.photos?.length || 0) > 1 ? "s" : ""}</div>
+          </div>
+          <div style={{ padding: "16px", flex: 1 }}>
+            <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal, marginBottom: "6px" }}>{album.titre}</h3>
+            {album.sejour && <p style={{ fontSize: "12px", color: C.gray, fontWeight: 600 }}>Lié à : {album.sejour.titre}</p>}
+          </div>
+          <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "flex-end", background: C.arctic + "40" }}>
+            <div style={{ display: "flex", gap: "4px" }}>
+              <button title="Éditer" onClick={() => onEdit(album)} style={{ ...actionBtnStyle }}><Edit size={16} /></button>
+              <button title="Supprimer" onClick={() => onDelete(album.id)} style={{ ...actionBtnStyle, color: "#f63656" }}><Trash2 size={16} /></button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, animateurs }) {
+export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, animateurs, albums }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
+
   const [sejourEnEdition, setSejourEnEdition] = useState(null);
   const [animEnEdition, setAnimEnEdition] = useState(null);
+  const [albumEnEdition, setAlbumEnEdition] = useState(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState("table");
@@ -741,6 +897,18 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     await toggleEnAvant(id, estEnAvant);
   };
 
+  const handleDeleteAlbum = async (id) => {
+    if (window.confirm("Supprimer définitivement cet album et toutes ses photos ?")) {
+      await supprimerAlbum(id);
+    }
+  };
+
+  const featuredPhotos = (albums || []).flatMap(a => (a.photos || []).filter(p => p.enAvant));
+
+  const handleUnfeaturePhoto = async (photoId) => {
+    await togglePhotoEnAvant(photoId, false);
+  };
+
   return (
     <AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} activeTab={activeTab} setActiveTab={setActiveTab} MENU={MENU} C={C}>
       
@@ -757,6 +925,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal, marginBottom: "8px" }}>
                 {activeTab === "dashboard" && "Bonjour, l'équipe 👋"}
                 {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
+                {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
               </h1>
@@ -891,6 +1060,39 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
             </div>
           )}
 
+          {activeTab === "galerie" && (
+            <>
+              <div style={{ marginBottom: "40px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
+                  <div>
+                    <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "8px" }}><Star size={18} color={C.yellow} fill={C.yellow} /> Photos à l'affiche</h2>
+                    <p style={{ fontSize: "13px", color: C.gray, marginTop: "4px" }}>Ces photos sont affichées dans la section "Nos plus beaux souvenirs" de la page d'accueil.</p>
+                  </div>
+                </div>
+                {featuredPhotos.length === 0 ? (
+                  <div style={{ background: C.white, borderRadius: "20px", padding: "32px", textAlign: "center", color: C.gray, border: `1px dashed ${C.lightGray}` }}>
+                    <p style={{ fontSize: "13px" }}>Aucune photo à l'affiche. Ouvrez un album et cliquez sur l'étoile d'une photo pour l'ajouter ici.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "16px" }}>
+                    {featuredPhotos.map((p) => (
+                      <div key={p.id} style={{ borderRadius: "16px", overflow: "hidden", position: "relative", aspectRatio: "1 / 1", border: `2px solid ${C.yellow}` }}>
+                        <img src={p.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="photo à l'affiche" />
+                        <button onClick={() => handleUnfeaturePhoto(p.id)} title="Retirer de l'affiche" style={{ position: "absolute", top: "8px", right: "8px", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: "26px", height: "26px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Star size={14} color={C.yellow} fill={C.yellow} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>{albums?.length || 0} album(s)</div>
+                <button onClick={() => setAlbumEnEdition("nouveau")} style={{ background: C.yellow, color: C.teal, border: "none", padding: "10px 16px", borderRadius: "10px", fontWeight: 800, cursor: "pointer" }}>+ Album photo</button>
+              </div>
+              <GridAlbums data={albums} onEdit={setAlbumEnEdition} onDelete={handleDeleteAlbum} />
+            </>
+          )}
+
           {activeTab === "clients" && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
               {clients?.map(c => (
@@ -950,6 +1152,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
 
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
+      {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
     </AdminLayout>
   );
 }

@@ -14,30 +14,47 @@ const C = {
   white:   "#ffffff",
 };
 
-const NAV = ["Accueil", "Séjours", "Qui sommes-nous", "Séniors", "Contact", "FAQ"];
+const NAV = [
+  { label: "Accueil", href: "/" },
+  { label: "Séjours", href: "/sejours-enfants-ados" },
+  { label: "Qui sommes-nous", href: "/qui-sommes-nous" },
+  { label: "Séniors", href: "/sorties-seniors" },
+  { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
+];
+
+const LEGAL_LINKS = [
+  { label: "Mentions légales", href: "/mentions-legales" },
+  { label: "CGV", href: "/cgv" },
+  { label: "Confidentialité", href: "/confidentialite" },
+];
 
 /* ─── MINI-COMPOSANT ─────────────────────────────────────────────────────── */
-function FooterCol({ title, links }) {
+function FooterCol({ title, links, emptyLabel }) {
   return (
     <div>
       <h4 style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "18px" }}>{title}</h4>
-      <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "11px", padding: 0, margin: 0 }}>
-        {links.map((l, i) => (
-          <li key={i}>
-            <Link href="#" style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", textDecoration: "none", fontWeight: 500, transition: "color .2s" }}
-              onMouseEnter={e => e.currentTarget.style.color = C.yellow}
-              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}>
-              {l}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {links.length === 0 ? (
+        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>{emptyLabel}</p>
+      ) : (
+        <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "11px", padding: 0, margin: 0 }}>
+          {links.map((l, i) => (
+            <li key={i}>
+              <Link href={l.href} style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", textDecoration: "none", fontWeight: 500, transition: "color .2s" }}
+                onMouseEnter={e => e.currentTarget.style.color = C.yellow}
+                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}>
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
 /* ─── FOOTER PRINCIPAL ───────────────────────────────────────────────────── */
-export default function Footer() {
+export default function Footer({ sejours = [] }) {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
@@ -116,9 +133,13 @@ export default function Footer() {
 
           {/* Nav */}
           <FooterCol title="Navigation" links={NAV} />
-          
+
           {/* Séjours */}
-          <FooterCol title="Séjours" links={["Ski · Châtel","Été dans les Landes","Voyage au Sénégal","Séjour en Allemagne","Sorties Séniors"]} />
+          <FooterCol
+            title="Séjours"
+            links={sejours.map(s => ({ label: s.titre, href: `/sejours-enfants-ados/${s.id}` }))}
+            emptyLabel="Aucun séjour publié pour le moment."
+          />
 
           {/* Contact */}
           <div>
@@ -152,10 +173,10 @@ export default function Footer() {
         <div className="footer-bottom" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
           <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", margin: 0 }}>© {currentYear} Make Your Moment · Association loi 1901</p>
           <div className="footer-bottom-links" style={{ display: "flex", gap: "20px" }}>
-            {["Mentions légales", "CGV", "Confidentialité"].map((l, i) => (
-              <Link key={i} href="#" style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", textDecoration: "none", transition: "color .2s" }}
+            {LEGAL_LINKS.map((l, i) => (
+              <Link key={i} href={l.href} style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => e.currentTarget.style.color = C.yellow}
-                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}>{l}</Link>
+                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}>{l.label}</Link>
             ))}
           </div>
         </div>

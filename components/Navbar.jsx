@@ -147,9 +147,9 @@ export default function Navbar() {
         }
       `}} />
 
-      {/* ── Ticker Design Pink (Épuré) ── */}
-      <div style={{ 
-        background: `linear-gradient(135deg, ${C.pink}, #6b0041)`, /* Fond Pink avec léger dégradé */
+      {/* ── Ticker Design Vert Sombre (Épuré) ── */}
+      <div style={{
+        background: `radial-gradient(circle, ${C.teal}, #081f26)`, /* Fond vert bleuté, clair au centre */
         color: C.white, /* Texte blanc */
         height: "38px", 
         overflow: "hidden", 
@@ -204,7 +204,7 @@ export default function Navbar() {
             <img src="/logo-mym-couleur.png" alt="Logo Make Your Moment" style={{ height: "45px", borderRadius: "6px" }} />
           </Link>
 
-          <nav className="desktop-only" style={{ alignItems: "center", gap: "8px", background: C.white, borderRadius: "999px", padding: "6px", boxShadow: "0 2px 12px rgba(17,76,90,0.08)" }}>
+          <nav className="desktop-only" style={{ alignItems: "center", gap: "8px", background: "transparent", padding: "6px" }}>
             {NAV.map((item) => (
               <NavItem key={item.href} item={item} active={pathname === item.href} />
             ))}

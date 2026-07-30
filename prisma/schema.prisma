@@ -34,6 +34,25 @@ model Sejour {
   documentsRequis  String[] @default([]) // Sous-ensemble du catalogue fixe
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
+  albums       Album[]
+}
+
+model Album {
+  id        String   @id @default(cuid())
+  titre     String
+  sejourId  String?
+  sejour    Sejour?  @relation(fields: [sejourId], references: [id], onDelete: SetNull)
+  photos    Photo[]
+  createdAt DateTime @default(now())
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  albumId   String
+  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  enAvant   Boolean  @default(false) // Affichée dans "Photos à l'affiche" sur la page d'accueil
+  createdAt DateTime @default(now())
 }
 
 model Client {

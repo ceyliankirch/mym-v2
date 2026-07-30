@@ -11,6 +11,14 @@ export default async function Page() {
     }
   });
 
-  // 2. On passe les données au composant client qui gère l'affichage
-  return <HomeClient sejoursFromDb={sejours} />;
+  // 2. On va chercher les photos "à l'affiche" pour la section Galerie
+  const galleryPhotos = await prisma.photo.findMany({
+    where: { enAvant: true },
+    include: { album: true },
+    orderBy: { createdAt: 'desc' },
+    take: 6,
+  });
+
+  // 3. On passe les données au composant client qui gère l'affichage
+  return <HomeClient sejoursFromDb={sejours} galleryPhotos={galleryPhotos} />;
 }

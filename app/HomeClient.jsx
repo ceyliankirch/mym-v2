@@ -194,8 +194,8 @@ function SejourCard({ s, idx }) {
           animation: `fadeUp .5s ease both`, animationDelay: `${(idx || 0) * 0.05}s`,
           display: "flex", flexDirection: "column", height: "100%",
           transform: hovered ? "translateY(-6px)" : "translateY(0)",
-          filter: s.isPast ? "grayscale(100%)" : "none",
-          opacity: s.isPast ? 0.75 : 1,
+          filter: "none",
+          opacity: 1,
           isolation: "isolate", // Coupe propre des coins (Correction Safari/Chrome)
           clipPath: "inset(0 round 24px)",
         }}
@@ -204,9 +204,9 @@ function SejourCard({ s, idx }) {
           <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} 
                alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease" }} />
           
-          <div style={{ position: "absolute", top: "12px", left: "12px", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "4px 10px", display: "flex", alignItems: "center", gap: "5px" }}>
+          <div style={{ position: "absolute", top: "12px", left: "12px", background: s.isPast ? "#e5484d" : "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "4px 10px", display: "flex", alignItems: "center", gap: "5px" }}>
             {s.isPast ? (
-              <span style={{ fontSize: "10px", fontWeight: 800, color: "#666", textTransform: "uppercase" }}>Terminé</span>
+              <span style={{ fontSize: "10px", fontWeight: 800, color: "white", textTransform: "uppercase" }}>Séjour passé</span>
             ) : (
               <>
                 <Icon size={12} style={{ color: sColor }} />
@@ -408,11 +408,11 @@ function AllSejoursMap({ sejours }) {
 }
 
 /* ─── PAGE PRINCIPALE ────────────────────────────────────────────── */
-export default function HomeClient({ sejoursFromDb }) {
+export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
   const [cat, setCat] = useState("tous");
   const [visible, setVisible] = useState(false);
   
-  const [showUpcomingOnly, setShowUpcomingOnly] = useState(true);
+  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const catalogueRef = useRef(null);
 
@@ -577,8 +577,8 @@ export default function HomeClient({ sejoursFromDb }) {
             
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
               <div style={{ display: "flex", background: "white", padding: "4px", borderRadius: "100px", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
-                <button onClick={() => setShowUpcomingOnly(true)} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: showUpcomingOnly ? C.yellow : "transparent", color: C.teal, transition: "all .2s" }}>À venir</button>
                 <button onClick={() => setShowUpcomingOnly(false)} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: !showUpcomingOnly ? C.yellow : "transparent", color: C.teal, transition: "all .2s" }}>Tous</button>
+                <button onClick={() => setShowUpcomingOnly(true)} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: showUpcomingOnly ? C.yellow : "transparent", color: C.teal, transition: "all .2s" }}>À venir</button>
               </div>
 
               <div style={{ display: "flex", background: "white", padding: "4px", borderRadius: "100px", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
@@ -695,16 +695,16 @@ export default function HomeClient({ sejoursFromDb }) {
             <h2 style={{ fontWeight: 900, letterSpacing: "-1px", color: C.teal, fontSize: "clamp(2rem,3vw,2.5rem)" }}>Nos plus beaux souvenirs</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px", marginBottom: "48px" }}>
-            {GALLERY_PREVIEW.map((image, i) => (
+            {(galleryPhotos && galleryPhotos.length > 0 ? galleryPhotos : GALLERY_PREVIEW).map((image) => (
               <div key={image.id} style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 8px 24px rgba(17,76,90,0.08)", aspectRatio: '1 / 1' }}>
-                <img src={image.src} alt={image.alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={image.url || image.src} alt={image.album?.titre || image.alt || "Photo souvenir"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             ))}
           </div>
           <div style={{ textAlign: "center" }}>
-            <Btn large href="/galerie">
+            <Link href="/galerie" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "transparent", color: C.yellow, fontSize: "13px", fontWeight: 800, padding: "14px 28px", border: "none", textDecoration: "none" }}>
               <Camera size={14} /> Voir toute la galerie
-            </Btn>
+            </Link>
           </div>
         </div>
       </section>
