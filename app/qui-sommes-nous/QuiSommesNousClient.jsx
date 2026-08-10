@@ -1,11 +1,22 @@
 // app/qui-sommes-nous/QuiSommesNousClient.jsx
 "use client";
-import { 
-  Shield, Users, GraduationCap, Heart, CheckCircle2, 
-  ArrowRight, Award, Target, MapPin 
+import { useState } from "react";
+import {
+  Shield, Users, GraduationCap, Heart, CheckCircle2,
+  ArrowRight, Award, Target, MapPin, ChevronLeft, ChevronRight
 } from "lucide-react";
 
+const ANIMATEURS_PAR_PAGE = 12;
+
 export default function QuiSommesNousClient({ equipe }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil((equipe?.length || 0) / ANIMATEURS_PAR_PAGE));
+  const equipePage = (equipe || []).slice((page - 1) * ANIMATEURS_PAR_PAGE, page * ANIMATEURS_PAR_PAGE);
+
+  const goToPage = (p) => {
+    setPage(Math.min(Math.max(1, p), totalPages));
+  };
+
   return (
     <div className="min-h-screen bg-[#F1F6F4] text-[#114C5A] font-sans overflow-x-hidden selection:bg-[#FFC801] selection:text-[#114C5A]">
       
@@ -124,7 +135,7 @@ export default function QuiSommesNousClient({ equipe }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {equipe && equipe.length > 0 ? (
-              equipe.map(anim => (
+              equipePage.map(anim => (
                 <div key={anim.id} className="bg-white rounded-[24px] overflow-hidden shadow-lg shadow-[#114c5a08] transition-transform hover:-translate-y-2 duration-300 group">
                   <div className="h-[280px] bg-[#e2e8f0] relative overflow-hidden">
                     {anim.imageUrl ? (
@@ -148,6 +159,40 @@ export default function QuiSommesNousClient({ equipe }) {
               </div>
             )}
           </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-14">
+              <button
+                onClick={() => goToPage(page - 1)}
+                disabled={page === 1}
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-[#114C5A]/15 text-[#114C5A] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white transition-colors"
+                aria-label="Page précédente"
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                    p === page ? "bg-[#FFC801] text-[#114C5A]" : "text-[#114C5A] hover:bg-white"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+
+              <button
+                onClick={() => goToPage(page + 1)}
+                disabled={page === totalPages}
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-[#114C5A]/15 text-[#114C5A] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white transition-colors"
+                aria-label="Page suivante"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

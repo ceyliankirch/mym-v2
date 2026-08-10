@@ -1,4 +1,8 @@
 {
-  "/espace-famille/page": "app/espace-famille/page.js",
-  "/page": "app/page.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/contact/page": "app/contact/page.js",
+  "/faq/page": "app/faq/page.js",
+  "/galerie/page": "app/galerie/page.js",
+  "/page": "app/page.js",
+  "/qui-sommes-nous/page": "app/qui-sommes-nous/page.js"
 }

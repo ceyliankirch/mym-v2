@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { put, del } from "@vercel/blob";
+import { uploadPublicImage, deletePublicAsset } from "@/lib/cloudinary";
 
 // ➕ CRÉER
 export async function creerSejour(formData) {
@@ -31,8 +31,8 @@ export async function creerSejour(formData) {
   let imageUrl = null;
 
   if (imageFile && imageFile.size > 0) {
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
-    imageUrl = blob.url;
+    const uploaded = await uploadPublicImage(imageFile, "sejours");
+    imageUrl = uploaded.url;
   }
 
   // ⚡ Gestion de la Galerie (Multiples images)
@@ -40,8 +40,8 @@ export async function creerSejour(formData) {
   const galerieUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
-      galerieUrls.push(blob.url);
+      const uploaded = await uploadPublicImage(file, "sejours/galerie");
+      galerieUrls.push(uploaded.url);
     }
   }
 
@@ -112,28 +112,28 @@ export async function modifierSejour(id, formData) {
 
   if (imageFile && imageFile.size > 0) {
     if (sejourActuel.imageUrl) {
-      try { await del(sejourActuel.imageUrl); } catch (e) { console.error("Erreur suppression ancien blob", e); }
+      await deletePublicAsset(sejourActuel.imageUrl);
     }
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
-    imageUrl = blob.url;
+    const uploaded = await uploadPublicImage(imageFile, "sejours");
+    imageUrl = uploaded.url;
   }
 
   // ⚡ Gestion de la Galerie lors d'une modification
   const galerieFiles = formData.getAll("galerie"); // Les NOUVELLES images uploadées
   const anciennesUrls = formData.getAll("anciennesGalerie"); // Les anciennes images CONSERVÉES
 
-  // 🧹 Nettoyage Vercel : On supprime les images que l'utilisateur a retirées de la galerie
+  // 🧹 Nettoyage Cloudinary : On supprime les images que l'utilisateur a retirées de la galerie
   const removedUrls = (sejourActuel.galerie || []).filter(url => !anciennesUrls.includes(url));
   for (const url of removedUrls) {
-     try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+     await deletePublicAsset(url);
   }
 
   // Upload des nouvelles images
   const nouvellesUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
-      nouvellesUrls.push(blob.url);
+      const uploaded = await uploadPublicImage(file, "sejours/galerie");
+      nouvellesUrls.push(uploaded.url);
     }
   }
 
@@ -186,13 +186,13 @@ export async function supprimerSejour(id) {
 
   // On nettoie l'image principale
   if (sejour?.imageUrl) {
-    try { await del(sejour.imageUrl); } catch (e) { console.error("Erreur suppression blob", e); }
+    await deletePublicAsset(sejour.imageUrl);
   }
 
-  // ⚡ On nettoie aussi toutes les images de la galerie sur Vercel !
+  // ⚡ On nettoie aussi toutes les images de la galerie sur Cloudinary !
   if (sejour?.galerie && sejour.galerie.length > 0) {
     for (const url of sejour.galerie) {
-      try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+      await deletePublicAsset(url);
     }
   }
 

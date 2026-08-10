@@ -3,7 +3,7 @@
     "408de3680c54cffa152057e01288e3c539e171b22e": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "registerUser",
           "filename": "app/actions/auth.js"
@@ -18,7 +18,7 @@
     "40a8d2bfc114f2a89f74deaa19f1d3c87d99111786": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "creerSejour",
           "filename": "app/actions/sejours.js"
@@ -33,7 +33,7 @@
     "6036bfc6abaf421c8430802ea7a2d4cfa27b20be76": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "modifierSejour",
           "filename": "app/actions/sejours.js"
@@ -48,7 +48,7 @@
     "403eec5f2b4ce752e847f5ab9aac1017db62f9cc38": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "supprimerSejour",
           "filename": "app/actions/sejours.js"
@@ -63,7 +63,7 @@
     "6026922218c352dffac1faa59af7a3552d200d3b72": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "toggleStatut",
           "filename": "app/actions/sejours.js"
@@ -78,7 +78,7 @@
     "606d997fd5c231a2db6f7364487b5317f31939bf53": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "toggleEnAvant",
           "filename": "app/actions/sejours.js"
@@ -93,7 +93,7 @@
     "40d4d8b36703e6d8f57719ff16716961ff781d4c0e": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "creerAnimateur",
           "filename": "app/actions/animateurs.js"
@@ -108,7 +108,7 @@
     "60e00c5cf0763d539042c9cdf49876791d7212d5fb": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "modifierAnimateur",
           "filename": "app/actions/animateurs.js"
@@ -123,7 +123,7 @@
     "40058cc912a10c7c417235e40a6583aff53fd499d0": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "supprimerAnimateur",
           "filename": "app/actions/animateurs.js"
@@ -138,7 +138,7 @@
     "40f7ec69478714e5b62fda5cb3f7424ad6dfa3b254": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "validerDocument",
           "filename": "app/actions/documents.js"
@@ -153,7 +153,7 @@
     "407c8ee88cf8ffcd45c5a8b1eafaa7bf3d212f4132": {
       "workers": {
         "app/admin/page": {
-          "moduleId": 19646,
+          "moduleId": 87869,
           "async": false,
           "exportedName": "rejeterDocument",
           "filename": "app/actions/documents.js"
@@ -164,6 +164,81 @@
       },
       "exportedName": "rejeterDocument",
       "filename": "app/actions/documents.js"
+    },
+    "4056b7d808509259bccaf2efbcdf2f2531ce06bc2b": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 87869,
+          "async": false,
+          "exportedName": "creerAlbum",
+          "filename": "app/actions/galerie.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "creerAlbum",
+      "filename": "app/actions/galerie.js"
+    },
+    "609e345192b0435cb64e69c2b7f1a05eab52ae5445": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 87869,
+          "async": false,
+          "exportedName": "modifierAlbum",
+          "filename": "app/actions/galerie.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "modifierAlbum",
+      "filename": "app/actions/galerie.js"
+    },
+    "405c58eb26ba8d5f0f60da483ef1a069943e8872e6": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 87869,
+          "async": false,
+          "exportedName": "supprimerAlbum",
+          "filename": "app/actions/galerie.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "supprimerAlbum",
+      "filename": "app/actions/galerie.js"
+    },
+    "40d139594a2a2d92504768a880122951f5ea164e78": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 87869,
+          "async": false,
+          "exportedName": "supprimerPhoto",
+          "filename": "app/actions/galerie.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "supprimerPhoto",
+      "filename": "app/actions/galerie.js"
+    },
+    "60840e9060f7766324511e55dfb2fb15f18eb1290d": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 87869,
+          "async": false,
+          "exportedName": "togglePhotoEnAvant",
+          "filename": "app/actions/galerie.js"
+        }
+      },
+      "layer": {
+        "app/admin/page": "action-browser"
+      },
+      "exportedName": "togglePhotoEnAvant",
+      "filename": "app/actions/galerie.js"
     }
   },
   "edge": {}

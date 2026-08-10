@@ -96,14 +96,15 @@ model Enfant {
 }
 
 model Document {
-  id        String   @id @default(cuid())
-  type      String   // une des 5 valeurs du catalogue fixe
-  url       String?
-  statut    String   @default("MANQUANT") // MANQUANT, EN_COURS, VALIDE
-  enfantId  String
-  enfant    Enfant   @relation(fields: [enfantId], references: [id], onDelete: Cascade)
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  type         String   // une des 5 valeurs du catalogue fixe
+  url          String?
+  resourceType String?  // type Cloudinary de l'asset (image, raw, video) — nécessaire pour le supprimer proprement
+  statut       String   @default("MANQUANT") // MANQUANT, EN_COURS, VALIDE
+  enfantId     String
+  enfant       Enfant   @relation(fields: [enfantId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 
   @@unique([enfantId, type])
 }

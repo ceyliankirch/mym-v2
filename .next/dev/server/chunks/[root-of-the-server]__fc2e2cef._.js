@@ -112,6 +112,7 @@ const { handlers, signIn, signOut, auth } = (0, __TURBOPACK__imported__module__$
     callbacks: {
         async jwt ({ token, user }) {
             if (user) {
+                token.id = user.id;
                 token.role = user.role;
                 token.prenom = user.prenom;
                 token.nom = user.nom;
@@ -120,6 +121,7 @@ const { handlers, signIn, signOut, auth } = (0, __TURBOPACK__imported__module__$
         },
         async session ({ session, token }) {
             if (token) {
+                session.user.id = token.id;
                 session.user.role = token.role;
                 session.user.prenom = token.prenom;
                 session.user.nom = token.nom;

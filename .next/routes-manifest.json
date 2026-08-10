@@ -72,6 +72,18 @@
       "namedRegex": "^/admin(?:/)?$"
     },
     {
+      "page": "/cgv",
+      "regex": "^/cgv(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/cgv(?:/)?$"
+    },
+    {
+      "page": "/confidentialite",
+      "regex": "^/confidentialite(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/confidentialite(?:/)?$"
+    },
+    {
       "page": "/contact",
       "regex": "^/contact(?:/)?$",
       "routeKeys": {},
@@ -100,6 +112,12 @@
       "regex": "^/galerie(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/galerie(?:/)?$"
+    },
+    {
+      "page": "/mentions-legales",
+      "regex": "^/mentions\\-legales(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/mentions\\-legales(?:/)?$"
     },
     {
       "page": "/qui-sommes-nous",

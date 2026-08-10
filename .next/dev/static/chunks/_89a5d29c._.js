@@ -953,8 +953,8 @@ function Navbar() {
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 style: {
-                    background: `linear-gradient(135deg, ${C.pink}, #6b0041)`,
-                    /* Fond Pink avec léger dégradé */ color: C.white,
+                    background: `radial-gradient(circle, ${C.teal}, #081f26)`,
+                    /* Fond vert bleuté, clair au centre */ color: C.white,
                     /* Texte blanc */ height: "38px",
                     overflow: "hidden",
                     display: "flex"
@@ -1082,10 +1082,8 @@ function Navbar() {
                                 style: {
                                     alignItems: "center",
                                     gap: "8px",
-                                    background: C.white,
-                                    borderRadius: "999px",
-                                    padding: "6px",
-                                    boxShadow: "0 2px 12px rgba(17,76,90,0.08)"
+                                    background: "transparent",
+                                    padding: "6px"
                                 },
                                 children: NAV.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(NavItem, {
                                         item: item,
@@ -1259,6 +1257,39 @@ function Navbar() {
                                                             lineNumber: 261,
                                                             columnNumber: 25
                                                         }, this),
+                                                        isAdmin && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                            href: "/espace-famille",
+                                                            onClick: ()=>setDropdownOpen(false),
+                                                            style: {
+                                                                padding: "12px 16px",
+                                                                borderRadius: "12px",
+                                                                fontSize: "13px",
+                                                                fontWeight: 700,
+                                                                color: C.teal,
+                                                                textDecoration: "none",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                gap: "10px",
+                                                                transition: "background 0.2s"
+                                                            },
+                                                            onMouseOver: (e)=>e.currentTarget.style.background = C.arctic,
+                                                            onMouseOut: (e)=>e.currentTarget.style.background = "transparent",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$house$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Home$3e$__["Home"], {
+                                                                    size: 16,
+                                                                    color: C.saffron
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/Navbar.jsx",
+                                                                    lineNumber: 278,
+                                                                    columnNumber: 29
+                                                                }, this),
+                                                                "Espace Famille"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/Navbar.jsx",
+                                                            lineNumber: 272,
+                                                            columnNumber: 27
+                                                        }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             style: {
                                                                 height: "1px",
@@ -1267,7 +1298,7 @@ function Navbar() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Navbar.jsx",
-                                                            lineNumber: 271,
+                                                            lineNumber: 283,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1297,14 +1328,14 @@ function Navbar() {
                                                                     size: 16
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Navbar.jsx",
-                                                                    lineNumber: 278,
+                                                                    lineNumber: 290,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 " Déconnexion"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Navbar.jsx",
-                                                            lineNumber: 273,
+                                                            lineNumber: 285,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
@@ -1351,12 +1382,12 @@ function Navbar() {
                                             size: 18
                                         }, void 0, false, {
                                             fileName: "[project]/components/Navbar.jsx",
-                                            lineNumber: 292,
+                                            lineNumber: 304,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Navbar.jsx",
-                                        lineNumber: 286,
+                                        lineNumber: 298,
                                         columnNumber: 17
                                     }, this)
                                 ]
@@ -1383,18 +1414,18 @@ function Navbar() {
                                     size: 24
                                 }, void 0, false, {
                                     fileName: "[project]/components/Navbar.jsx",
-                                    lineNumber: 303,
+                                    lineNumber: 315,
                                     columnNumber: 25
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$menu$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Menu$3e$__["Menu"], {
                                     size: 24
                                 }, void 0, false, {
                                     fileName: "[project]/components/Navbar.jsx",
-                                    lineNumber: 303,
+                                    lineNumber: 315,
                                     columnNumber: 43
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Navbar.jsx",
-                                lineNumber: 298,
+                                lineNumber: 310,
                                 columnNumber: 11
                             }, this)
                         ]
@@ -1463,13 +1494,13 @@ function Navbar() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Navbar.jsx",
-                                                lineNumber: 323,
+                                                lineNumber: 335,
                                                 columnNumber: 34
                                             }, this)
                                         ]
                                     }, item.href, true, {
                                         fileName: "[project]/components/Navbar.jsx",
-                                        lineNumber: 318,
+                                        lineNumber: 330,
                                         columnNumber: 19
                                     }, this);
                                 }),
@@ -1484,7 +1515,7 @@ function Navbar() {
                                         session ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                    href: isAdmin ? "/admin" : "/profil",
+                                                    href: isAdmin ? "/admin" : "/espace-famille",
                                                     onClick: ()=>setMenuOpen(false),
                                                     style: {
                                                         background: C.arctic,
@@ -1504,13 +1535,13 @@ function Navbar() {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Navbar.jsx",
-                                                            lineNumber: 337,
+                                                            lineNumber: 349,
                                                             columnNumber: 34
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$house$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Home$3e$__["Home"], {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Navbar.jsx",
-                                                            lineNumber: 337,
+                                                            lineNumber: 349,
                                                             columnNumber: 66
                                                         }, this),
                                                         " ",
@@ -1518,8 +1549,39 @@ function Navbar() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Navbar.jsx",
-                                                    lineNumber: 333,
+                                                    lineNumber: 345,
                                                     columnNumber: 21
+                                                }, this),
+                                                isAdmin && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                    href: "/espace-famille",
+                                                    onClick: ()=>setMenuOpen(false),
+                                                    style: {
+                                                        background: C.arctic,
+                                                        color: C.teal,
+                                                        padding: "16px",
+                                                        borderRadius: "16px",
+                                                        fontSize: "16px",
+                                                        fontWeight: 800,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        gap: "10px",
+                                                        textDecoration: "none"
+                                                    },
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$house$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Home$3e$__["Home"], {
+                                                            size: 18
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/Navbar.jsx",
+                                                            lineNumber: 356,
+                                                            columnNumber: 25
+                                                        }, this),
+                                                        " Espace Famille"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/Navbar.jsx",
+                                                    lineNumber: 352,
+                                                    columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                     onClick: ()=>{
@@ -1545,14 +1607,14 @@ function Navbar() {
                                                             size: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Navbar.jsx",
-                                                            lineNumber: 343,
+                                                            lineNumber: 363,
                                                             columnNumber: 23
                                                         }, this),
                                                         " Déconnexion"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Navbar.jsx",
-                                                    lineNumber: 339,
+                                                    lineNumber: 359,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -1580,14 +1642,14 @@ function Navbar() {
                                                     size: 18
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Navbar.jsx",
-                                                    lineNumber: 351,
+                                                    lineNumber: 371,
                                                     columnNumber: 21
                                                 }, this),
                                                 " Se connecter / S'inscrire"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Navbar.jsx",
-                                            lineNumber: 347,
+                                            lineNumber: 367,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1612,30 +1674,30 @@ function Navbar() {
                                                     size: 16
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Navbar.jsx",
-                                                    lineNumber: 359,
+                                                    lineNumber: 379,
                                                     columnNumber: 34
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Navbar.jsx",
-                                            lineNumber: 355,
+                                            lineNumber: 375,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Navbar.jsx",
-                                    lineNumber: 329,
+                                    lineNumber: 341,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Navbar.jsx",
-                            lineNumber: 311,
+                            lineNumber: 323,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/Navbar.jsx",
-                        lineNumber: 309,
+                        lineNumber: 321,
                         columnNumber: 9
                     }, this)
                 ]
@@ -1649,7 +1711,7 @@ function Navbar() {
                 onClose: ()=>setIsAuthModalOpen(false)
             }, void 0, false, {
                 fileName: "[project]/components/Navbar.jsx",
-                lineNumber: 369,
+                lineNumber: 389,
                 columnNumber: 7
             }, this)
         ]
@@ -1704,14 +1766,46 @@ var _s = __turbopack_context__.k.signature();
     white: "#ffffff"
 };
 const NAV = [
-    "Accueil",
-    "Séjours",
-    "Qui sommes-nous",
-    "Séniors",
-    "Contact",
-    "FAQ"
+    {
+        label: "Accueil",
+        href: "/"
+    },
+    {
+        label: "Séjours",
+        href: "/sejours-enfants-ados"
+    },
+    {
+        label: "Qui sommes-nous",
+        href: "/qui-sommes-nous"
+    },
+    {
+        label: "Séniors",
+        href: "/sorties-seniors"
+    },
+    {
+        label: "Contact",
+        href: "/contact"
+    },
+    {
+        label: "FAQ",
+        href: "/faq"
+    }
 ];
-/* ─── MINI-COMPOSANT ─────────────────────────────────────────────────────── */ function FooterCol({ title, links }) {
+const LEGAL_LINKS = [
+    {
+        label: "Mentions légales",
+        href: "/mentions-legales"
+    },
+    {
+        label: "CGV",
+        href: "/cgv"
+    },
+    {
+        label: "Confidentialité",
+        href: "/confidentialite"
+    }
+];
+/* ─── MINI-COMPOSANT ─────────────────────────────────────────────────────── */ function FooterCol({ title, links, emptyLabel }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -1726,10 +1820,20 @@ const NAV = [
                 children: title
             }, void 0, false, {
                 fileName: "[project]/components/Footer.jsx",
-                lineNumber: 23,
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+            links.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                style: {
+                    fontSize: "12px",
+                    color: "rgba(255,255,255,0.35)"
+                },
+                children: emptyLabel
+            }, void 0, false, {
+                fileName: "[project]/components/Footer.jsx",
+                lineNumber: 38,
+                columnNumber: 9
+            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
                 style: {
                     listStyle: "none",
                     display: "flex",
@@ -1740,7 +1844,7 @@ const NAV = [
                 },
                 children: links.map((l, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                            href: "#",
+                            href: l.href,
                             style: {
                                 fontSize: "12px",
                                 color: "rgba(255,255,255,0.5)",
@@ -1750,31 +1854,31 @@ const NAV = [
                             },
                             onMouseEnter: (e)=>e.currentTarget.style.color = C.yellow,
                             onMouseLeave: (e)=>e.currentTarget.style.color = "rgba(255,255,255,0.5)",
-                            children: l
+                            children: l.label
                         }, void 0, false, {
                             fileName: "[project]/components/Footer.jsx",
-                            lineNumber: 27,
-                            columnNumber: 13
+                            lineNumber: 43,
+                            columnNumber: 15
                         }, this)
                     }, i, false, {
                         fileName: "[project]/components/Footer.jsx",
-                        lineNumber: 26,
-                        columnNumber: 11
+                        lineNumber: 42,
+                        columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/Footer.jsx",
-                lineNumber: 24,
-                columnNumber: 7
+                lineNumber: 40,
+                columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Footer.jsx",
-        lineNumber: 22,
+        lineNumber: 35,
         columnNumber: 5
     }, this);
 }
 _c = FooterCol;
-function Footer() {
+function Footer({ sejours = [] }) {
     _s();
     const currentYear = new Date().getFullYear();
     const pathname = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"])();
@@ -1831,7 +1935,7 @@ function Footer() {
       `
             }, void 0, false, {
                 fileName: "[project]/components/Footer.jsx",
-                lineNumber: 49,
+                lineNumber: 66,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1861,7 +1965,7 @@ function Footer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 98,
+                                                lineNumber: 115,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1875,18 +1979,18 @@ function Footer() {
                                                     children: "Make Your Moment"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 100,
+                                                    lineNumber: 117,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 99,
+                                                lineNumber: 116,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 97,
+                                        lineNumber: 114,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1900,7 +2004,7 @@ function Footer() {
                                         children: "Séjours inoubliables pour enfants, ados et séniors depuis Sucy-en-Brie."
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 103,
+                                        lineNumber: 120,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1927,7 +2031,7 @@ function Footer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 107,
+                                                lineNumber: 124,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1946,24 +2050,24 @@ function Footer() {
                                                     size: 14
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 112,
+                                                    lineNumber: 129,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 109,
+                                                lineNumber: 126,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 106,
+                                        lineNumber: 123,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 96,
+                                lineNumber: 113,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FooterCol, {
@@ -1971,21 +2075,19 @@ function Footer() {
                                 links: NAV
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 118,
+                                lineNumber: 135,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FooterCol, {
                                 title: "Séjours",
-                                links: [
-                                    "Ski · Châtel",
-                                    "Été dans les Landes",
-                                    "Voyage au Sénégal",
-                                    "Séjour en Allemagne",
-                                    "Sorties Séniors"
-                                ]
+                                links: sejours.map((s)=>({
+                                        label: s.titre,
+                                        href: `/sejours-enfants-ados/${s.id}`
+                                    })),
+                                emptyLabel: "Aucun séjour publié pour le moment."
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 121,
+                                lineNumber: 138,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2002,7 +2104,7 @@ function Footer() {
                                         children: "Contact"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 125,
+                                        lineNumber: 146,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -2043,7 +2145,7 @@ function Footer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 133,
+                                                        lineNumber: 154,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2055,18 +2157,18 @@ function Footer() {
                                                         children: t
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Footer.jsx",
-                                                        lineNumber: 134,
+                                                        lineNumber: 155,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, i, true, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 132,
+                                                lineNumber: 153,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 126,
+                                        lineNumber: 147,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2111,29 +2213,29 @@ function Footer() {
                                                     size: 14
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Footer.jsx",
-                                                    lineNumber: 144,
+                                                    lineNumber: 165,
                                                     columnNumber: 19
                                                 }, this)
                                             }, i, false, {
                                                 fileName: "[project]/components/Footer.jsx",
-                                                lineNumber: 140,
+                                                lineNumber: 161,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 138,
+                                        lineNumber: 159,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 124,
+                                lineNumber: 145,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Footer.jsx",
-                        lineNumber: 93,
+                        lineNumber: 110,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2160,7 +2262,7 @@ function Footer() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 153,
+                                lineNumber: 174,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2169,12 +2271,8 @@ function Footer() {
                                     display: "flex",
                                     gap: "20px"
                                 },
-                                children: [
-                                    "Mentions légales",
-                                    "CGV",
-                                    "Confidentialité"
-                                ].map((l, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                        href: "#",
+                                children: LEGAL_LINKS.map((l, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                        href: l.href,
                                         style: {
                                             fontSize: "10px",
                                             color: "rgba(255,255,255,0.25)",
@@ -2183,33 +2281,33 @@ function Footer() {
                                         },
                                         onMouseEnter: (e)=>e.currentTarget.style.color = C.yellow,
                                         onMouseLeave: (e)=>e.currentTarget.style.color = "rgba(255,255,255,0.25)",
-                                        children: l
+                                        children: l.label
                                     }, i, false, {
                                         fileName: "[project]/components/Footer.jsx",
-                                        lineNumber: 156,
+                                        lineNumber: 177,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/Footer.jsx",
-                                lineNumber: 154,
+                                lineNumber: 175,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Footer.jsx",
-                        lineNumber: 152,
+                        lineNumber: 173,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/Footer.jsx",
-                lineNumber: 90,
+                lineNumber: 107,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Footer.jsx",
-        lineNumber: 46,
+        lineNumber: 63,
         columnNumber: 5
     }, this);
 }

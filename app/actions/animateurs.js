@@ -2,7 +2,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { put } from "@vercel/blob";
+import { uploadPublicImage, deletePublicAsset } from "@/lib/cloudinary";
 
 export async function creerAnimateur(formData) {
   const nom = formData.get("nom");
@@ -12,8 +12,8 @@ export async function creerAnimateur(formData) {
 
   let imageUrl = null;
   if (imageFile && imageFile.size > 0) {
-    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
-    imageUrl = blob.url;
+    const uploaded = await uploadPublicImage(imageFile, "equipe");
+    imageUrl = uploaded.url;
   }
 
   await prisma.animateur.create({
@@ -32,8 +32,12 @@ export async function modifierAnimateur(id, formData) {
   const data = { nom, role, bio };
 
   if (imageFile && imageFile.size > 0) {
-    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
-    data.imageUrl = blob.url;
+    const animateurActuel = await prisma.animateur.findUnique({ where: { id } });
+    if (animateurActuel?.imageUrl) {
+      await deletePublicAsset(animateurActuel.imageUrl);
+    }
+    const uploaded = await uploadPublicImage(imageFile, "equipe");
+    data.imageUrl = uploaded.url;
   }
 
   await prisma.animateur.update({ where: { id }, data });
@@ -42,6 +46,10 @@ export async function modifierAnimateur(id, formData) {
 }
 
 export async function supprimerAnimateur(id) {
+  const animateur = await prisma.animateur.findUnique({ where: { id } });
+  if (animateur?.imageUrl) {
+    await deletePublicAsset(animateur.imageUrl);
+  }
   await prisma.animateur.delete({ where: { id } });
   revalidatePath("/admin");
   revalidatePath("/qui-sommes-nous");

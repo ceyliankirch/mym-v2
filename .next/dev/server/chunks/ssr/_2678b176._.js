@@ -7,6 +7,7 @@ __turbopack_context__.s([
     ()=>QuiSommesNousClient
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield.js [app-ssr] (ecmascript) <export default as Shield>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/users.js [app-ssr] (ecmascript) <export default as Users>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$graduation$2d$cap$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__GraduationCap$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/graduation-cap.js [app-ssr] (ecmascript) <export default as GraduationCap>");
@@ -20,7 +21,15 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 "use client";
 ;
 ;
+;
+const ANIMATEURS_PAR_PAGE = 12;
 function QuiSommesNousClient({ equipe }) {
+    const [page, setPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(1);
+    const totalPages = Math.max(1, Math.ceil((equipe?.length || 0) / ANIMATEURS_PAR_PAGE));
+    const equipePage = (equipe || []).slice((page - 1) * ANIMATEURS_PAR_PAGE, page * ANIMATEURS_PAR_PAGE);
+    const goToPage = (p)=>{
+        setPage(Math.min(Math.max(1, p), totalPages));
+    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-[#F1F6F4] text-[#114C5A] font-sans overflow-x-hidden selection:bg-[#FFC801] selection:text-[#114C5A]",
         children: [
@@ -37,7 +46,7 @@ function QuiSommesNousClient({ equipe }) {
                                         className: "w-2 h-2 rounded-full bg-[#FFC801] shrink-0"
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 16,
+                                        lineNumber: 27,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -45,13 +54,13 @@ function QuiSommesNousClient({ equipe }) {
                                         children: "Notre Histoire"
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 17,
+                                        lineNumber: 28,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 15,
+                                lineNumber: 26,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -60,7 +69,7 @@ function QuiSommesNousClient({ equipe }) {
                                     "Créateurs de ",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 20,
+                                        lineNumber: 31,
                                         columnNumber: 26
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -68,20 +77,20 @@ function QuiSommesNousClient({ equipe }) {
                                         children: "souvenirs"
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 21,
+                                        lineNumber: 32,
                                         columnNumber: 13
                                     }, this),
                                     " ",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 21,
+                                        lineNumber: 32,
                                         columnNumber: 63
                                     }, this),
                                     "depuis 2023."
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 19,
+                                lineNumber: 30,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -89,7 +98,7 @@ function QuiSommesNousClient({ equipe }) {
                                 children: "Make Your Moment est une association loi 1901 basée à Sucy-en-Brie. Notre mission ? Créer des séjours enrichissants, sécurisés et mémorables pour les enfants, les adolescents et nos aînés."
                             }, void 0, false, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 24,
+                                lineNumber: 35,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -105,7 +114,7 @@ function QuiSommesNousClient({ equipe }) {
                                                         alt: anim.nom
                                                     }, i, false, {
                                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                        lineNumber: 33,
+                                                        lineNumber: 44,
                                                         columnNumber: 21
                                                     }, this)),
                                                 equipe.length > 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -116,7 +125,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 38,
+                                                    lineNumber: 49,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -128,7 +137,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     alt: "Team"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 46,
+                                                    lineNumber: 57,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -137,7 +146,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     alt: "Team"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 47,
+                                                    lineNumber: 58,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -146,14 +155,14 @@ function QuiSommesNousClient({ equipe }) {
                                                     alt: "Team"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 48,
+                                                    lineNumber: 59,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 28,
+                                        lineNumber: 39,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -162,7 +171,7 @@ function QuiSommesNousClient({ equipe }) {
                                             "Une équipe d'encadrants",
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 53,
+                                                lineNumber: 64,
                                                 columnNumber: 38
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -170,25 +179,25 @@ function QuiSommesNousClient({ equipe }) {
                                                 children: "passionnés & diplômés"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 53,
+                                                lineNumber: 64,
                                                 columnNumber: 43
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 52,
+                                        lineNumber: 63,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 27,
+                                lineNumber: 38,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                        lineNumber: 14,
+                        lineNumber: 25,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -202,12 +211,12 @@ function QuiSommesNousClient({ equipe }) {
                                     className: "w-full h-full object-cover"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 60,
+                                    lineNumber: 71,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 59,
+                                lineNumber: 70,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -218,12 +227,12 @@ function QuiSommesNousClient({ equipe }) {
                                     className: "w-full h-full object-cover"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 63,
+                                    lineNumber: 74,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 62,
+                                lineNumber: 73,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -237,7 +246,7 @@ function QuiSommesNousClient({ equipe }) {
                                                 className: "text-[#FFC801]"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 68,
+                                                lineNumber: 79,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -245,13 +254,13 @@ function QuiSommesNousClient({ equipe }) {
                                                 children: "Agréé"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 69,
+                                                lineNumber: 80,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 67,
+                                        lineNumber: 78,
                                         columnNumber: 14
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -259,25 +268,25 @@ function QuiSommesNousClient({ equipe }) {
                                         children: "Jeunesse & Sports"
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 71,
+                                        lineNumber: 82,
                                         columnNumber: 14
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 66,
+                                lineNumber: 77,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                        lineNumber: 58,
+                        lineNumber: 69,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                lineNumber: 13,
+                lineNumber: 24,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -293,7 +302,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Nos valeurs"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 80,
+                                    lineNumber: 91,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -301,13 +310,13 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Ce qui nous rend uniques"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 81,
+                                    lineNumber: 92,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 79,
+                            lineNumber: 90,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -338,12 +347,12 @@ function QuiSommesNousClient({ equipe }) {
                                                 className: "text-[#114C5A]"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 104,
+                                                lineNumber: 115,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 103,
+                                            lineNumber: 114,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -351,7 +360,7 @@ function QuiSommesNousClient({ equipe }) {
                                             children: item.title
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 106,
+                                            lineNumber: 117,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -359,29 +368,29 @@ function QuiSommesNousClient({ equipe }) {
                                             children: item.desc
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 107,
+                                            lineNumber: 118,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, i, true, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 102,
+                                    lineNumber: 113,
                                     columnNumber: 15
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 84,
+                            lineNumber: 95,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                    lineNumber: 78,
+                    lineNumber: 89,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                lineNumber: 77,
+                lineNumber: 88,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -397,7 +406,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Rencontrez-nous"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 118,
+                                    lineNumber: 129,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -405,7 +414,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Notre Équipe d'Encadrants"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 119,
+                                    lineNumber: 130,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -413,18 +422,18 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Des professionnels dévoués à l'épanouissement de vos enfants."
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 120,
+                                    lineNumber: 131,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 117,
+                            lineNumber: 128,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8",
-                            children: equipe && equipe.length > 0 ? equipe.map((anim)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: equipe && equipe.length > 0 ? equipePage.map((anim)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "bg-white rounded-[24px] overflow-hidden shadow-lg shadow-[#114c5a08] transition-transform hover:-translate-y-2 duration-300 group",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -435,7 +444,7 @@ function QuiSommesNousClient({ equipe }) {
                                                 className: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 131,
+                                                lineNumber: 142,
                                                 columnNumber: 23
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "w-full h-full flex items-center justify-center text-[#8aaa] bg-[#F1F6F4]",
@@ -444,17 +453,17 @@ function QuiSommesNousClient({ equipe }) {
                                                     className: "opacity-20"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 134,
+                                                    lineNumber: 145,
                                                     columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                lineNumber: 133,
+                                                lineNumber: 144,
                                                 columnNumber: 23
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 129,
+                                            lineNumber: 140,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -465,7 +474,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: anim.nom
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 139,
+                                                    lineNumber: 150,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -473,19 +482,19 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: anim.role
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 140,
+                                                    lineNumber: 151,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 138,
+                                            lineNumber: 149,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, anim.id, true, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 128,
+                                    lineNumber: 139,
                                     columnNumber: 17
                                 }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "col-span-full text-center py-12",
@@ -495,7 +504,7 @@ function QuiSommesNousClient({ equipe }) {
                                         className: "mx-auto text-[#8aaa] opacity-20 mb-4"
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 146,
+                                        lineNumber: 157,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -503,29 +512,29 @@ function QuiSommesNousClient({ equipe }) {
                                         children: "L'équipe est en cours de constitution pour la saison 2026..."
                                     }, void 0, false, {
                                         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                        lineNumber: 147,
+                                        lineNumber: 158,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 145,
+                                lineNumber: 156,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 125,
+                            lineNumber: 136,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                    lineNumber: 116,
+                    lineNumber: 127,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                lineNumber: 115,
+                lineNumber: 126,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -541,7 +550,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "L'Équipe de direction"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 158,
+                                    lineNumber: 169,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -549,7 +558,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Des professionnels de l'éducation nationale."
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 159,
+                                    lineNumber: 170,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -557,7 +566,7 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Make Your Moment a été fondée par des enseignants passionnés. Nous connaissons les enfants, nous connaissons le terrain. Notre objectif est de transposer l'exigence de l'école dans un cadre de vacances, où l'épanouissement personnel est au centre de tout."
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 162,
+                                    lineNumber: 173,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -575,7 +584,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     className: "text-[#FFC801] shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 174,
+                                                    lineNumber: 185,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -583,24 +592,24 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: text
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 186,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, i, true, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 173,
+                                            lineNumber: 184,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 166,
+                                    lineNumber: 177,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 157,
+                            lineNumber: 168,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -615,7 +624,7 @@ function QuiSommesNousClient({ equipe }) {
                                             className: "w-full h-48 object-cover rounded-[24px]"
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 183,
+                                            lineNumber: 194,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -626,7 +635,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     className: "mb-4 opacity-80"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 185,
+                                                    lineNumber: 196,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -634,7 +643,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: "100%"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 186,
+                                                    lineNumber: 197,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -642,19 +651,19 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: "Encadrants qualifiés"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 187,
+                                                    lineNumber: 198,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 184,
+                                            lineNumber: 195,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 182,
+                                    lineNumber: 193,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -668,7 +677,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     className: "mb-4 opacity-80"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 192,
+                                                    lineNumber: 203,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -676,7 +685,7 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: "500+"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 193,
+                                                    lineNumber: 204,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -684,13 +693,13 @@ function QuiSommesNousClient({ equipe }) {
                                                     children: "Enfants partis"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                                    lineNumber: 194,
+                                                    lineNumber: 205,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 191,
+                                            lineNumber: 202,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -699,30 +708,30 @@ function QuiSommesNousClient({ equipe }) {
                                             className: "w-full h-64 object-cover rounded-[24px]"
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 196,
+                                            lineNumber: 207,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 190,
+                                    lineNumber: 201,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 181,
+                            lineNumber: 192,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                    lineNumber: 156,
+                    lineNumber: 167,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                lineNumber: 155,
+                lineNumber: 166,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -737,12 +746,12 @@ function QuiSommesNousClient({ equipe }) {
                                 className: "text-[#114C5A]"
                             }, void 0, false, {
                                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                lineNumber: 206,
+                                lineNumber: 217,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 205,
+                            lineNumber: 216,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -750,7 +759,7 @@ function QuiSommesNousClient({ equipe }) {
                             children: "Une question ? Envie d'en savoir plus ?"
                         }, void 0, false, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 208,
+                            lineNumber: 219,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -758,7 +767,7 @@ function QuiSommesNousClient({ equipe }) {
                             children: "Notre équipe associative est à votre disposition pour répondre à toutes vos interrogations sur nos séjours et nos modalités de paiement (8x sans frais)."
                         }, void 0, false, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 211,
+                            lineNumber: 222,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -772,13 +781,13 @@ function QuiSommesNousClient({ equipe }) {
                                             size: 16
                                         }, void 0, false, {
                                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                            lineNumber: 216,
+                                            lineNumber: 227,
                                             columnNumber: 30
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 215,
+                                    lineNumber: 226,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -786,30 +795,30 @@ function QuiSommesNousClient({ equipe }) {
                                     children: "Voir la FAQ"
                                 }, void 0, false, {
                                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                                    lineNumber: 218,
+                                    lineNumber: 229,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                            lineNumber: 214,
+                            lineNumber: 225,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                    lineNumber: 204,
+                    lineNumber: 215,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-                lineNumber: 203,
+                lineNumber: 214,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/qui-sommes-nous/QuiSommesNousClient.jsx",
-        lineNumber: 10,
+        lineNumber: 21,
         columnNumber: 5
     }, this);
 }

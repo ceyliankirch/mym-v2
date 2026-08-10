@@ -25,11 +25,18 @@ const C = {
 
 /* ─── DONNÉES STATIQUES (AVIS) ───────────────────────────────────── */
 const AVIS = [
-  { initiale:"B", nom:"B. Leriche",    date:"Juillet 2024",  note:4, texte:"Première colonie pour notre grand de 7 ans — une équipe très professionnelle avant, pendant et après." },
+  { initiale:"B", nom:"B. Leriche",    date:"Juillet 2024",  note:4, texte:"Première colonie pour notre grand de 7 ans — une équipe très professionnelle avant, pendant et après.", nouveau: true },
   { initiale:"L", nom:"L. Dupas",      date:"Février 2024",  note:5, texte:"Déjà la 3e expérience avec Make Your Moment. Notre fils s'y plaît et les moniteurs sont vraiment au top." },
   { initiale:"L", nom:"L. Tressard",   date:"Juillet 2023",  note:5, texte:"Ma fille est rentrée ravie, pleine de souvenirs. Une quantité d'activités énorme — de vrais réveils tôt !" },
   { initiale:"C", nom:"C. Baschmidt",  date:"Février 2024",  note:5, texte:"Merci pour ces belles vacances et le compte rendu quotidien très apprécié par toutes les familles." },
 ];
+
+/* ─── COULEURS D'AVATAR STYLE GOOGLE ─────────────────────────────── */
+const AVATAR_COLORS = ["#1a73e8", "#d93025", "#188038", "#e37400", "#9334e6", "#0b8043", "#c5221f"];
+function getAvatarColor(letter) {
+  const code = (letter || "?").charCodeAt(0);
+  return AVATAR_COLORS[code % AVATAR_COLORS.length];
+}
 
 const GALLERY_PREVIEW = [
   { id: 1, src: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800", alt: "Enfants souriants en colonie" },
@@ -120,19 +127,24 @@ function Btn({ children, large, onClick, href }) {
   return <button onClick={onClick} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}>{children}</button>;
 }
 
-function BtnOutline({ children, large, light, href }) {
+function BtnOutline({ children, large, light, href, external }) {
   const [h, setH] = useState(false);
-  const style = { 
-    display: "flex", alignItems: "center", gap: "8px", 
-    background: h ? (light ? "rgba(255,255,255,0.15)" : C.yellow + "18") : "transparent", 
-    color: light ? C.white : C.teal, fontSize: large ? "13px" : "11px", fontWeight: 700, borderRadius: "999px", 
-    padding: large ? "14px 28px" : "10px 22px", border: `1.5px solid ${light ? "rgba(255,255,255,0.3)" : C.teal}`, 
-    cursor: "pointer", transition: "all .2s", 
+  const style = {
+    display: "flex", alignItems: "center", gap: "8px",
+    background: h ? (light ? "rgba(255,255,255,0.15)" : C.yellow + "18") : "transparent",
+    color: light ? C.white : C.teal, fontSize: large ? "13px" : "11px", fontWeight: 700, borderRadius: "999px",
+    padding: large ? "14px 28px" : "10px 22px", border: `1.5px solid ${light ? "rgba(255,255,255,0.3)" : C.teal}`,
+    cursor: "pointer", transition: "all .2s",
     backdropFilter: light ? "blur(12px)" : "none", // Effet verre dépoli
     textDecoration: "none"
   };
 
-  if (href) return <Link href={href} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}>{children}</Link>;
+  if (href) return (
+    <Link href={href} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+      {children}
+    </Link>
+  );
   return <button onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} style={style}>{children}</button>;
 }
 
@@ -242,24 +254,57 @@ function SejourCard({ s, idx }) {
   );
 }
 
-function ReviewCard({ a, i }) {
+/* ─── LOGO GOOGLE (4 couleurs) ────────────────────────────────────── */
+function GoogleGIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-label="Google" style={{ flexShrink: 0 }}>
+      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
+        c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
+        c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039
+        l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
+        c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
+        c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+    </svg>
+  );
+}
+
+const GOOGLE_YELLOW = "#FBBC04";
+
+function ReviewCard({ a, i, isGoogle }) {
   const [h, setH] = useState(false);
   return (
     <div onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ background: C.arctic, borderRadius: "20px", padding: "24px", transition: "all .3s", transform: h ? "translateY(-4px)" : "none", boxShadow: h ? "0 12px 36px rgba(17,76,90,0.1)" : "none" }}>
-      <div style={{ display: "flex", gap: "2px", marginBottom: "14px" }}>
-        {[...Array(5)].map((_, j) => <Star key={j} size={12} style={{ fill: j < a.note ? C.yellow : "#e5e7eb", color: j < a.note ? C.yellow : "#e5e7eb" }} />)}
-      </div>
-      <p style={{ fontSize: "13px", color: "#5a7a84", lineHeight: 1.7, marginBottom: "20px", fontWeight: 500 }}>"{a.texte}"</p>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: i % 2 === 0 ? C.teal : C.yellow, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 900, color: i % 2 === 0 ? C.yellow : C.teal, flexShrink: 0 }}>
-          {a.initiale}
+      style={{ background: C.white, borderRadius: "16px", padding: "24px", transition: "all .3s", transform: h ? "translateY(-4px)" : "none", boxShadow: h ? "0 12px 36px rgba(17,76,90,0.12)" : "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e8eaed" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {a.photo ? (
+            <img src={a.photo} alt={a.nom} referrerPolicy="no-referrer" style={{ width: "40px", height: "40px", borderRadius: "50%", flexShrink: 0, objectFit: "cover" }} />
+          ) : (
+            <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: getAvatarColor(a.initiale), display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: 600, fontFamily: "var(--font-montserrat), sans-serif", color: "#ffffff", flexShrink: 0 }}>
+              {a.initiale?.toUpperCase()}
+            </div>
+          )}
+          <div>
+            <p style={{ fontSize: "13px", fontWeight: 700, color: "#202124" }}>{a.nom}</p>
+            <p style={{ fontSize: "11px", color: "#70757a", fontWeight: 500 }}>{a.date}</p>
+          </div>
         </div>
-        <div>
-          <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{a.nom}</p>
-          <p style={{ fontSize: "11px", color: "#8aaa", fontWeight: 600 }}>{a.date}</p>
-        </div>
+        {isGoogle && <GoogleGIcon size={18} />}
       </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+        <div style={{ display: "flex", gap: "2px" }}>
+          {[...Array(5)].map((_, j) => <Star key={j} size={14} style={{ fill: j < a.note ? GOOGLE_YELLOW : "#e5e7eb", color: j < a.note ? GOOGLE_YELLOW : "#e5e7eb" }} />)}
+        </div>
+        {a.nouveau && (
+          <span style={{ fontSize: "10px", fontWeight: 700, color: "#1a73e8", background: "#e8f0fe", border: "1px solid #d2e3fc", borderRadius: "4px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+            Nouveau
+          </span>
+        )}
+      </div>
+      <p style={{ fontSize: "13px", color: "#3c4043", lineHeight: 1.7, fontWeight: 400 }}>{a.texte}</p>
     </div>
   );
 }
@@ -710,21 +755,28 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
       </section>
 
       {/* ── Avis ────────────────────────────────────────────────────────────── */}
-      <section style={{ padding: "100px 32px", background: C.white }}>
+      <section style={{ padding: "100px 32px", background: C.arctic }}>
         <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "48px", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Témoignages</p>
               <h2 style={{ fontWeight: 900, letterSpacing: "-1px", color: C.teal, fontSize: "clamp(2rem,3vw,2.5rem)" }}>Ils nous font confiance</h2>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", background: C.yellow + "22", borderRadius: "100px", padding: "12px 24px" }}>
-              <div style={{ display: "flex", gap: "2px" }}>{[...Array(5)].map((_, i) => <Star key={i} size={16} fill={C.yellow} color={C.yellow} />)}</div>
-              <span style={{ fontSize: "16px", fontWeight: 900, color: C.teal }}>4.8</span>
-              <span style={{ fontSize: "13px", color: "#8aaa", fontWeight: 600 }}>/ 5 · 200+ avis</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", background: C.white, borderRadius: "100px", padding: "12px 24px", boxShadow: "0 2px 12px rgba(17,76,90,0.08)" }}>
+              <GoogleGIcon size={18} />
+              <div style={{ width: "1px", height: "16px", background: "#e8eaed" }} />
+              <div style={{ display: "flex", gap: "2px" }}>{[...Array(5)].map((_, i) => <Star key={i} size={14} fill={GOOGLE_YELLOW} color={GOOGLE_YELLOW} />)}</div>
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "#202124" }}>5</span>
+              <span style={{ fontSize: "13px", color: "#70757a", fontWeight: 600 }}>/ 5 · 73 avis Google</span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
-            {AVIS.map((a, i) => <ReviewCard key={i} a={a} i={i} />)}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginBottom: "40px" }}>
+            {AVIS.map((a, i) => <ReviewCard key={i} a={a} i={i} isGoogle />)}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <BtnOutline external href="https://www.google.com/search?sa=X&sca_esv=64b268b11d0571a2&rlz=1C5OZZY_enFR1209FR1209&sxsrf=APpeQnt-cjpcJPdAp03pmQAcFrR42w1HOQ:1786358079061&q=Make+Your+Moment+Avis&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxIxNLSwsDQ3MDcys7AwtzQwMjE0s9zAyPiKUdQ3MTtVITK_tEjBNz83Na9EwbEss3gRK3ZxAJ7N6OFLAAAA&rldimm=11889707268879024169&tbm=lcl&hl=fr-FR&ved=2ahUKEwi40vm17pWWAxUNfKQEHQieMNMQ9fQKegQIUxAG&biw=3130&bih=1289&dpr=1#lkt=LocalPoiReviews">
+              Voir plus d'avis
+            </BtnOutline>
           </div>
         </div>
       </section>

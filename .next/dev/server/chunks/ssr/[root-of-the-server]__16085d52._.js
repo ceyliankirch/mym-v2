@@ -70,7 +70,7 @@ async function AdminPage() {
     try {
         console.log("📡 Admin : Récupération des données depuis Neon...");
         // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-        const [sejours, inscriptions, clientsCount, animateurs] = await Promise.all([
+        const [sejours, inscriptions, clientsCount, animateurs, albums] = await Promise.all([
             __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].sejour.findMany({
                 orderBy: {
                     createdAt: "desc"
@@ -79,6 +79,11 @@ async function AdminPage() {
             __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].inscription.findMany({
                 include: {
                     client: true,
+                    enfant: {
+                        include: {
+                            documents: true
+                        }
+                    },
                     sejour: true
                 },
                 orderBy: {
@@ -90,6 +95,16 @@ async function AdminPage() {
             __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].animateur.findMany({
                 orderBy: {
                     createdAt: "asc"
+                }
+            }),
+            // ⚡ NOUVEAU : Récupération des albums photos
+            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].album.findMany({
+                include: {
+                    photos: true,
+                    sejour: true
+                },
+                orderBy: {
+                    createdAt: "desc"
                 }
             })
         ]);
@@ -104,10 +119,11 @@ async function AdminPage() {
             stats: stats,
             sejours: sejours,
             inscriptions: inscriptions,
-            animateurs: animateurs
+            animateurs: animateurs,
+            albums: albums
         }, void 0, false, {
             fileName: "[project]/app/admin/page.jsx",
-            lineNumber: 40,
+            lineNumber: 46,
             columnNumber: 7
         }, this);
     } catch (error) {
@@ -120,7 +136,7 @@ async function AdminPage() {
                     children: "Erreur de connexion"
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 51,
+                    lineNumber: 58,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -128,7 +144,7 @@ async function AdminPage() {
                     children: "Impossible de charger les données. Vérifie la console de ton terminal."
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 52,
+                    lineNumber: 59,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
@@ -136,13 +152,13 @@ async function AdminPage() {
                     children: error.message
                 }, void 0, false, {
                     fileName: "[project]/app/admin/page.jsx",
-                    lineNumber: 55,
+                    lineNumber: 62,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/admin/page.jsx",
-            lineNumber: 50,
+            lineNumber: 57,
             columnNumber: 7
         }, this);
     }
