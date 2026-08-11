@@ -242,8 +242,11 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
         a{color:inherit;}
         .rich-text p{margin-bottom:10px;font-size:14px;line-height:1.85;color:#5a7a84;font-weight:500;}
         .rich-text strong{font-weight:800;color:#114C5A;}
+        .rich-text em{font-style:italic;}
         .rich-text u{text-decoration:underline;}
         .rich-text br{display:block;margin:4px 0;}
+        .rich-text ul,.rich-text ol{margin:0 0 10px;padding-left:20px;font-size:14px;line-height:1.85;color:#5a7a84;font-weight:500;}
+        .rich-text li{margin-bottom:4px;}
 
         /* ⚡ L'ANIMATION CRUCIALE POUR LE RADAR (pulse-soft) */
         @keyframes pulse-soft {

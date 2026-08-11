@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendDocumentsRequestEmail } from "@/lib/resend";
+import { sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendNewInscriptionNotificationEmail } from "@/lib/resend";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
@@ -149,10 +149,36 @@ export async function changerStatutInscription(id, statut) {
   }
 
   try {
+    const inscriptionActuelle = await prisma.inscription.findUnique({
+      where: { id },
+    });
+
     const inscription = await prisma.inscription.update({
       where: { id },
       data: { statut },
+      include: { client: true, enfant: true, sejour: true },
     });
+
+    // 📧 On envoie les emails de confirmation uniquement au moment où l'inscription BASCULE vers "Paiement validé"
+    if (statut === "Paiement validé" && inscriptionActuelle?.statut !== "Paiement validé") {
+      if (inscription.client?.email) {
+        await sendInscriptionConfirmationEmail({
+          to: inscription.client.email,
+          prenomEnfant: inscription.enfant?.prenom,
+          sejourTitre: inscription.sejour?.titre,
+        });
+      }
+
+      await sendNewInscriptionNotificationEmail({
+        prenomEnfant: inscription.enfant?.prenom,
+        nomEnfant: inscription.enfant?.nom,
+        sejourTitre: inscription.sejour?.titre,
+        clientNom: inscription.client?.nom,
+        clientPrenom: inscription.client?.prenom,
+        clientEmail: inscription.client?.email,
+        clientTelephone: inscription.client?.telephone,
+      });
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");

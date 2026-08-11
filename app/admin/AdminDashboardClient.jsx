@@ -9,7 +9,8 @@ import {
   ClipboardList, ExternalLink, Edit, Trash2,
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
-  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy
+  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
+  Bold, Italic, Underline, ListOrdered
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -268,6 +269,66 @@ function GalleryUpload({ defaultValues = [], onImagesCompressed }) {
   );
 }
 
+/* ── ÉDITEUR DE TEXTE RICHE (Gras, Italique, Souligné, Listes) ── */
+function RichTextToolbarButton({ onClick, title, children }) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onMouseDown={(e) => e.preventDefault()} // ⚡ Empêche la perte de focus/sélection dans l'éditeur
+      onClick={onClick}
+      style={{ width: "28px", height: "28px", borderRadius: "6px", border: "none", background: "transparent", color: C.teal, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+      onMouseOver={(e) => e.currentTarget.style.background = C.lightGray}
+      onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+    >
+      {children}
+    </button>
+  );
+}
+
+function RichTextEditor({ name, label, defaultValue, placeholder }) {
+  const editorRef = useRef(null);
+  const [html, setHtml] = useState(defaultValue || "");
+
+  const exec = (command) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, null);
+    setHtml(editorRef.current.innerHTML);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      {label && <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>{label}</label>}
+      <input type="hidden" name={name} value={html} />
+      <div style={{ border: `1px solid ${C.lightGray}`, borderRadius: "12px", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2px", padding: "6px 8px", background: C.arctic, borderBottom: `1px solid ${C.lightGray}` }}>
+          <RichTextToolbarButton title="Gras" onClick={() => exec("bold")}><Bold size={14} /></RichTextToolbarButton>
+          <RichTextToolbarButton title="Italique" onClick={() => exec("italic")}><Italic size={14} /></RichTextToolbarButton>
+          <RichTextToolbarButton title="Souligné" onClick={() => exec("underline")}><Underline size={14} /></RichTextToolbarButton>
+          <div style={{ width: "1px", height: "18px", background: C.lightGray, margin: "0 4px" }} />
+          <RichTextToolbarButton title="Liste à puces" onClick={() => exec("insertUnorderedList")}><List size={14} /></RichTextToolbarButton>
+          <RichTextToolbarButton title="Liste numérotée" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></RichTextToolbarButton>
+        </div>
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={() => setHtml(editorRef.current.innerHTML)}
+          dangerouslySetInnerHTML={{ __html: defaultValue || "" }}
+          data-placeholder={placeholder}
+          className="rich-text-editor-content"
+          style={{ padding: "12px", minHeight: "120px", fontSize: "13px", lineHeight: 1.7, outline: "none", fontFamily: "inherit", color: C.teal }}
+        />
+      </div>
+      <style>{`
+        .rich-text-editor-content:empty:before { content: attr(data-placeholder); color: ${C.gray}; }
+        .rich-text-editor-content ul, .rich-text-editor-content ol { padding-left: 20px; margin: 8px 0; }
+        .rich-text-editor-content strong { font-weight: 800; }
+      `}</style>
+    </div>
+  );
+}
+
 /* ── MODALE CRÉATION SÉJOUR AVEC ÉDITEUR DE FORMULAIRE ── */
 function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmitting }) {
   const isEditing = sejourData !== "nouveau" && sejourData !== "nouveau-senior";
@@ -413,20 +474,11 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <textarea name="shortDescription" defaultValue={isEditing ? sejourData.shortDescription : ""} rows="2" placeholder="Une phrase d'accroche pour décrire l'ambiance du séjour..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, resize: "none", fontFamily: "inherit" }} />
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Programme du séjour (HTML autorisé)</label>
-              <textarea name="programme" defaultValue={isEditing ? sejourData.programme : ""} rows="5" placeholder="<p><strong>Jour 1 :</strong> Arrivée...</p>" style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, resize: "vertical", fontFamily: "inherit" }} />
-            </div>
+            <RichTextEditor name="programme" label="Programme du séjour" defaultValue={isEditing ? sejourData.programme : ""} placeholder="Jour 1 : Arrivée..." />
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Infos pratiques & Cadre de vie</label>
-              <textarea name="infosPratiques" defaultValue={isEditing ? sejourData.infosPratiques : ""} rows="3" placeholder="Lieu de départ, type d'hébergement, repas..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, resize: "vertical", fontFamily: "inherit" }} />
-            </div>
+            <RichTextEditor name="infosPratiques" label="Infos pratiques & Cadre de vie" defaultValue={isEditing ? sejourData.infosPratiques : ""} placeholder="Lieu de départ, type d'hébergement, repas..." />
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lieu & Cadre de vie</label>
-              <textarea name="cadreDeVie" defaultValue={isEditing ? sejourData.cadreDeVie : ""} rows="3" placeholder="Hébergement, type de chambres, repas..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, resize: "vertical", fontFamily: "inherit" }} />
-            </div>
+            <RichTextEditor name="cadreDeVie" label="Lieu & Cadre de vie" defaultValue={isEditing ? sejourData.cadreDeVie : ""} placeholder="Hébergement, type de chambres, repas..." />
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Adresse Complète (Pour la carte)</label>
