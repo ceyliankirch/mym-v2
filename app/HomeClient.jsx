@@ -7,7 +7,7 @@ import {
   Award, CreditCard, Shield, Mountain, Waves, Globe, Landmark,
   Phone, Mail, Instagram, Facebook, Menu, X, Search, Camera,
   GraduationCap, Sun, Snowflake, Flower2, Anchor, Heart, ChevronDown,
-  CheckCircle2, Clock, Leaf, Map, Grid
+  CheckCircle2, Clock, Leaf, Map, Grid, Archive
 } from "lucide-react";
 
 /* ─── PALETTE DE COULEURS ────────────────────────────────────────── */
@@ -206,8 +206,8 @@ function SejourCard({ s, idx }) {
           animation: `fadeUp .5s ease both`, animationDelay: `${(idx || 0) * 0.05}s`,
           display: "flex", flexDirection: "column", height: "100%",
           transform: hovered ? "translateY(-6px)" : "translateY(0)",
-          filter: "none",
-          opacity: 1,
+          filter: s.isPast ? "grayscale(100%)" : "none",
+          opacity: s.isPast ? 0.75 : 1,
           isolation: "isolate", // Coupe propre des coins (Correction Safari/Chrome)
           clipPath: "inset(0 round 24px)",
         }}
@@ -457,7 +457,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
   const [cat, setCat] = useState("tous");
   const [visible, setVisible] = useState(false);
   
-  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
+  const [showPastSejours, setShowPastSejours] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const catalogueRef = useRef(null);
 
@@ -495,22 +495,23 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
   const featuredSejours = processedSejours.filter(s => s.enAvant).slice(0, 2);
 
-  const sejoursToDisplay = processedSejours.filter(s => {
+  const matchesActiveFilters = (s) => {
     const passCategory = matchCategory(s, cat);
-    const passTime = showUpcomingOnly ? !s.isPast : true;
 
     // Application des filtres de la barre de recherche
     const passDestination = !activeDestination || s.lieu === activeDestination;
     const passAge = !activeAge || s.tranchesAge === activeAge;
     const passSaison = !activeSaison || s.saison === activeSaison;
-    const passSearch = !activeSearchTerm || 
+    const passSearch = !activeSearchTerm ||
       (s.titre && s.titre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) ||
       (s.lieu && s.lieu.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) ||
       (s.shortDescription && s.shortDescription.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(activeSearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
 
+    return passCategory && passDestination && passAge && passSaison && passSearch;
+  };
 
-    return passCategory && passTime && passDestination && passAge && passSaison && passSearch;
-  });
+  const sejoursToDisplay = processedSejours.filter(s => !s.isPast && matchesActiveFilters(s));
+  const sejoursPassesToDisplay = processedSejours.filter(s => s.isPast && matchesActiveFilters(s));
 
   // Options pour les filtres, générées dynamiquement
   const destinationOptions = [...new Set(processedSejours.map(s => s.lieu).filter(Boolean))].map(lieu => ({ value: lieu, label: lieu }));
@@ -622,11 +623,6 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
               <div style={{ display: "flex", background: "white", padding: "4px", borderRadius: "100px", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
-                <button onClick={() => setShowUpcomingOnly(false)} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: !showUpcomingOnly ? C.yellow : "transparent", color: C.teal, transition: "all .2s" }}>Tous</button>
-                <button onClick={() => setShowUpcomingOnly(true)} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: showUpcomingOnly ? C.yellow : "transparent", color: C.teal, transition: "all .2s" }}>À venir</button>
-              </div>
-
-              <div style={{ display: "flex", background: "white", padding: "4px", borderRadius: "100px", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
                 <button onClick={() => setViewMode("grid")} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: viewMode === "grid" ? C.teal : "transparent", color: viewMode === "grid" ? "white" : C.teal, transition: "all .2s", display: "flex", alignItems: "center", gap: "6px" }}><Grid size={14}/> Grille</button>
                 <button onClick={() => setViewMode("map")} style={{ padding: "8px 16px", borderRadius: "100px", border: "none", fontSize: "13px", fontWeight: 700, cursor: "pointer", background: viewMode === "map" ? C.teal : "transparent", color: viewMode === "map" ? "white" : C.teal, transition: "all .2s", display: "flex", alignItems: "center", gap: "6px" }}><Map size={14}/> Carte</button>
               </div>
@@ -655,6 +651,26 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             </div>
           ) : (
             <AllSejoursMap sejours={sejoursToDisplay} />
+          )}
+
+          {sejoursPassesToDisplay.length > 0 && (
+            <div style={{ marginTop: "48px" }}>
+              <button
+                onClick={() => setShowPastSejours(v => !v)}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "18px 24px", borderRadius: "16px", border: `1px solid #e5e5e5`, background: "white", cursor: "pointer" }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: "10px", fontWeight: 800, color: C.teal, fontSize: "14px" }}>
+                  <Archive size={16} /> Séjours passés ({sejoursPassesToDisplay.length})
+                </span>
+                <ChevronDown size={18} style={{ color: C.teal, transform: showPastSejours ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s" }} />
+              </button>
+
+              {showPastSejours && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginTop: "24px" }}>
+                  {sejoursPassesToDisplay.map((s, i) => <SejourCard key={s.id} s={s} idx={i} />)}
+                </div>
+              )}
+            </div>
           )}
 
         </div>

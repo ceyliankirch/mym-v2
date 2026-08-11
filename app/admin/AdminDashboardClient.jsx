@@ -10,7 +10,7 @@ import {
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
-  Bold, Italic, Underline, ListOrdered
+  Bold, Italic, Underline, ListOrdered, Archive
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -964,11 +964,20 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
   const [filterSaison, setFilterSaison] = useState("");
   const [filterAge, setFilterAge] = useState("");
   const [filterStatut, setFilterStatut] = useState("");
+  const [sejoursSection, setSejoursSection] = useState("actifs"); // "actifs" | "archive"
+
+  const today = new Date();
+  const isSejourTermine = (s) => {
+    const refDate = s.dateFin || s.dateDebut;
+    return !!refDate && new Date(refDate) < today;
+  };
 
   const sejoursTries = [...(sejours || [])].sort((a, b) => new Date(a.dateDebut) - new Date(b.dateDebut));
   const uniqueAges = [...new Set(sejoursTries.map(s => s.tranchesAge).filter(Boolean))];
+  const sejoursArchives = sejoursTries.filter(isSejourTermine);
+  const sejoursActifs = sejoursTries.filter(s => !isSejourTermine(s));
 
-  const sejoursFiltres = sejoursTries.filter(s => {
+  const sejoursFiltres = (sejoursSection === "archive" ? sejoursArchives : sejoursActifs).filter(s => {
     if (filterSaison && s.saison !== filterSaison) return false;
     if (filterAge && s.tranchesAge !== filterAge) return false;
     if (filterStatut && s.statut !== filterStatut) return false;
@@ -1052,8 +1061,25 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
 
           {activeTab === "sejours" && (
             <>
+              <div style={{ display: "flex", background: C.white, borderRadius: "12px", padding: "4px", border: `1px solid ${C.lightGray}`, width: "fit-content", marginBottom: "20px" }}>
+                <button onClick={() => setSejoursSection("actifs")} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", border: "none", cursor: "pointer", background: sejoursSection === "actifs" ? C.teal : "transparent", color: sejoursSection === "actifs" ? C.white : C.gray, fontWeight: 800, fontSize: "13px", transition: "all 0.2s" }}>
+                  <Tent size={15} /> Actifs
+                  <span style={{ background: sejoursSection === "actifs" ? "rgba(255,255,255,0.2)" : C.arctic, padding: "2px 8px", borderRadius: "999px", fontSize: "11px" }}>{sejoursActifs.length}</span>
+                </button>
+                <button onClick={() => setSejoursSection("archive")} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", border: "none", cursor: "pointer", background: sejoursSection === "archive" ? C.teal : "transparent", color: sejoursSection === "archive" ? C.white : C.gray, fontWeight: 800, fontSize: "13px", transition: "all 0.2s" }}>
+                  <Archive size={15} /> Archive
+                  <span style={{ background: sejoursSection === "archive" ? "rgba(255,255,255,0.2)" : C.arctic, padding: "2px 8px", borderRadius: "999px", fontSize: "11px" }}>{sejoursArchives.length}</span>
+                </button>
+              </div>
+
+              {sejoursSection === "archive" && (
+                <div style={{ background: C.lilac, borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", fontSize: "13px", color: C.teal, fontWeight: 600 }}>
+                  Les séjours dont la date de fin est passée arrivent automatiquement ici. Ils restent modifiables et supprimables ; pour les retirer du site public, pensez à les repasser en "Brouillon".
+                </div>
+              )}
+
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-                
+
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>{sejoursFiltres.length} séjour(s)</div>
                   
