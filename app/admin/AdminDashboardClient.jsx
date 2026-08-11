@@ -1,6 +1,6 @@
 // app/admin/AdminDashboardClient.jsx
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { 
   LayoutDashboard, Map, Users, FileText, Settings, 
   Menu, Tent, Euro, CheckCircle2, Clock, X, ChevronDown, 
@@ -289,29 +289,34 @@ function RichTextToolbarButton({ onClick, title, children }) {
 function RichTextEditor({ name, label, defaultValue, placeholder }) {
   const editorRef = useRef(null);
   const [html, setHtml] = useState(defaultValue || "");
+  const [isEmpty, setIsEmpty] = useState(!defaultValue);
+
+  // ⚡ On initialise le contenu UNE SEULE FOIS via le DOM (pattern "non contrôlé"),
+  // pour ne jamais laisser React retoucher le HTML pendant que l'utilisateur tape.
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = defaultValue || "";
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const syncState = () => {
+    const content = editorRef.current?.innerHTML || "";
+    setHtml(content);
+    setIsEmpty(!editorRef.current?.textContent?.trim());
+  };
 
   const exec = (command) => {
     editorRef.current?.focus();
-
-    // ⚡ Si on clique juste dans un mot (pas de texte surligné), on sélectionne
-    // le mot sous le curseur pour que le style s'applique dessus immédiatement.
-    if (["bold", "italic", "underline"].includes(command)) {
-      const sel = window.getSelection();
-      if (sel && sel.isCollapsed && sel.anchorNode && editorRef.current?.contains(sel.anchorNode)) {
-        sel.modify("move", "backward", "word");
-        sel.modify("extend", "forward", "word");
-      }
-    }
-
     document.execCommand(command, false, null);
-    setHtml(editorRef.current.innerHTML);
+    syncState();
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       {label && <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>{label}</label>}
       <input type="hidden" name={name} value={html} />
-      <div style={{ border: `1px solid ${C.lightGray}`, borderRadius: "12px", overflow: "hidden" }}>
+      <div style={{ border: `1px solid ${C.lightGray}`, borderRadius: "12px", overflow: "hidden", position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "2px", padding: "6px 8px", background: C.arctic, borderBottom: `1px solid ${C.lightGray}` }}>
           <RichTextToolbarButton title="Gras" onClick={() => exec("bold")}><Bold size={14} /></RichTextToolbarButton>
           <RichTextToolbarButton title="Italique" onClick={() => exec("italic")}><Italic size={14} /></RichTextToolbarButton>
@@ -320,21 +325,28 @@ function RichTextEditor({ name, label, defaultValue, placeholder }) {
           <RichTextToolbarButton title="Liste à puces" onClick={() => exec("insertUnorderedList")}><List size={14} /></RichTextToolbarButton>
           <RichTextToolbarButton title="Liste numérotée" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></RichTextToolbarButton>
         </div>
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
-          onInput={() => setHtml(editorRef.current.innerHTML)}
-          dangerouslySetInnerHTML={{ __html: defaultValue || "" }}
-          data-placeholder={placeholder}
-          className="rich-text-editor-content"
-          style={{ padding: "12px", minHeight: "120px", fontSize: "13px", lineHeight: 1.7, outline: "none", fontFamily: "inherit", color: C.teal }}
-        />
+        <div style={{ position: "relative" }}>
+          {isEmpty && placeholder && (
+            <div style={{ position: "absolute", top: "12px", left: "12px", fontSize: "13px", color: C.gray, pointerEvents: "none" }}>
+              {placeholder}
+            </div>
+          )}
+          <div
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            onInput={syncState}
+            onBlur={syncState}
+            className="rich-text-editor-content"
+            style={{ padding: "12px", minHeight: "120px", fontSize: "13px", lineHeight: 1.7, outline: "none", fontFamily: "inherit", color: C.teal }}
+          />
+        </div>
       </div>
       <style>{`
-        .rich-text-editor-content:empty:before { content: attr(data-placeholder); color: ${C.gray}; }
         .rich-text-editor-content ul, .rich-text-editor-content ol { padding-left: 20px; margin: 8px 0; }
-        .rich-text-editor-content strong { font-weight: 800; }
+        .rich-text-editor-content li { margin-bottom: 4px; }
+        .rich-text-editor-content b, .rich-text-editor-content strong { font-weight: 800; }
+        .rich-text-editor-content i, .rich-text-editor-content em { font-style: italic; }
       `}</style>
     </div>
   );
