@@ -695,7 +695,9 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               ))}
             </div>
             {/* ⚡ Lien rajouté ici aussi pour la cohérence */}
-            <Btn large href="/qui-sommes-nous">En savoir + <ArrowRight size={14} /></Btn>
+            <Link href="/qui-sommes-nous" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "fit-content", background: "transparent", color: C.saffron, fontSize: "13px", fontWeight: 800, borderRadius: "999px", padding: "14px 20px", border: `1.5px solid ${C.saffron}`, textDecoration: "none" }}>
+              En savoir + <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>

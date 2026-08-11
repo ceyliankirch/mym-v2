@@ -23,7 +23,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
@@ -771,7 +771,7 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
 }
 
 /* ── MODALE : LISTE DES INSCRITS D'UN SÉJOUR ── */
-function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut }) {
+function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete }) {
   const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
 
   return (
@@ -802,19 +802,28 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut }) {
                       <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
                     )}
                   </div>
-                  <select
-                    value={ins.statut}
-                    onChange={(e) => onChangerStatut(ins.id, e.target.value)}
-                    style={{
-                      background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                      color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                      padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none", flexShrink: 0,
-                    }}
-                  >
-                    {STATUTS_INSCRIPTION.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                    <select
+                      value={ins.statut}
+                      onChange={(e) => onChangerStatut(ins.id, e.target.value)}
+                      style={{
+                        background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                        color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                        padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                      }}
+                    >
+                      {STATUTS_INSCRIPTION.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => onDelete(ins)}
+                      title="Supprimer l'inscription"
+                      style={{ background: "#fee2e2", border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -1073,6 +1082,13 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     await changerStatutInscription(id, statut);
   };
 
+  const handleDeleteInscription = async (ins) => {
+    const nom = ins.enfant ? `${ins.enfant.prenom} ${ins.enfant.nom}` : "cet inscrit";
+    if (window.confirm(`Supprimer définitivement l'inscription de ${nom} ?`)) {
+      await supprimerInscription(ins.id);
+    }
+  };
+
   const handleDeleteAlbum = async (id) => {
     if (window.confirm("Supprimer définitivement cet album et toutes ses photos ?")) {
       await supprimerAlbum(id);
@@ -1123,20 +1139,20 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 <StatCard title="Docs manquants" value={stats?.documentsManquants || 0} icon={AlertTriangle} color={"#ef4444"} />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 1fr) 2fr", gap: "24px", alignItems: "start" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                 <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
                   <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}><CalendarDays size={18} color={C.saffron} /> Prochains départs</h2>
                   {(!prochainsDeparts || prochainsDeparts.length === 0) ? (
                     <p style={{ fontSize: "13px", color: C.gray }}>Aucun départ à venir.</p>
                   ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
                       {prochainsDeparts.map((s) => (
-                        <div key={s.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", paddingBottom: "14px", borderBottom: `1px solid ${C.arctic}` }}>
+                        <div key={s.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", background: C.arctic, borderRadius: "14px", padding: "14px 16px" }}>
                           <div>
                             <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{s.titre}</p>
                             <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>{formatSejourDates(s.dateDebut, s.dateFin)}</p>
                           </div>
-                          <button onClick={() => { setActiveTab("sejours"); setSejourInscritsEnView(s); }} style={{ background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, flexShrink: 0 }} title="Voir les inscrits"><Users size={14} /></button>
+                          <button onClick={() => { setActiveTab("sejours"); setSejourInscritsEnView(s); }} style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, flexShrink: 0 }} title="Voir les inscrits"><Users size={14} /></button>
                         </div>
                       ))}
                     </div>
@@ -1218,19 +1234,28 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                           <strong>Parent :</strong> {ins.client?.nom} {ins.client?.prenom}
                         </p>
                       </div>
-                      <select
-                        value={ins.statut}
-                        onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
-                        style={{
-                          background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                          padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-                        }}
-                      >
-                        {STATUTS_INSCRIPTION.map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <select
+                          value={ins.statut}
+                          onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
+                          style={{
+                            background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                            color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                            padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                          }}
+                        >
+                          {STATUTS_INSCRIPTION.map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => handleDeleteInscription(ins)}
+                          title="Supprimer l'inscription"
+                          style={{ background: "#fee2e2", border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
 
                     <div style={{ marginTop: "16px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>
@@ -1399,7 +1424,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
-      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} />}
+      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} />}
     </AdminLayout>
   );
 }

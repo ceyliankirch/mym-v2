@@ -17,8 +17,10 @@ import {
   Download,
   Loader,
   X,
+  Trash2,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
+import { supprimerInscriptionFamille } from "@/app/actions/inscriptions";
 
 const C = {
   teal: "#114C5A",
@@ -32,7 +34,7 @@ const C = {
 /* ─── MODALE : DOCUMENTS D'UN SÉJOUR ────────────────────────────────
    Ouverte en cliquant sur un séjour inscrit : reprend les documents déjà
    enregistrés en base pour l'enfant, et permet d'importer ceux qui manquent. */
-function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId }) {
+function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId, onDeleteInscription, isDeleting }) {
   const enfantRecord = enfants.find((e) => e.id === sejour.enfantId);
   const documentsRequis = sejour.documentsRequis || [];
 
@@ -111,6 +113,17 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
             })
           )}
         </div>
+
+        <div className="p-6 border-t border-slate-200">
+          <button
+            onClick={() => onDeleteInscription(sejour)}
+            disabled={isDeleting}
+            className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-bold text-sm transition disabled:opacity-50"
+          >
+            {isDeleting ? <Loader size={16} className="animate-spin" /> : <Trash2 size={16} />}
+            Annuler cette inscription
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -126,6 +139,27 @@ export default function EspaceFamilleClient({
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploadingDocId, setUploadingDocId] = useState(null);
   const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
+  const [isDeletingInscription, setIsDeletingInscription] = useState(false);
+
+  const handleDeleteInscription = async (sejour) => {
+    if (!window.confirm(`Annuler l'inscription de ${sejour.enfant} au séjour "${sejour.titre}" ?`)) return;
+
+    setIsDeletingInscription(true);
+    try {
+      const result = await supprimerInscriptionFamille(sejour.id, sejour.clientId);
+      if (result.error) {
+        alert(`Erreur: ${result.error}`);
+      } else {
+        setSejourEnConsultation(null);
+        window.location.reload();
+      }
+    } catch (error) {
+      alert("Erreur lors de la suppression");
+      console.error(error);
+    } finally {
+      setIsDeletingInscription(false);
+    }
+  };
 
   const handleUploadClick = async (enfantId, docType, event) => {
     const file = event.target.files?.[0];
@@ -513,6 +547,8 @@ export default function EspaceFamilleClient({
           onClose={() => setSejourEnConsultation(null)}
           onUpload={handleUploadClick}
           uploadingDocId={uploadingDocId}
+          onDeleteInscription={handleDeleteInscription}
+          isDeleting={isDeletingInscription}
         />
       )}
     </div>

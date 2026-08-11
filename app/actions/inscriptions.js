@@ -189,3 +189,42 @@ export async function changerStatutInscription(id, statut) {
     return { error: "Erreur lors de la mise à jour du statut" };
   }
 }
+
+// 🗑️ SUPPRIMER UNE INSCRIPTION (admin — pas de vérification de propriétaire)
+export async function supprimerInscription(id) {
+  try {
+    await prisma.inscription.delete({ where: { id } });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting inscription:", error);
+    return { error: "Erreur lors de la suppression de l'inscription" };
+  }
+}
+
+// 🗑️ SUPPRIMER SA PROPRE INSCRIPTION (espace famille — vérifie que le client est bien propriétaire)
+export async function supprimerInscriptionFamille(id, clientId) {
+  if (!id || !clientId) {
+    return { error: "Données incomplètes" };
+  }
+
+  try {
+    const inscription = await prisma.inscription.findUnique({ where: { id } });
+    if (!inscription || inscription.clientId !== clientId) {
+      return { error: "Inscription introuvable" };
+    }
+
+    await prisma.inscription.delete({ where: { id } });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting inscription (famille):", error);
+    return { error: "Erreur lors de la suppression de l'inscription" };
+  }
+}

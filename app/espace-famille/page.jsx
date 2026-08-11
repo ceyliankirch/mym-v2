@@ -36,6 +36,7 @@ export default async function EspaceFamillePage() {
       titre: ins.sejour.titre,
       enfant: enfant.prenom,
       enfantId: enfant.id,
+      clientId: client.id,
       dates: ins.sejour.dateDebut && ins.sejour.dateFin
         ? `${new Date(ins.sejour.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(ins.sejour.dateFin).toLocaleDateString("fr-FR")}`
         : "Voir détails du séjour",
