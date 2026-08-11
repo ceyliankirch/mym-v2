@@ -118,16 +118,6 @@ export default function AdminLayout({
           ))}
         </nav>
 
-        {/* Profil Desktop */}
-        <div style={{ padding: sidebarOpen ? "20px" : "20px 0", borderTop: `1px solid ${C.lightGray}`, display: "flex", alignItems: "center", justifyContent: sidebarOpen ? "flex-start" : "center", gap: "12px", overflow: "hidden" }}>
-          <div style={{ width: "46px", height: "46px", borderRadius: "14px", background: C.saffron, display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontWeight: 900, fontSize: "16px", flexShrink: 0 }}>AD</div>
-          {sidebarOpen && (
-            <div style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>Admin</span>
-              <span style={{ fontSize: "11px", fontWeight: 600, color: C.gray }}>contact@mym.com</span>
-            </div>
-          )}
-        </div>
       </aside>
 
       {/* 📱 MOBILE : BOTTOM NAVIGATION BAR (LIQUID GLASS) */}
