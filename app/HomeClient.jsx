@@ -412,11 +412,11 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             </div>
           </div>
 
-          <div style={{ flex: 1, display: "flex", position: "relative", minHeight: "520px", maxWidth: "600px", marginLeft: "auto" }} className="hidden lg:block">
+          <div style={{ flex: 1, display: "flex", position: "relative", minHeight: "600px", maxWidth: "640px", marginLeft: "auto" }} className="hidden lg:block">
              {featuredSejours[0] && (
-               <div style={{ position: "absolute", top: "10px", left: "40px", width: "340px", zIndex: 1, transform: "rotate(-4deg)", transition: "all 0.3s" }}
-                    onMouseEnter={e => e.currentTarget.style.zIndex = 10}
-                    onMouseLeave={e => e.currentTarget.style.zIndex = 1}>
+               <div style={{ position: "absolute", top: "90px", left: "70px", width: "280px", zIndex: 1, transform: "rotate(-4deg) scale(1.25)", transition: "all 0.3s" }}
+                    onMouseEnter={e => { e.currentTarget.style.zIndex = 10; e.currentTarget.style.transform = "rotate(-4deg) scale(1.3)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.zIndex = 1; e.currentTarget.style.transform = "rotate(-4deg) scale(1.25)"; }}>
                   <div style={{ position: "absolute", top: "-12px", left: "-12px", background: C.yellow, borderRadius: "999px", padding: "6px 14px", fontSize: "11px", fontWeight: 900, color: C.teal, zIndex: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                     À LA UNE 🌟
                   </div>
@@ -425,9 +425,9 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
              )}
 
              {featuredSejours[1] && (
-               <div style={{ position: "absolute", bottom: "10px", right: "0", width: "340px", zIndex: 2, transform: "rotate(3deg)", transition: "all 0.3s" }}
-                    onMouseEnter={e => e.currentTarget.style.zIndex = 10}
-                    onMouseLeave={e => e.currentTarget.style.zIndex = 2}>
+               <div style={{ position: "absolute", bottom: "40px", right: "30px", width: "280px", zIndex: 2, transform: "rotate(3deg) scale(1.25)", transition: "all 0.3s" }}
+                    onMouseEnter={e => { e.currentTarget.style.zIndex = 10; e.currentTarget.style.transform = "rotate(3deg) scale(1.3)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.zIndex = 2; e.currentTarget.style.transform = "rotate(3deg) scale(1.25)"; }}>
                   <SejourCard s={featuredSejours[1]} idx={1} />
                </div>
              )}
