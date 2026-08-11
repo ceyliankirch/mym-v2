@@ -5,6 +5,12 @@ import SejourDetailClient from "./SejourDetailClient";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const sejour = await prisma.sejour.findUnique({ where: { id }, select: { titre: true } });
+  return { title: sejour?.titre || "Séjour" };
+}
+
 export default async function SejourPage({ params }) {
   // ⚡ LA CORRECTION EST ICI : Il faut un 'await' devant params !
   const { id } = await params;

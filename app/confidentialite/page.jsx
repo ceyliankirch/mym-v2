@@ -8,7 +8,7 @@ const C = {
   white: "#ffffff",
 };
 
-export const metadata = { title: "Confidentialité · Make Your Moment" };
+export const metadata = { title: "Confidentialité" };
 
 function Section({ title, children }) {
   return (

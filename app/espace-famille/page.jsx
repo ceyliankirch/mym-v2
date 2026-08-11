@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getOrCreateClientForUser } from "@/app/actions/inscriptions";
 import EspaceFamilleClient from "./EspaceFamilleClient";
 
+export const metadata = { title: "Espace Famille" };
+
 export default async function EspaceFamillePage() {
   const session = await auth();
   if (!session) redirect("/");

@@ -7,6 +7,12 @@ import InscriptionClient from "./InscriptionClient";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const sejour = await prisma.sejour.findUnique({ where: { id }, select: { titre: true } });
+  return { title: sejour ? `Inscription - ${sejour.titre}` : "Inscription" };
+}
+
 export default async function InscriptionPage({ params }) {
   const { id } = await params;
 

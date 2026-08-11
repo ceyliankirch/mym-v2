@@ -4,6 +4,7 @@ import AdminDashboardClient from "./AdminDashboardClient";
 
 // Force le rendu dynamique pour avoir les données fraîches de la DB
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Admin" };
 
 export default async function AdminPage() {
   try {

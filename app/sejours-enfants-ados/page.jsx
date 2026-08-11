@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import SejoursClient from "./SejoursClient";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Nos séjours" };
 
 export default async function PageSejoursEnfantsAdos() {
   // On récupère les séjours depuis Neon

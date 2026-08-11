@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import SeniorsClient from "./SeniorsClient";
 
 // ⚡ Indispensable pour voir les nouvelles sorties instantanément
-export const dynamic = "force-dynamic"; 
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Sorties Séniors" };
 
 export default async function PageSortiesSeniors() {
   const sejours = await prisma.sejour.findMany({

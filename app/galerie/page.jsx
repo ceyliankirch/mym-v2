@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import GalerieClient from "./GalerieClient";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Galerie" };
 
 export default async function GaleriePage() {
   const albums = await prisma.album.findMany({

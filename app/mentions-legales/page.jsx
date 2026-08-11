@@ -8,7 +8,7 @@ const C = {
   white: "#ffffff",
 };
 
-export const metadata = { title: "Mentions légales · Make Your Moment" };
+export const metadata = { title: "Mentions légales" };
 
 function Section({ title, children }) {
   return (

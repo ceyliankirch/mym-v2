@@ -13,6 +13,14 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+export const metadata = {
+  title: {
+    default: "Make Your Moment",
+    template: "%s - Make Your Moment",
+  },
+  description: "Association Make Your Moment - Séjours, colonies de vacances et sorties pour enfants, ados et séniors.",
+};
+
 export default async function RootLayout({ children }) {
   // ⚡ Séjours publiés pour la colonne "Séjours" du pied de page
   let footerSejours = [];
