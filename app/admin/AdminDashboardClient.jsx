@@ -21,6 +21,9 @@ import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAva
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
+// ⚡ IMPORTS INSCRIPTIONS
+import { changerStatutInscription } from "../actions/inscriptions";
+import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
 
@@ -44,6 +47,13 @@ const MENU = [
   { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
+
+const STATUT_INSCRIPTION_COLORS = {
+  "Inscription envoyée": { bg: "#e0f2fe", color: "#075985" },
+  "Paiement en attente": { bg: "#fef3c7", color: "#92400e" },
+  "Paiement validé": { bg: "#d1fae5", color: "#065f46" },
+  "Annulée": { bg: "#fee2e2", color: "#991b1b" },
+};
 
 /* ── UTILS ── */
 const formatDateForInput = (dateString) => {
@@ -387,6 +397,12 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <CustomSelect name="statut" label="Statut" defaultValue={isEditing ? sejourData.statut : "Brouillon"} options={[{ value: "Brouillon", label: "Brouillon", icon: Clock, color: C.gray }, { value: "Publié", label: "Publié", icon: CheckCircle2, color: "#10b981" }]} />
             </div>
             
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement CIC</label>
+              <input type="url" name="lienPaiementCIC" defaultValue={isEditing ? sejourData.lienPaiementCIC : ""} placeholder="https://paiement.cic.fr/..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+              <p style={{ fontSize: "11px", color: C.gray }}>Une fois son inscription envoyée, la famille sera redirigée vers ce lien pour régler le séjour. Laissez vide si le paiement se fait autrement.</p>
+            </div>
+
             <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} />
           </div>
 
@@ -903,6 +919,10 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     if (copie) setSejourEnEdition(copie);
   };
 
+  const handleChangerStatutInscription = async (id, statut) => {
+    await changerStatutInscription(id, statut);
+  };
+
   const handleDeleteAlbum = async (id) => {
     if (window.confirm("Supprimer définitivement cet album et toutes ses photos ?")) {
       await supprimerAlbum(id);
@@ -1008,9 +1028,19 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                           <strong>Parent :</strong> {ins.client?.nom} {ins.client?.prenom}
                         </p>
                       </div>
-                      <span style={{ background: ins.statut === "Confirmé" ? "#d1fae5" : "#fef3c7", color: ins.statut === "Confirmé" ? "#065f46" : "#92400e", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700 }}>
-                        {ins.statut}
-                      </span>
+                      <select
+                        value={ins.statut}
+                        onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
+                        style={{
+                          background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                          padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                        }}
+                      >
+                        {STATUTS_INSCRIPTION.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
                     </div>
 
                     <div style={{ marginTop: "16px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>

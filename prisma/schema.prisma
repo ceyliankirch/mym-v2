@@ -32,6 +32,7 @@ model Sejour {
   galerie          String[] // Tableau d'URLs pour tes 10 photos max
   formSchema       String?  // Le JSON du constructeur de formulaire
   documentsRequis  String[] @default([]) // Sous-ensemble du catalogue fixe
+  lienPaiementCIC  String?  // Lien de paiement CIC vers lequel rediriger la famille après inscription
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
   albums       Album[]

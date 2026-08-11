@@ -93,9 +93,15 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         setError(result.error);
       } else {
         setSuccess(true);
-        setTimeout(() => {
-          router.push("/espace-famille?tab=documents");
-        }, 2000);
+        if (sejour.lienPaiementCIC) {
+          setTimeout(() => {
+            window.location.href = sejour.lienPaiementCIC;
+          }, 2500);
+        } else {
+          setTimeout(() => {
+            router.push("/espace-famille?tab=documents");
+          }, 2000);
+        }
       }
     } catch (err) {
       setError("Une erreur est survenue");
@@ -133,11 +139,25 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
               <CheckCircle2 size={48} color="#10b981" />
             </div>
             <h1 style={{ fontSize: "28px", fontWeight: 900, color: C.teal }}>
-              Inscription confirmée ! 🎉
+              Inscription envoyée ! 🎉
             </h1>
-            <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
-              Redirection vers votre espace famille...
-            </p>
+            {sejour.lienPaiementCIC ? (
+              <>
+                <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
+                  Vous allez être redirigé vers la page de paiement pour régler le séjour...
+                </p>
+                <a
+                  href={sejour.lienPaiementCIC}
+                  style={{ display: "inline-block", marginTop: "24px", background: C.yellow, color: C.teal, padding: "14px 28px", borderRadius: "999px", fontWeight: 800, textDecoration: "none", fontSize: "14px" }}
+                >
+                  Accéder au paiement maintenant
+                </a>
+              </>
+            ) : (
+              <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
+                Redirection vers votre espace famille...
+              </p>
+            )}
           </div>
         </div>
       </div>

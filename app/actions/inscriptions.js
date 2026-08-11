@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { sendDocumentsRequestEmail } from "@/lib/resend";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
+import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 
 export async function getOrCreateClientForUser(userId) {
   let client = await prisma.client.findUnique({
@@ -96,7 +97,7 @@ export async function creerInscription(
         clientId: client.id,
         enfantId: enfant.id,
         sejourId,
-        statut: "En attente",
+        statut: "Inscription envoyée",
       },
     });
 
@@ -138,5 +139,27 @@ export async function creerInscription(
   } catch (error) {
     console.error("Error creating inscription:", error);
     return { error: "Erreur lors de la création de l'inscription" };
+  }
+}
+
+// 🔄 CHANGER L'ÉTAT D'UNE INSCRIPTION (admin)
+export async function changerStatutInscription(id, statut) {
+  if (!STATUTS_INSCRIPTION.includes(statut)) {
+    return { error: "Statut invalide" };
+  }
+
+  try {
+    const inscription = await prisma.inscription.update({
+      where: { id },
+      data: { statut },
+    });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true, inscription };
+  } catch (error) {
+    console.error("Error updating inscription status:", error);
+    return { error: "Erreur lors de la mise à jour du statut" };
   }
 }

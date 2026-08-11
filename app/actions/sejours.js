@@ -22,7 +22,8 @@ export async function creerSejour(formData) {
   const infosPratiques = formData.get("infosPratiques") || "";
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
-  
+  const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
+
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
   const prixPrincipal = prixArray[0] || 0;
 
@@ -76,6 +77,7 @@ export async function creerSejour(formData) {
       formSchema,
       documentsRequis,
       galerie: galerieUrls,
+      lienPaiementCIC,
     },
   });
 
@@ -102,6 +104,7 @@ export async function modifierSejour(id, formData) {
   const infosPratiques = formData.get("infosPratiques") || "";
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
+  const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
 
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
   const prixPrincipal = prixArray[0] || 0;
@@ -172,6 +175,7 @@ export async function modifierSejour(id, formData) {
       formSchema,
       documentsRequis,
       galerie: finalGalerie,
+      lienPaiementCIC,
     },
   });
 
@@ -249,6 +253,7 @@ export async function dupliquerSejour(id) {
       galerie: source.galerie,
       formSchema: source.formSchema,
       documentsRequis: source.documentsRequis,
+      lienPaiementCIC: source.lienPaiementCIC,
     },
   });
 
