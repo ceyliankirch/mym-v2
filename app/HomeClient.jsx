@@ -291,6 +291,139 @@ function ReviewCard({ a, i, isGoogle }) {
   );
 }
 
+/* ─── GALERIE ROTATIVE (photos aléatoires + fondu) AVEC LIGHTBOX ─────── */
+function pickRandomPhotos(pool, count, previous = []) {
+  if (pool.length <= count) return pool;
+  const previousIds = new Set(previous.map(p => p.id));
+  const notShown = pool.filter(p => !previousIds.has(p.id));
+  const shuffled = [...notShown].sort(() => Math.random() - 0.5);
+  let selection = shuffled.slice(0, count);
+  if (selection.length < count) {
+    const selectedIds = new Set(selection.map(p => p.id));
+    const remaining = pool.filter(p => !selectedIds.has(p.id)).sort(() => Math.random() - 0.5);
+    selection = [...selection, ...remaining.slice(0, count - selection.length)];
+  }
+  return selection;
+}
+
+function pickOneRandom(pool, exclude) {
+  if (pool.length <= 1) return exclude;
+  let next = exclude;
+  while (next.id === exclude.id) {
+    next = pool[Math.floor(Math.random() * pool.length)];
+  }
+  return next;
+}
+
+// ⚡ Chaque tuile gère sa propre rotation, avec un départ + un intervalle
+// légèrement aléatoires, pour que les photos ne changent jamais toutes en même temps.
+// Fondu enchaîné : l'ancienne photo reste visible pendant que la nouvelle apparaît par-dessus.
+function GalleryTile({ pool, initialPhoto, onOpen }) {
+  const [base, setBase] = useState(initialPhoto);
+  const [incoming, setIncoming] = useState(null);
+  const [fadeIn, setFadeIn] = useState(false);
+  const baseRef = useRef(initialPhoto);
+  baseRef.current = base;
+
+  useEffect(() => {
+    if (pool.length <= 1) return;
+    let intervalId, commitTimeout, raf1, raf2;
+
+    const advance = () => {
+      const next = pickOneRandom(pool, baseRef.current);
+      setIncoming(next);
+      setFadeIn(false);
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => setFadeIn(true));
+      });
+      commitTimeout = setTimeout(() => {
+        setBase(next);
+        setIncoming(null);
+        setFadeIn(false);
+      }, 2200);
+    };
+
+    const startDelay = Math.random() * 5000;
+    const startTimeout = setTimeout(() => {
+      advance();
+      intervalId = setInterval(advance, 5500 + Math.random() * 2000); // ~5.5-7.5s, désynchronisé entre tuiles
+    }, startDelay);
+
+    return () => {
+      clearTimeout(startTimeout);
+      clearInterval(intervalId);
+      clearTimeout(commitTimeout);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool]);
+
+  return (
+    <div
+      onClick={() => onOpen(incoming || base)}
+      style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 8px 24px rgba(17,76,90,0.08)", aspectRatio: "1 / 1", cursor: "pointer", position: "relative" }}
+    >
+      <img
+        src={base.url}
+        alt={base.album?.titre || "Photo souvenir"}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+      />
+      {incoming && (
+        <img
+          src={incoming.url}
+          alt={incoming.album?.titre || "Photo souvenir"}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: fadeIn ? 1 : 0, transition: "opacity 2s ease" }}
+        />
+      )}
+    </div>
+  );
+}
+
+function GalleryLightbox({ photo, onClose }) {
+  if (!photo) return null;
+  const albumTitre = photo.album?.titre;
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, background: "rgba(13,50,60,0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "32px", animation: "galleryFadeIn .2s ease" }}
+    >
+      <button
+        onClick={onClose}
+        style={{ position: "absolute", top: "24px", right: "24px", width: "44px", height: "44px", borderRadius: "50%", background: "rgba(255,255,255,0.12)", border: "none", color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <X size={20} />
+      </button>
+      <div onClick={e => e.stopPropagation()} style={{ maxWidth: "900px", maxHeight: "85vh", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+        <img src={photo.url} alt={albumTitre || "Photo souvenir"} style={{ maxWidth: "100%", maxHeight: "70vh", borderRadius: "16px", objectFit: "contain", boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }} />
+        <Link
+          href={albumTitre ? `/galerie?album=${encodeURIComponent(albumTitre)}` : "/galerie"}
+          style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.yellow, color: C.teal, fontSize: "13px", fontWeight: 800, padding: "14px 28px", borderRadius: "999px", textDecoration: "none" }}
+        >
+          <Camera size={14} /> Voir l'album complet
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function GalleryRotator({ photos }) {
+  const SLOT_COUNT = 8; // 2 rangées de 4
+  const [initialSlots] = useState(() => pickRandomPhotos(photos, SLOT_COUNT));
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+
+  return (
+    <>
+      <div className="gallery-grid" style={{ marginBottom: "48px" }}>
+        {initialSlots.map((photo, i) => (
+          <GalleryTile key={i} pool={photos} initialPhoto={photo} onOpen={setLightboxPhoto} />
+        ))}
+      </div>
+      <GalleryLightbox photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
+    </>
+  );
+}
+
 /* ─── PAGE PRINCIPALE ────────────────────────────────────────────── */
 export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
   const [cat, setCat] = useState("tous");
@@ -377,6 +510,10 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
         * { box-sizing: border-box; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes galleryFadeIn { from{opacity:0} to{opacity:1} }
+        .gallery-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+        @media (max-width:900px){ .gallery-grid{ grid-template-columns:repeat(2,1fr);} }
+        @media (max-width:520px){ .gallery-grid{ grid-template-columns:1fr;} }
         .hero-bg {
           background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('/mym-hero-cover.webp');
           background-size: cover;
@@ -596,13 +733,11 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Galerie</p>
             <h2 style={{ fontWeight: 900, letterSpacing: "-1px", color: C.teal, fontSize: "clamp(2rem,3vw,2.5rem)" }}>Nos plus beaux souvenirs</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px", marginBottom: "48px" }}>
-            {(galleryPhotos && galleryPhotos.length > 0 ? galleryPhotos : GALLERY_PREVIEW).map((image) => (
-              <div key={image.id} style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 8px 24px rgba(17,76,90,0.08)", aspectRatio: '1 / 1' }}>
-                <img src={image.url || image.src} alt={image.album?.titre || image.alt || "Photo souvenir"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-            ))}
-          </div>
+          <GalleryRotator photos={
+            galleryPhotos && galleryPhotos.length > 0
+              ? galleryPhotos
+              : GALLERY_PREVIEW.map(g => ({ id: g.id, url: g.src, album: { titre: g.alt } }))
+          } />
           <div style={{ textAlign: "center" }}>
             <Link href="/galerie" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "transparent", color: C.yellow, fontSize: "13px", fontWeight: 800, padding: "14px 28px", border: "none", textDecoration: "none" }}>
               <Camera size={14} /> Voir toute la galerie

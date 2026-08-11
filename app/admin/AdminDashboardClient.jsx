@@ -10,7 +10,7 @@ import {
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
-  Bold, Italic, Underline, ListOrdered, Archive
+  Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -770,32 +770,97 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
   );
 }
 
-/* ── TABLEAUX / GRILLES ── */
-function TableInscriptions({ data }) {
+/* ── MODALE : LISTE DES INSCRITS D'UN SÉJOUR ── */
+function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut }) {
+  const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
+
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
-      <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "24px" }}>Dernières Inscriptions</h2>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead><tr style={{ borderBottom: `2px solid ${C.arctic}`, textAlign: "left" }}>
-          <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>PARTICIPANT</th>
-          <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>SÉJOUR</th>
-          <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>MONTANT</th>
-        </tr></thead>
-        <tbody>
-          {data?.map(b => (
-            <tr key={b.id} style={{ borderBottom: `1px solid ${C.arctic}` }}>
-              <td style={{ padding: "16px", fontSize: "13px", fontWeight: 700, color: C.teal }}>{b.client?.nom} {b.client?.prenom}</td>
-              <td style={{ padding: "16px", fontSize: "13px" }}>{b.sejour?.titre}</td>
-              <td style={{ padding: "16px", fontSize: "13px", fontWeight: 800 }}>{b.montantPaye} €</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "700px", maxHeight: "85vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+
+        <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>{sejour.titre}</h2>
+        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>{inscrits.length} inscrit{inscrits.length > 1 ? "s" : ""} · {sejour.places || 0} place{(sejour.places || 0) > 1 ? "s" : ""} au total</p>
+
+        {inscrits.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "40px 0", color: C.gray }}>
+            <Users size={40} style={{ opacity: 0.2, marginBottom: "16px", margin: "0 auto" }} />
+            <p>Aucune inscription pour ce séjour pour le moment.</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {inscrits.map((ins) => {
+              const docsManquants = (ins.enfant?.documents || []).filter((d) => d.statut === "MANQUANT").length;
+              return (
+                <div key={ins.id} style={{ background: C.arctic, borderRadius: "16px", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+                  <div>
+                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>{ins.enfant?.prenom} {ins.enfant?.nom}</p>
+                    <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>
+                      Parent : {ins.client?.prenom} {ins.client?.nom} {ins.client?.email ? `· ${ins.client.email}` : ""} {ins.client?.telephone ? `· ${ins.client.telephone}` : ""}
+                    </p>
+                    {docsManquants > 0 && (
+                      <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
+                    )}
+                  </div>
+                  <select
+                    value={ins.statut}
+                    onChange={(e) => onChangerStatut(ins.id, e.target.value)}
+                    style={{
+                      background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                      color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                      padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none", flexShrink: 0,
+                    }}
+                  >
+                    {STATUTS_INSCRIPTION.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate }) {
+/* ── TABLEAUX / GRILLES ── */
+function TableInscriptions({ data }) {
+  const recent = (data || []).slice(0, 8);
+  return (
+    <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+      <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "24px" }}>Dernières Inscriptions</h2>
+      {recent.length === 0 ? (
+        <p style={{ fontSize: "13px", color: C.gray }}>Aucune inscription pour le moment.</p>
+      ) : (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead><tr style={{ borderBottom: `2px solid ${C.arctic}`, textAlign: "left" }}>
+            <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>PARTICIPANT</th>
+            <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>SÉJOUR</th>
+            <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>DATE</th>
+            <th style={{ padding: "16px", fontSize: "12px", color: C.gray }}>STATUT</th>
+          </tr></thead>
+          <tbody>
+            {recent.map(b => {
+              const colors = STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
+              return (
+                <tr key={b.id} style={{ borderBottom: `1px solid ${C.arctic}` }}>
+                  <td style={{ padding: "16px", fontSize: "13px", fontWeight: 700, color: C.teal }}>{b.enfant?.prenom} {b.enfant?.nom}</td>
+                  <td style={{ padding: "16px", fontSize: "13px" }}>{b.sejour?.titre}</td>
+                  <td style={{ padding: "16px", fontSize: "13px", color: C.gray }}>{new Date(b.createdAt).toLocaleDateString("fr-FR")}</td>
+                  <td style={{ padding: "16px" }}><span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{b.statut}</span></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -846,7 +911,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                 <td style={{ padding: "16px", fontSize: "13px", fontWeight: 800, color: C.teal }}>{s.prix || 0} €</td>
                 <td style={{ padding: "16px", display: "flex", gap: "6px", justifyContent: "flex-end", alignItems: "center" }}>
                   <div className="extra-actions" style={{ display: "flex", gap: "6px" }}>
-                    <button title="Inscrits" style={actionBtnStyle}><Users size={15} /></button>
+                    <button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={15} /></button>
                     <button title="Formulaire" style={actionBtnStyle}><ClipboardList size={15} /></button>
                   </div>
                   <button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={15} /></button>
@@ -862,7 +927,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -903,7 +968,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             </div>
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
-              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" style={actionBtnStyle}><Users size={16} /></button><button title="Lien du formulaire" style={actionBtnStyle}><ClipboardList size={16} /></button></div>
+              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Lien du formulaire" style={actionBtnStyle}><ClipboardList size={16} /></button></div>
               <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
@@ -950,13 +1015,14 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, animateurs, albums }) {
+export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, animateurs, albums, prochainsDeparts }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [sejourEnEdition, setSejourEnEdition] = useState(null);
   const [animEnEdition, setAnimEnEdition] = useState(null);
   const [albumEnEdition, setAlbumEnEdition] = useState(null);
+  const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState("table");
@@ -1049,13 +1115,36 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
 
           {activeTab === "dashboard" && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px", marginBottom: "40px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", marginBottom: "32px" }}>
                 <StatCard title="Inscriptions" value={stats?.inscriptionsTotal || 0} icon={FileText} color={C.saffron} />
-                <StatCard title="CA" value={`${stats?.ca || 0} €`} icon={Euro} color={"#10b981"} />
-                <StatCard title="Séjours" value={stats?.sejoursActifs || 0} icon={Tent} color={C.teal} />
+                <StatCard title="CA (validé)" value={`${stats?.ca || 0} €`} icon={Euro} color={"#10b981"} />
+                <StatCard title="Séjours publiés" value={stats?.sejoursActifs || 0} icon={Tent} color={C.teal} />
                 <StatCard title="Familles" value={stats?.familles || 0} icon={Users} color={C.yellow} />
+                <StatCard title="Docs manquants" value={stats?.documentsManquants || 0} icon={AlertTriangle} color={"#ef4444"} />
               </div>
-              <TableInscriptions data={inscriptions} />
+
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 1fr) 2fr", gap: "24px", alignItems: "start" }}>
+                <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+                  <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}><CalendarDays size={18} color={C.saffron} /> Prochains départs</h2>
+                  {(!prochainsDeparts || prochainsDeparts.length === 0) ? (
+                    <p style={{ fontSize: "13px", color: C.gray }}>Aucun départ à venir.</p>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                      {prochainsDeparts.map((s) => (
+                        <div key={s.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", paddingBottom: "14px", borderBottom: `1px solid ${C.arctic}` }}>
+                          <div>
+                            <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{s.titre}</p>
+                            <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>{formatSejourDates(s.dateDebut, s.dateFin)}</p>
+                          </div>
+                          <button onClick={() => { setActiveTab("sejours"); setSejourInscritsEnView(s); }} style={{ background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, flexShrink: 0 }} title="Voir les inscrits"><Users size={14} /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <TableInscriptions data={inscriptions} />
+              </div>
             </>
           )}
 
@@ -1102,8 +1191,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} /> :
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} />}
             </>
           )}
 
@@ -1231,17 +1320,37 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
           )}
 
           {activeTab === "clients" && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
-              {clients?.map(c => (
-                <div key={c.id} style={{ background: C.white, padding: "24px", borderRadius: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
-                  <h3 style={{ color: C.teal, fontWeight: 800, marginBottom: "8px" }}>{c.nom} {c.prenom}</h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px", color: C.gray }}>
-                     <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Mail size={14}/> {c.email}</span>
-                     <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Phone size={14}/> {c.telephone}</span>
-                  </div>
+            <>
+              <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray, marginBottom: "20px" }}>{clients?.length || 0} famille(s)</div>
+              {(!clients || clients.length === 0) ? (
+                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
+                  <Users size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
+                  <p>Aucune famille enregistrée pour le moment.</p>
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
+                  {clients.map(c => (
+                    <div key={c.id} style={{ background: C.white, padding: "24px", borderRadius: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                        <h3 style={{ color: C.teal, fontWeight: 800 }}>{c.nom} {c.prenom}</h3>
+                        <span style={{ background: C.arctic, color: C.teal, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, flexShrink: 0 }}>{c._count?.inscriptions || 0} inscription{(c._count?.inscriptions || 0) > 1 ? "s" : ""}</span>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px", color: C.gray, marginBottom: "12px" }}>
+                         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Mail size={14}/> {c.email || "Non renseigné"}</span>
+                         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Phone size={14}/> {c.telephone || "Non renseigné"}</span>
+                      </div>
+                      {c.enfants?.length > 0 && (
+                        <div style={{ borderTop: `1px solid ${C.arctic}`, paddingTop: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          {c.enfants.map(e => (
+                            <span key={e.id} style={{ fontSize: "12px", fontWeight: 600, color: C.teal, background: C.lilac, padding: "4px 10px", borderRadius: "999px" }}>{e.prenom} {e.nom}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === "settings" && (
@@ -1290,6 +1399,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
+      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} />}
     </AdminLayout>
   );
 }

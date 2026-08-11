@@ -11,7 +11,7 @@ export default async function AdminPage() {
     console.log("📡 Admin : Récupération des données depuis Neon...");
 
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-    const [sejours, inscriptions, clientsCount, animateurs, albums] = await Promise.all([
+    const [sejours, inscriptions, clients, animateurs, albums, documentsManquants] = await Promise.all([
       prisma.sejour.findMany({
         orderBy: { createdAt: "desc" }
       }),
@@ -23,7 +23,14 @@ export default async function AdminPage() {
         },
         orderBy: { createdAt: "desc" },
       }),
-      prisma.client.count(),
+      // ⚡ Liste des familles (avant : jamais récupérée, l'onglet "Clients" était toujours vide)
+      prisma.client.findMany({
+        include: {
+          enfants: true,
+          _count: { select: { inscriptions: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
       // ⚡ NOUVEAU : Récupération de l'équipe
       prisma.animateur.findMany({
         orderBy: { createdAt: "asc" }
@@ -33,14 +40,28 @@ export default async function AdminPage() {
         include: { photos: true, sejour: true },
         orderBy: { createdAt: "desc" },
       }),
+      prisma.document.count({ where: { statut: "MANQUANT" } }),
     ]);
 
     // Calcul des statistiques (KPIs)
+    // ⚡ Le CA se base sur le prix du séjour des inscriptions dont le paiement est validé
+    // (montantPaye n'est jamais renseigné nulle part dans l'app, donc toujours à 0)
+    const ca = inscriptions
+      .filter((ins) => ins.statut === "Paiement validé")
+      .reduce((total, ins) => total + (ins.sejour?.prix || 0), 0);
+
+    const today = new Date();
+    const prochainsDeparts = sejours
+      .filter((s) => s.statut === "Publié" && s.dateDebut && new Date(s.dateDebut) >= today)
+      .sort((a, b) => new Date(a.dateDebut) - new Date(b.dateDebut))
+      .slice(0, 5);
+
     const stats = {
       inscriptionsTotal: inscriptions.length,
-      ca: inscriptions.reduce((total, curr) => total + (curr.montantPaye || 0), 0),
-      sejoursActifs: sejours.length,
-      familles: clientsCount,
+      ca,
+      sejoursActifs: sejours.filter((s) => s.statut === "Publié").length,
+      familles: clients.length,
+      documentsManquants,
     };
 
     return (
@@ -48,8 +69,10 @@ export default async function AdminPage() {
         stats={stats}
         sejours={sejours}
         inscriptions={inscriptions}
+        clients={clients} // ⚡ NOUVEAU : On passe les familles au client
         animateurs={animateurs} // ⚡ NOUVEAU : On passe les animateurs au client
         albums={albums} // ⚡ NOUVEAU : On passe les albums photos au client
+        prochainsDeparts={prochainsDeparts}
       />
     );
   } catch (error) {

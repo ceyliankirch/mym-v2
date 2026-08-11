@@ -29,28 +29,19 @@ export default async function EspaceFamillePage() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Compter les séjours effectués
-  const sejoursEffectues = enfants.reduce(
-    (acc, enfant) => acc + enfant.inscriptions.length,
-    0
-  );
-  const fidelite = {
-    sejoursEffectues,
-    objectif: 5,
-    recompense: "Bon de réduction de -5% sur le prochain séjour",
-  };
-
   // Construire la liste des séjours à venir
   const sejoursAVenir = enfants.flatMap((enfant) =>
     enfant.inscriptions.map((ins) => ({
       id: ins.id,
       titre: ins.sejour.titre,
       enfant: enfant.prenom,
+      enfantId: enfant.id,
       dates: ins.sejour.dateDebut && ins.sejour.dateFin
         ? `${new Date(ins.sejour.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(ins.sejour.dateFin).toLocaleDateString("fr-FR")}`
         : "Voir détails du séjour",
       statut: ins.statut,
-      isValide: ins.statut === "Confirmé",
+      isValide: ins.statut === "Paiement validé",
+      documentsRequis: ins.sejour.documentsRequis || [],
     }))
   );
 
@@ -89,7 +80,6 @@ export default async function EspaceFamillePage() {
   return (
     <EspaceFamilleClient
       userName={userName}
-      fidelite={fidelite}
       sejoursAVenir={sejoursAVenir}
       documents={documents}
       notifications={notifications}

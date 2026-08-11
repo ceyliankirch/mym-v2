@@ -11,12 +11,12 @@ export default async function Page() {
     }
   });
 
-  // 2. On va chercher les photos "à l'affiche" pour la section Galerie
+  // 2. On va chercher les photos pour la section Galerie (parmi toutes celles importées ;
+  //    celles marquées "à l'affiche" dans l'admin passent en priorité)
   const galleryPhotos = await prisma.photo.findMany({
-    where: { enAvant: true },
     include: { album: true },
-    orderBy: { createdAt: 'desc' },
-    take: 6,
+    orderBy: [{ enAvant: 'desc' }, { createdAt: 'desc' }],
+    take: 30,
   });
 
   // 3. On passe les données au composant client qui gère l'affichage

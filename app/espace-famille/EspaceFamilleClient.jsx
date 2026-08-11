@@ -8,17 +8,15 @@ import {
   CheckSquare,
   History,
   AlertCircle,
-  Gift,
   CheckCircle2,
   Clock,
   XCircle,
   UploadCloud,
   Calendar,
-  Sparkles,
-  Plus,
   ChevronRight,
   Download,
   Loader,
+  X,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
 
@@ -31,9 +29,95 @@ const C = {
   lightGray: "#e2e8f0",
 };
 
+/* ─── MODALE : DOCUMENTS D'UN SÉJOUR ────────────────────────────────
+   Ouverte en cliquant sur un séjour inscrit : reprend les documents déjà
+   enregistrés en base pour l'enfant, et permet d'importer ceux qui manquent. */
+function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId }) {
+  const enfantRecord = enfants.find((e) => e.id === sejour.enfantId);
+  const documentsRequis = sejour.documentsRequis || [];
+
+  const statusConfig = {
+    VALIDE: { bg: "bg-green-50", border: "border-green-200", text: "text-green-700", label: "Déjà en base — validé", icon: CheckCircle2 },
+    EN_COURS: { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", label: "Déjà en base — en vérification", icon: Clock },
+    MANQUANT: { bg: "bg-red-50", border: "border-red-200", text: "text-red-700", label: "À importer", icon: XCircle },
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
+      >
+        <div className="flex items-start justify-between p-6 border-b border-slate-200">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">{sejour.titre}</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Documents pour <strong>{sejour.enfant}</strong>
+            </p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {documentsRequis.length === 0 ? (
+            <p className="text-slate-500 font-medium text-center py-6">
+              Aucun document requis pour ce séjour.
+            </p>
+          ) : (
+            documentsRequis.map((docType) => {
+              const existing = enfantRecord?.documents?.find((d) => d.type === docType);
+              const statut = existing?.statut || "MANQUANT";
+              const cfg = statusConfig[statut];
+              const Icon = cfg.icon;
+
+              return (
+                <div
+                  key={docType}
+                  className={`${cfg.bg} border ${cfg.border} rounded-xl p-4 flex items-center justify-between gap-4`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className={cfg.text} size={20} />
+                    <div>
+                      <p className={`font-bold ${cfg.text}`}>{docType}</p>
+                      <p className={`text-xs ${cfg.text} opacity-75`}>{cfg.label}</p>
+                    </div>
+                  </div>
+
+                  {enfantRecord && statut !== "VALIDE" && (
+                    <label className="cursor-pointer shrink-0">
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => onUpload(enfantRecord.id, docType, e)}
+                        disabled={uploadingDocId === docType}
+                      />
+                      <div className="flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
+                        {uploadingDocId === docType ? (
+                          <Loader size={16} className="animate-spin" />
+                        ) : (
+                          <UploadCloud size={16} />
+                        )}
+                        Importer
+                      </div>
+                    </label>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EspaceFamilleClient({
   userName = "Parent",
-  fidelite = { sejoursEffectues: 3, objectif: 5, recompense: "Bon de réduction de -5%" },
   notifications = [],
   sejoursAVenir = [],
   documents = [],
@@ -41,11 +125,7 @@ export default function EspaceFamilleClient({
 }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploadingDocId, setUploadingDocId] = useState(null);
-
-  const pourcentageFidelite = Math.min(
-    (fidelite.sejoursEffectues / fidelite.objectif) * 100,
-    100
-  );
+  const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
 
   const handleUploadClick = async (enfantId, docType, event) => {
     const file = event.target.files?.[0];
@@ -150,48 +230,6 @@ export default function EspaceFamilleClient({
               </div>
             )}
 
-            {/* LOYALTY */}
-            <section className="bg-gradient-to-br from-[#114C5A] to-[#0a3039] rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
-              <Sparkles
-                className="absolute top-4 right-4 text-white/10"
-                size={100}
-              />
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-[#FFC801] p-2.5 rounded-full shadow-lg shadow-yellow-500/20">
-                    <Gift className="text-[#114C5A]" size={24} />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">
-                    Votre fidélité récompensée
-                  </h2>
-                </div>
-
-                <p className="text-slate-200 mb-8 max-w-2xl font-medium">
-                  Plus que{" "}
-                  <strong className="text-white text-lg">
-                    {fidelite.objectif - fidelite.sejoursEffectues} séjour(s)
-                  </strong>{" "}
-                  pour débloquer votre{" "}
-                  <span className="text-[#FFC801]">{fidelite.recompense}</span> !
-                </p>
-
-                <div className="relative pt-1 max-w-3xl">
-                  <div className="flex mb-3 items-center justify-between text-sm font-bold text-slate-200">
-                    <span>{fidelite.sejoursEffectues} séjour(s) réalisé(s)</span>
-                    <span>Objectif : {fidelite.objectif}</span>
-                  </div>
-                  <div className="overflow-hidden h-4 text-xs flex rounded-full bg-slate-800/50 border border-white/10 shadow-inner">
-                    <div
-                      style={{ width: `${pourcentageFidelite}%` }}
-                      className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#FFC801] transition-all duration-1000 ease-out relative"
-                    >
-                      <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-r from-transparent to-white/40"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* UPCOMING TRIPS */}
             {sejoursAVenir.length > 0 && (
               <section>
@@ -203,7 +241,8 @@ export default function EspaceFamilleClient({
                   {sejoursAVenir.map((sejour) => (
                     <div
                       key={sejour.id}
-                      className={`bg-white p-6 rounded-2xl shadow-sm border-t-4 transition-all hover:shadow-md ${
+                      onClick={() => setSejourEnConsultation(sejour)}
+                      className={`bg-white p-6 rounded-2xl shadow-sm border-t-4 transition-all hover:shadow-md cursor-pointer ${
                         sejour.isValide
                           ? "border-[#27ae60]"
                           : "border-[#FF9932]"
@@ -466,6 +505,16 @@ export default function EspaceFamilleClient({
           </div>
         )}
       </main>
+
+      {sejourEnConsultation && (
+        <SejourDocumentsModal
+          sejour={sejourEnConsultation}
+          enfants={enfants}
+          onClose={() => setSejourEnConsultation(null)}
+          onUpload={handleUploadClick}
+          uploadingDocId={uploadingDocId}
+        />
+      )}
     </div>
   );
 }

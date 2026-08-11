@@ -65,9 +65,9 @@ function ImageCard({ image, idx }) {
 }
 
 /* ─── PAGE GALERIE ───────────────────────────────────────────────────────── */
-export default function GalerieClient({ images, categories }) {
+export default function GalerieClient({ images, categories, initialCategory = "Toutes" }) {
   const [visible, setVisible] = useState(false);
-  const [activeCat, setActiveCat] = useState("Toutes");
+  const [activeCat, setActiveCat] = useState(initialCategory);
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 80);
