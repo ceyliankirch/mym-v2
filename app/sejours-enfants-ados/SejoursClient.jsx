@@ -2,9 +2,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import SejoursMap from "@/components/SejoursMap";
 import {
   MapPin, Calendar, Users, Clock, Search, X, SunMedium,
-  Snowflake, Flower2, Globe, Heart, ChevronDown, ArrowRight, Leaf, ChevronRight
+  Snowflake, Flower2, Globe, Heart, ChevronDown, ArrowRight, Leaf, ChevronRight,
+  Grid, Map, Archive
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -99,8 +101,8 @@ function SejourCard({ s, idx }) {
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
   
   // Calcul provisoire
-  const placesRestantes = s.places; 
-  const urgent = placesRestantes !== null && placesRestantes <= 3 && placesRestantes > 0;
+  const placesRestantes = s.places;
+  const urgent = !s.isPast && placesRestantes !== null && placesRestantes <= 3 && placesRestantes > 0;
 
   return (
     // ⚡ Lien corrigé
@@ -113,7 +115,9 @@ function SejourCard({ s, idx }) {
         transition:"all .3s ease",
         animation:`fadeUp .5s ease both`, animationDelay:`${idx*0.07}s`,
         position:"relative",
-        display: "flex", flexDirection: "column"
+        display: "flex", flexDirection: "column",
+        filter: s.isPast ? "grayscale(100%)" : "none",
+        opacity: s.isPast ? 0.75 : 1,
       }}>
         {urgent&&(
           <div style={{position:"absolute",top:"12px",left:"12px",zIndex:5,background:"#ef4444",borderRadius:"999px",padding:"3px 10px"}}>
@@ -122,10 +126,16 @@ function SejourCard({ s, idx }) {
         )}
         <div style={{position:"relative",height:"200px",overflow:"hidden"}}>
           <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} alt={s.titre} style={{width:"100%",height:"100%",objectFit:"cover",transform:hovered?"scale(1.05)":"scale(1)",transition:"transform .5s ease"}}/>
-          
-          <div style={{position:"absolute",top:"12px",left:urgent?"auto":"12px",right:urgent?"12px":"auto",background:"rgba(255,255,255,0.93)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"4px 10px",display:"flex",alignItems:"center",gap:"5px",...(urgent?{display:"none"}:{})}}>
-            <Icon size={10} style={{color:sColor}}/>
-            <span style={{fontSize:"10px",fontWeight:800,color:C.teal,textTransform:"uppercase"}}>{s.saison || "Saison"}</span>
+
+          <div style={{position:"absolute",top:"12px",left:urgent?"auto":"12px",right:urgent?"12px":"auto",background:s.isPast ? "#e5484d" : "rgba(255,255,255,0.93)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"4px 10px",display:"flex",alignItems:"center",gap:"5px",...(urgent?{display:"none"}:{})}}>
+            {s.isPast ? (
+              <span style={{fontSize:"10px",fontWeight:800,color:"white",textTransform:"uppercase"}}>Séjour passé</span>
+            ) : (
+              <>
+                <Icon size={10} style={{color:sColor}}/>
+                <span style={{fontSize:"10px",fontWeight:800,color:C.teal,textTransform:"uppercase"}}>{s.saison || "Saison"}</span>
+              </>
+            )}
           </div>
 
           <button onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }} style={{ position: "absolute", top: "12px", right: "12px", width: "32px", height: "32px", background: "white", borderRadius: "50%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
@@ -179,6 +189,8 @@ export default function SejoursClient({ sejoursFromDb }) {
   const [periode, setPeriode] = useState("tous");
   const [search, setSearch]   = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [viewMode, setViewMode] = useState("grid");
+  const [showPastSejours, setShowPastSejours] = useState(false);
 
   useEffect(()=>{
     const fn=()=>setScrolled(window.scrollY>40);
@@ -186,22 +198,28 @@ export default function SejoursClient({ sejoursFromDb }) {
     return()=>window.removeEventListener("scroll",fn);
   },[]);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   // 1. Ne garder que les séjours publiés et qui ne sont pas QUE seniors
-  const allSejours = sejoursFromDb?.filter(s => s.statut === "Publié").filter(s => {
+  const allSejours = (sejoursFromDb?.filter(s => s.statut === "Publié").filter(s => {
       const age = (s.tranchesAge || "").toLowerCase();
       // On enlève ceux qui sont strictement pour les seniors (pour ça, on a la page Seniors)
       return !(age.includes("senior") || age.includes("sénior"));
-  }) || [];
+  }) || []).map(s => ({ ...s, isPast: new Date(s.dateDebut) < today }));
 
   // 2. Appliquer les filtres
-  const filtered = allSejours.filter(s => {
+  const matchesFilters = (s) => {
     const matchCat     = matchCategory(s, cat);
     const matchPeriode = periode === "tous" || s.saison?.toLowerCase() === periode;
     const matchSearch  = !search ||
       s.titre.toLowerCase().includes(search.toLowerCase()) ||
       (s.lieu && s.lieu.toLowerCase().includes(search.toLowerCase()));
     return matchCat && matchPeriode && matchSearch;
-  });
+  };
+
+  const filtered = allSejours.filter(s => !s.isPast && matchesFilters(s));
+  const filteredPasses = allSejours.filter(s => s.isPast && matchesFilters(s));
 
   return (
     <div style={{fontFamily:"'Montserrat',sans-serif",background:C.arctic,color:C.teal,overflowX:"hidden"}}>
@@ -296,20 +314,50 @@ export default function SejoursClient({ sejoursFromDb }) {
                 </button>
               )}
             </div>
+
+            <div style={{display:"flex",background:C.white,padding:"4px",borderRadius:"100px",boxShadow:"0 4px 12px rgba(0,0,0,0.04)"}}>
+              <button onClick={()=>setViewMode("grid")} style={{padding:"8px 16px",borderRadius:"100px",border:"none",fontSize:"13px",fontWeight:700,cursor:"pointer",background:viewMode==="grid"?C.teal:"transparent",color:viewMode==="grid"?"white":C.teal,transition:"all .2s",display:"flex",alignItems:"center",gap:"6px"}}><Grid size={14}/> Grille</button>
+              <button onClick={()=>setViewMode("map")} style={{padding:"8px 16px",borderRadius:"100px",border:"none",fontSize:"13px",fontWeight:700,cursor:"pointer",background:viewMode==="map"?C.teal:"transparent",color:viewMode==="map"?"white":C.teal,transition:"all .2s",display:"flex",alignItems:"center",gap:"6px"}}><Map size={14}/> Carte</button>
+            </div>
           </div>
 
-          {/* Grille */}
-          {filtered.length>0?(
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:"24px"}}>
-              {filtered.map((s,i)=><SejourCard key={s.id} s={s} idx={i}/>)}
-            </div>
-          ):(
+          {/* Grille / Carte */}
+          {filtered.length===0 && viewMode==="grid" ? (
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"100px 0",color:"#ccc"}}>
               <Globe size={48} strokeWidth={1.5} style={{marginBottom:"16px"}}/>
               <p style={{fontSize:"15px",fontWeight:600,color:"#8aaa"}}>Aucun séjour ne correspond à votre recherche.</p>
               <button onClick={()=>{setCat("tous");setPeriode("tous");setSearch("");}} style={{marginTop:"20px",background:C.yellow,color:C.teal,border:"none",borderRadius:"999px",padding:"12px 28px",fontSize:"13px",fontWeight:800,cursor:"pointer", boxShadow:"0 8px 24px rgba(255,200,1,0.3)"}}>
                 Voir tous les séjours
               </button>
+            </div>
+          ) : viewMode==="grid" ? (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:"24px"}}>
+              {filtered.map((s,i)=><SejourCard key={s.id} s={s} idx={i}/>)}
+            </div>
+          ) : (
+            <SejoursMap sejours={[...filtered, ...filteredPasses]} renderCard={(s,i) => <SejourCard key={s.id} s={s} idx={i}/>} C={C} height="950px" />
+          )}
+
+          {/* Séjours passés (archive) */}
+          {filteredPasses.length>0 && (
+            <div style={{marginTop:"48px"}}>
+              <div style={{display:"flex",justifyContent:"center"}}>
+                <button
+                  onClick={()=>setShowPastSejours(v=>!v)}
+                  style={{display:"flex",alignItems:"center",gap:"10px",padding:"12px 24px",borderRadius:"999px",border:"none",background:"transparent",cursor:"pointer"}}
+                >
+                  <span style={{display:"flex",alignItems:"center",gap:"10px",fontWeight:800,color:C.teal,fontSize:"14px"}}>
+                    <Archive size={16}/> Séjours passés ({filteredPasses.length})
+                  </span>
+                  <ChevronDown size={18} style={{color:C.teal,transform:showPastSejours?"rotate(180deg)":"rotate(0)",transition:"transform .2s"}}/>
+                </button>
+              </div>
+
+              {showPastSejours && (
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:"24px",marginTop:"24px"}}>
+                  {filteredPasses.map((s,i)=><SejourCard key={s.id} s={s} idx={i}/>)}
+                </div>
+              )}
             </div>
           )}
         </div>

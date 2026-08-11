@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import SejoursMap from "@/components/SejoursMap";
 import {
   ArrowRight, ArrowUpRight, ChevronRight, ChevronLeft, MapPin, Calendar, Users, Star,
   Award, CreditCard, Shield, Mountain, Waves, Globe, Landmark,
@@ -51,24 +51,6 @@ const GALLERY_PREVIEW = [
 
 
 
-/* ─── DICTIONNAIRE DES COORDONNÉES POUR LA CARTE ─────────────────── */
-const FRANCE_COORDS = {
-  "strasbourg": { top: "35%", left: "88%" },
-  "vincennes": { top: "31%", left: "54%" },
-  "meaux": { top: "30%", left: "58%" },
-  "chapelle": { top: "52%", left: "82%" }, 
-  "elancourt": { top: "32%", left: "51%" },
-  "deauville": { top: "25%", left: "42%" },
-  "vieux-boucau": { top: "78%", left: "28%" },
-  "default": { top: "50%", left: "50%" }
-};
-
-function getCoordinates(ville) {
-  if (!ville) return FRANCE_COORDS.default;
-  const normalized = ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-  const foundKey = Object.keys(FRANCE_COORDS).find(k => normalized.includes(k));
-  return foundKey ? FRANCE_COORDS[foundKey] : FRANCE_COORDS.default;
-}
 
 /* ─── UTILS ──────────────────────────────────────────────────────── */
 const getSeasonConfig = (saison) => {
@@ -309,149 +291,6 @@ function ReviewCard({ a, i, isGoogle }) {
   );
 }
 
-/* ─── COMPOSANT POPUP CARTE (Défilement Horizontal & Dégradé) ──────────── */
-function MapPopup({ group }) {
-  const scrollRef = useRef(null);
-  const isMulti = group.stays.length > 1;
-
-  const scrollL = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    scrollRef.current?.scrollBy({ left: -292, behavior: 'smooth' });
-  };
-  const scrollR = (e) => {
-    e.preventDefault(); e.stopPropagation();
-    scrollRef.current?.scrollBy({ left: 292, behavior: 'smooth' });
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 20, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
-      style={{
-        width: isMulti ? "100%" : "280px",
-        maxWidth: "600px",
-        pointerEvents: "auto",
-        position: "relative"
-      }}
-    >
-      {isMulti && (
-        <>
-          <button onClick={scrollL} style={{ position: "absolute", left: "12px", top: "45%", transform: "translateY(-50%)", zIndex: 10, width: "40px", height: "40px", borderRadius: "50%", background: C.white, border: `1px solid ${C.lightGray}`, boxShadow: "0 4px 12px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-            <ChevronLeft size={20} color={C.teal} />
-          </button>
-          <button onClick={scrollR} style={{ position: "absolute", right: "12px", top: "45%", transform: "translateY(-50%)", zIndex: 10, width: "40px", height: "40px", borderRadius: "50%", background: C.white, border: `1px solid ${C.lightGray}`, boxShadow: "0 4px 12px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-            <ChevronRight size={20} color={C.teal} />
-          </button>
-        </>
-      )}
-
-      {/* ⚡ Dégradé fondu sur les côtés pour indiquer qu'on peut scroller */}
-      <div style={{ 
-        WebkitMaskImage: isMulti ? "linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)" : "none",
-        maskImage: isMulti ? "linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)" : "none",
-      }}>
-        <div
-          ref={scrollRef}
-          className="hide-scroll"
-          style={{
-            display: "flex",
-            gap: "16px",
-            overflowX: "auto",
-            scrollSnapType: "x mandatory",
-            scrollBehavior: "smooth",
-            padding: isMulti ? "0 70px" : "0", 
-            paddingBottom: "24px", // Espace pour l'ombre de la carte
-            justifyContent: isMulti ? "flex-start" : "center"
-          }}
-        >
-          {group.stays.map((s, i) => (
-            <div key={s.id} style={{ width: "280px", flexShrink: 0, scrollSnapAlign: "center" }}>
-              <SejourCard s={s} idx={i} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── VUE CARTE (MAP) INTERACTIVE ────────────────────────────────────────── */
-function AllSejoursMap({ sejours }) {
-  const [activeKey, setActiveKey] = useState(null);
-  const timeoutRef = useRef(null);
-
-  // Groupement des séjours par lieu géographique
-  const grouped = {};
-  sejours.forEach(s => {
-    const villeCourte = s.lieu ? s.lieu.split(',')[0].trim() : "France";
-    const coords = getCoordinates(villeCourte);
-    const key = `${coords.top}-${coords.left}`;
-    
-    if (!grouped[key]) grouped[key] = { coords, stays: [], isPast: true };
-    grouped[key].stays.push(s);
-    if (!s.isPast) grouped[key].isPast = false; // S'il y a un séjour à venir, le pin est allumé
-  });
-
-  const handleMouseEnter = (key) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setActiveKey(key);
-  };
-
-  const handleMouseLeave = () => {
-    // ⚡ Timeout crucial : Laisse le temps à la souris d'atteindre le popup
-    timeoutRef.current = setTimeout(() => {
-      setActiveKey(null);
-    }, 300);
-  };
-
-  const activeGroup = activeKey ? grouped[activeKey] : null;
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: "600px", borderRadius: "32px", border: `1px solid ${C.lightGray}`, background: "#f8fafc", margin: "0 auto", overflow: "hidden" }}>
-      
-      {/* Couche de la carte de France */}
-      <div style={{ position: "absolute", inset: 0 }}>
-        <div style={{ position: "relative", width: "100%", maxWidth: "600px", height: "100%", margin: "0 auto" }}>
-          <img src="/france.svg" alt="Carte" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.08, objectFit: "contain", pointerEvents: "none" }} />
-          
-          {/* Rendu des Pins (Points sur la carte) */}
-          {Object.entries(grouped).map(([key, group]) => {
-            const isActive = activeKey === key;
-
-            return (
-              <div key={key} 
-                   onMouseEnter={() => handleMouseEnter(key)}
-                   onMouseLeave={handleMouseLeave}
-                   style={{ position: "absolute", top: group.coords.top, left: group.coords.left, zIndex: isActive ? 100 : 10 }}>
-                <div style={{ 
-                  transform: "translate(-50%, -50%)", width: "18px", height: "18px", borderRadius: "50%", 
-                  background: group.isPast ? "#ccc" : C.yellow, border: `3px solid ${C.white}`, 
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)", cursor: "pointer", transition: "transform 0.2s",
-                  ...(isActive && { transform: "translate(-50%, -50%) scale(1.5)" })
-                }} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ⚡ WIDGET CENTRAL EN BAS : Affichage du ou des séjours du lieu sélectionné */}
-      <div
-        onMouseEnter={() => activeKey && handleMouseEnter(activeKey)} // Maintient ouvert si on survole le popup
-        onMouseLeave={handleMouseLeave}
-        style={{ position: "absolute", bottom: "16px", left: 0, width: "100%", display: "flex", justifyContent: "center", zIndex: 200, pointerEvents: "none" }}
-      >
-        <AnimatePresence>
-          {activeGroup && <MapPopup group={activeGroup} />}
-        </AnimatePresence>
-      </div>
-
-    </div>
-  );
-}
-
 /* ─── PAGE PRINCIPALE ────────────────────────────────────────────── */
 export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
   const [cat, setCat] = useState("tous");
@@ -573,9 +412,9 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             </div>
           </div>
 
-          <div style={{ flex: 1, display: "flex", position: "relative", minHeight: "440px", maxWidth: "520px", marginLeft: "auto" }} className="hidden lg:block">
+          <div style={{ flex: 1, display: "flex", position: "relative", minHeight: "520px", maxWidth: "600px", marginLeft: "auto" }} className="hidden lg:block">
              {featuredSejours[0] && (
-               <div style={{ position: "absolute", top: "10px", left: "60px", width: "280px", zIndex: 1, transform: "rotate(-4deg)", transition: "all 0.3s" }}
+               <div style={{ position: "absolute", top: "10px", left: "40px", width: "340px", zIndex: 1, transform: "rotate(-4deg)", transition: "all 0.3s" }}
                     onMouseEnter={e => e.currentTarget.style.zIndex = 10}
                     onMouseLeave={e => e.currentTarget.style.zIndex = 1}>
                   <div style={{ position: "absolute", top: "-12px", left: "-12px", background: C.yellow, borderRadius: "999px", padding: "6px 14px", fontSize: "11px", fontWeight: 900, color: C.teal, zIndex: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
@@ -586,7 +425,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
              )}
 
              {featuredSejours[1] && (
-               <div style={{ position: "absolute", bottom: "10px", right: "0", width: "280px", zIndex: 2, transform: "rotate(3deg)", transition: "all 0.3s" }}
+               <div style={{ position: "absolute", bottom: "10px", right: "0", width: "340px", zIndex: 2, transform: "rotate(3deg)", transition: "all 0.3s" }}
                     onMouseEnter={e => e.currentTarget.style.zIndex = 10}
                     onMouseLeave={e => e.currentTarget.style.zIndex = 2}>
                   <SejourCard s={featuredSejours[1]} idx={1} />
@@ -650,20 +489,22 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               {sejoursToDisplay.map((s, i) => <SejourCard key={s.id} s={s} idx={i} />)}
             </div>
           ) : (
-            <AllSejoursMap sejours={sejoursToDisplay} />
+            <SejoursMap sejours={[...sejoursToDisplay, ...sejoursPassesToDisplay]} renderCard={(s, i) => <SejourCard s={s} idx={i} />} C={C} height="950px" />
           )}
 
           {sejoursPassesToDisplay.length > 0 && (
             <div style={{ marginTop: "48px" }}>
-              <button
-                onClick={() => setShowPastSejours(v => !v)}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "18px 24px", borderRadius: "16px", border: `1px solid #e5e5e5`, background: "white", cursor: "pointer" }}
-              >
-                <span style={{ display: "flex", alignItems: "center", gap: "10px", fontWeight: 800, color: C.teal, fontSize: "14px" }}>
-                  <Archive size={16} /> Séjours passés ({sejoursPassesToDisplay.length})
-                </span>
-                <ChevronDown size={18} style={{ color: C.teal, transform: showPastSejours ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s" }} />
-              </button>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                  onClick={() => setShowPastSejours(v => !v)}
+                  style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 24px", borderRadius: "999px", border: "none", background: "transparent", cursor: "pointer" }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "10px", fontWeight: 800, color: C.teal, fontSize: "14px" }}>
+                    <Archive size={16} /> Séjours passés ({sejoursPassesToDisplay.length})
+                  </span>
+                  <ChevronDown size={18} style={{ color: C.teal, transform: showPastSejours ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s" }} />
+                </button>
+              </div>
 
               {showPastSejours && (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginTop: "24px" }}>

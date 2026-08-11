@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { uploadPrivateDocument, deletePrivateAsset } from "@/lib/cloudinary";
+import { put, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 
 export async function uploaderDocument(enfantId, docType, file) {
@@ -18,20 +18,24 @@ export async function uploaderDocument(enfantId, docType, file) {
       return { error: "Enfant introuvable" };
     }
 
-    // 🔒 Documents sensibles (identité, santé) : upload en accès privé/signé, jamais public
+    // 🔒 Documents sensibles (identité, santé) : upload en accès privé, jamais public
     const ancienDoc = await prisma.document.findUnique({
       where: { enfantId_type: { enfantId, type: docType } },
     });
     if (ancienDoc?.url) {
-      await deletePrivateAsset(ancienDoc.url, ancienDoc.resourceType || "raw");
+      try { await del(ancienDoc.url); } catch (e) { console.error("Erreur suppression ancien document", e); }
     }
 
-    const uploaded = await uploadPrivateDocument(file, `documents/${enfantId}`);
+    const blob = await put(
+      `documents/${enfantId}/${docType}-${Date.now()}-${file.name}`,
+      file,
+      { access: "private" }
+    );
 
     const document = await prisma.document.upsert({
       where: { enfantId_type: { enfantId, type: docType } },
-      update: { url: uploaded.url, resourceType: uploaded.resourceType, statut: "EN_COURS" },
-      create: { enfantId, type: docType, url: uploaded.url, resourceType: uploaded.resourceType, statut: "EN_COURS" },
+      update: { url: blob.url, statut: "EN_COURS" },
+      create: { enfantId, type: docType, url: blob.url, statut: "EN_COURS" },
     });
 
     revalidatePath("/espace-famille");
