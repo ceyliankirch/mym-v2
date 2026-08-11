@@ -292,6 +292,17 @@ function RichTextEditor({ name, label, defaultValue, placeholder }) {
 
   const exec = (command) => {
     editorRef.current?.focus();
+
+    // ⚡ Si on clique juste dans un mot (pas de texte surligné), on sélectionne
+    // le mot sous le curseur pour que le style s'applique dessus immédiatement.
+    if (["bold", "italic", "underline"].includes(command)) {
+      const sel = window.getSelection();
+      if (sel && sel.isCollapsed && sel.anchorNode && editorRef.current?.contains(sel.anchorNode)) {
+        sel.modify("move", "backward", "word");
+        sel.modify("extend", "forward", "word");
+      }
+    }
+
     document.execCommand(command, false, null);
     setHtml(editorRef.current.innerHTML);
   };
