@@ -9,14 +9,14 @@ import {
   ClipboardList, ExternalLink, Edit, Trash2,
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
-  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare
+  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
-import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant } from "../actions/sejours";
+import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour } from "../actions/sejours";
 // ⚡ IMPORTS ANIMATEURS
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
@@ -704,7 +704,7 @@ function TableInscriptions({ data }) {
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }) {
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -758,6 +758,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
                     <button title="Inscrits" style={actionBtnStyle}><Users size={15} /></button>
                     <button title="Formulaire" style={actionBtnStyle}><ClipboardList size={15} /></button>
                   </div>
+                  <button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={15} /></button>
                   <button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={15} /></button>
                   <button title="Supprimer" onClick={() => onDelete(s.id)} style={{ ...actionBtnStyle, color: "#f63656", background: "#f6365615", opacity: 1 }}><Trash2 size={15} /></button>
                 </td>
@@ -770,7 +771,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant 
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -812,7 +813,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant }
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
               <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" style={actionBtnStyle}><Users size={16} /></button><button title="Lien du formulaire" style={actionBtnStyle}><ClipboardList size={16} /></button></div>
-              <div style={{ display: "flex", gap: "4px" }}><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
+              <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
         );
@@ -897,6 +898,11 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     await toggleEnAvant(id, estEnAvant);
   };
 
+  const handleDuplicate = async (id) => {
+    const copie = await dupliquerSejour(id);
+    if (copie) setSejourEnEdition(copie);
+  };
+
   const handleDeleteAlbum = async (id) => {
     if (window.confirm("Supprimer définitivement cet album et toutes ses photos ?")) {
       await supprimerAlbum(id);
@@ -975,8 +981,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} /> : 
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} />}
             </>
           )}
 

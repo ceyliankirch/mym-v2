@@ -223,3 +223,35 @@ export async function toggleEnAvant(id, enAvant) {
   revalidatePath("/admin");
   revalidatePath("/sejours-enfants-ados");
 }
+
+// 📄 DUPLIQUER
+export async function dupliquerSejour(id) {
+  const source = await prisma.sejour.findUnique({ where: { id } });
+  if (!source) return null;
+
+  const copie = await prisma.sejour.create({
+    data: {
+      titre: `${source.titre} (copie)`,
+      lieu: source.lieu,
+      dateDebut: source.dateDebut,
+      dateFin: source.dateFin,
+      saison: source.saison,
+      imageUrl: source.imageUrl,
+      places: source.places,
+      prix: source.prix,
+      statut: "Brouillon", // ⚡ Toujours en brouillon le temps de vérifier la copie
+      enAvant: false,
+      tranchesAge: source.tranchesAge,
+      shortDescription: source.shortDescription,
+      programme: source.programme,
+      infosPratiques: source.infosPratiques,
+      adresseComplete: source.adresseComplete,
+      galerie: source.galerie,
+      formSchema: source.formSchema,
+      documentsRequis: source.documentsRequis,
+    },
+  });
+
+  revalidatePath("/admin");
+  return copie;
+}
