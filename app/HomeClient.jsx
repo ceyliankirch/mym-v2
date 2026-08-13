@@ -524,6 +524,17 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
+        @media (max-width: 768px) {
+          .hero-search-wrap { width: calc(100% - 32px) !important; }
+          .hero-search-bar { flex-direction: column; align-items: stretch; border-radius: 24px !important; padding: 20px !important; gap: 12px; }
+          .hero-search-bar .search-divider { display: none; }
+          .hero-search-bar input { min-width: 0 !important; padding: 8px 4px; }
+          .hero-search-bar button { align-self: flex-end; }
+          .hero-search-filters { flex-wrap: wrap; gap: 16px !important; }
+          .hero-search-filters > div { flex: 1 1 30%; min-width: 90px; }
+        }
       `}</style>
 
       {/* ── HERO SECTION ────────────────────────────────────────────────── */}
@@ -571,15 +582,17 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
           </div>
         </div>
 
-        <div style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1100px", zIndex: 10 }}>
-          <div style={{ background: C.white, borderRadius: "100px", padding: "6px 6px 6px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 20px 50px rgba(17,76,90,0.15)", border: "1px solid rgba(0,0,0,0.05)", gap: "24px" }}>
-            <FilterDropdown label="Destination" options={destinationOptions} value={heroDestination} onChange={setHeroDestination} />
-            <FilterDropdown label="Âge" options={ageOptions} value={heroAge} onChange={setHeroAge} />
-            <FilterDropdown label="Saison" options={saisonOptions} value={heroSaison} onChange={setHeroSaison} />
-            <div style={{ width: "1px", height: "30px", background: "#eee" }} className="hidden sm:block" />
+        <div className="hero-search-wrap" style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1100px", zIndex: 10 }}>
+          <div className="hero-search-bar" style={{ background: C.white, borderRadius: "100px", boxShadow: "0 20px 50px rgba(17,76,90,0.15)", border: "1px solid rgba(0,0,0,0.05)" }}>
+            <div className="hero-search-filters" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+              <FilterDropdown label="Destination" options={destinationOptions} value={heroDestination} onChange={setHeroDestination} />
+              <FilterDropdown label="Âge" options={ageOptions} value={heroAge} onChange={setHeroAge} />
+              <FilterDropdown label="Saison" options={saisonOptions} value={heroSaison} onChange={setHeroSaison} />
+            </div>
+            <div className="search-divider" style={{ width: "1px", height: "30px", background: "#eee" }} />
             <input type="text" placeholder="Rechercher par mot-clé..." value={heroSearchTerm} onChange={e => setHeroSearchTerm(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: "14px", fontWeight: 600, color: C.teal, minWidth: "120px" }} />
-            
-            <button onClick={handleSearch} style={{ width: "52px", height: "52px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)", flexShrink: 0 }} 
+
+            <button onClick={handleSearch} style={{ width: "52px", height: "52px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)", flexShrink: 0 }}
               onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
               <Search size={22} />
             </button>

@@ -130,8 +130,11 @@ export default function SejoursMap({ sejours, renderCard, C, height = "700px" })
   const activeGroup = activeKey ? grouped[activeKey] : null;
 
   return (
-    <div style={{ position: "relative", width: "100%", height, borderRadius: "32px", border: "none", background: "transparent", margin: "0 auto", overflow: "hidden" }}>
-      <style>{`.hide-scroll::-webkit-scrollbar{display:none} .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}`}</style>
+    <div className="sejours-map-container" style={{ position: "relative", width: "100%", height, borderRadius: "32px", border: "none", background: "transparent", margin: "0 auto", overflow: "hidden" }}>
+      <style>{`
+        .hide-scroll::-webkit-scrollbar{display:none} .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
+        @media (max-width: 640px) { .sejours-map-container { height: 480px !important; } }
+      `}</style>
 
       {/* Couche de la carte de France */}
       <div style={{ position: "absolute", inset: 0 }}>

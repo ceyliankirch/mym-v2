@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendNewInscriptionNotificationEmail } from "@/lib/resend";
+import { sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendNewInscriptionNotificationEmail } from "@/lib/postmark";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";

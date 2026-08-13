@@ -451,13 +451,13 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           
           {/* ── ONGLET 1 : INFOS DE BASE ── */}
           <div style={{ display: tab === "infos" ? "flex" : "none", flexDirection: "column", gap: "20px" }}>
-            <div style={{ display: "flex", gap: "16px" }}>
-              <input type="text" name="titre" defaultValue={isEditing ? sejourData.titre : ""} required placeholder="Titre du séjour" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
-              <input type="text" name="tranchesAge" defaultValue={isEditing ? sejourData.tranchesAge : defaultAge} placeholder="Âges (ex: 6-12 ans)" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <input type="text" name="titre" defaultValue={isEditing ? sejourData.titre : ""} required placeholder="Titre du séjour" style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+              <input type="text" name="tranchesAge" defaultValue={isEditing ? sejourData.tranchesAge : defaultAge} placeholder="Âges (ex: 6-12 ans)" style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
             </div>
-            
-            <div style={{ display: "flex", gap: "16px" }}>
-               <input type="text" name="lieu" defaultValue={isEditing ? sejourData.lieu : ""} placeholder="Lieu (Ville, Région)" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+               <input type="text" name="lieu" defaultValue={isEditing ? sejourData.lieu : ""} placeholder="Lieu (Ville, Région)" style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
                <input type="number" name="places" defaultValue={isEditing ? sejourData.places : ""} placeholder="Nb. de places" style={{ width: "140px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
             </div>
 
@@ -471,12 +471,12 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               </div>
             </div>
             
-            <div style={{ display: "flex", gap: "16px" }}>
-              <input type="date" name="dateDebut" defaultValue={isEditing ? formatDateForInput(sejourData.dateDebut) : ""} style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, color: C.gray }} />
-              <input type="date" name="dateFin" defaultValue={isEditing ? formatDateForInput(sejourData.dateFin) : ""} style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, color: C.gray }} />
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <input type="date" name="dateDebut" defaultValue={isEditing ? formatDateForInput(sejourData.dateDebut) : ""} style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, color: C.gray }} />
+              <input type="date" name="dateFin" defaultValue={isEditing ? formatDateForInput(sejourData.dateFin) : ""} style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, color: C.gray }} />
             </div>
-            
-            <div style={{ display: "flex", gap: "16px", zIndex: 20 }}>
+
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", zIndex: 20 }}>
               <CustomSelect name="saison" label="Saison" defaultValue={isEditing ? sejourData.saison : "Automne"} options={[{ value: "Automne", label: "Automne", icon: Leaf, color: C.saffron }, { value: "Hiver", label: "Hiver", icon: Snowflake, color: C.teal }, { value: "Printemps", label: "Printemps", icon: Flower, color: "#10b981" }, { value: "Été", label: "Été", icon: Sun, color: C.yellow }]} />
               <CustomSelect name="statut" label="Statut" defaultValue={isEditing ? sejourData.statut : "Brouillon"} options={[{ value: "Brouillon", label: "Brouillon", icon: Clock, color: C.gray }, { value: "Publié", label: "Publié", icon: CheckCircle2, color: "#10b981" }]} />
             </div>
