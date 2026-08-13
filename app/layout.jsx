@@ -1,5 +1,5 @@
 // app/layout.jsx
-import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import fs from "fs";
 import path from "path";
 import "./globals.css";
@@ -9,9 +9,16 @@ import PartnersMarquee from "@/components/PartnersMarquee";
 import AuthProvider from "@/components/AuthProvider"; // ⚡ On importe le provider
 import { prisma } from "@/lib/prisma";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+// ⚡ Police auto-hébergée (au lieu de next/font/google) : évite les échecs de
+// build Vercel quand fonts.gstatic.com est injoignable au moment du build.
+const montserrat = localFont({
+  src: [
+    { path: "./fonts/Montserrat-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Montserrat-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/Montserrat-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/Montserrat-ExtraBold.ttf", weight: "800", style: "normal" },
+    { path: "./fonts/Montserrat-Black.ttf", weight: "900", style: "normal" },
+  ],
   variable: "--font-montserrat",
   display: "swap",
 });
