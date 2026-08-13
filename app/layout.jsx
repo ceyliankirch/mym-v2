@@ -1,8 +1,11 @@
 // app/layout.jsx
 import { Montserrat } from "next/font/google";
+import fs from "fs";
+import path from "path";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PartnersMarquee from "@/components/PartnersMarquee";
 import AuthProvider from "@/components/AuthProvider"; // ⚡ On importe le provider
 import { prisma } from "@/lib/prisma";
 
@@ -35,6 +38,17 @@ export default async function RootLayout({ children }) {
     console.error("Erreur récupération séjours pour le footer", e);
   }
 
+  // ⚡ Logos partenaires : lus depuis public/partenaires (déposer un fichier suffit)
+  let partnerLogos = [];
+  try {
+    const partenairesDir = path.join(process.cwd(), "public", "partenaires");
+    partnerLogos = fs
+      .readdirSync(partenairesDir)
+      .filter((f) => /\.(png|jpe?g|svg|webp)$/i.test(f));
+  } catch (e) {
+    partnerLogos = [];
+  }
+
   return (
     <html lang="fr" className={montserrat.variable}>
       <body style={{
@@ -45,6 +59,7 @@ export default async function RootLayout({ children }) {
         <AuthProvider>
           <Navbar />
           <main>{children}</main>
+          <PartnersMarquee logos={partnerLogos} />
           <Footer sejours={footerSejours} />
         </AuthProvider>
       </body>
