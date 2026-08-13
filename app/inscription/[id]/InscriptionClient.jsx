@@ -60,6 +60,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
   };
 
+  // 💶 Détecte si la famille a souscrit à l'assurance annulation (champ "select"
+  // dont le libellé évoque l'assurance) pour ajouter les 30€ au prix affiché.
+  const champAssurance = formFields.find(
+    (f) => f.type === "select" && f.label?.toLowerCase().includes("assurance")
+  );
+  const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
+
   const handleNewEnfantChange = (key, value) => {
     setNewEnfantData((prev) => ({ ...prev, [key]: value }));
   };
@@ -465,6 +472,25 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
               )}
 
               <div style={styles.buttonContainer}>
+                {sejour.prix > 0 && (
+                  <div style={styles.priceSummary}>
+                    <div style={styles.priceRow}>
+                      <span>Prix du séjour</span>
+                      <span>{sejour.prix.toFixed(2)} €</span>
+                    </div>
+                    {assuranceSouscrite && (
+                      <div style={styles.priceRow}>
+                        <span>Assurance annulation (MAIF)</span>
+                        <span>+ 30,00 €</span>
+                      </div>
+                    )}
+                    <div style={styles.priceTotalRow}>
+                      <span>Total</span>
+                      <span>{(sejour.prix + (assuranceSouscrite ? 30 : 0)).toFixed(2)} €</span>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -697,6 +723,31 @@ const styles = {
     height: "16px",
     flexShrink: 0,
     cursor: "pointer",
+  },
+  priceSummary: {
+    background: C.arctic,
+    borderRadius: "16px",
+    padding: "16px 20px",
+    marginBottom: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  priceRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "13px",
+    fontWeight: 600,
+    color: C.gray,
+  },
+  priceTotalRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "16px",
+    fontWeight: 900,
+    color: C.teal,
+    paddingTop: "8px",
+    borderTop: `1px solid ${C.lightGray}`,
   },
   buttonContainer: {
     marginTop: "24px",
