@@ -385,6 +385,35 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         );
                       }
 
+                      if (field.type === "info") {
+                        return (
+                          <p key={field.id} style={styles.infoText}>
+                            {field.label}
+                          </p>
+                        );
+                      }
+
+                      if (field.type === "checkbox") {
+                        return (
+                          <label key={field.id} style={styles.checkboxRow}>
+                            <input
+                              type="checkbox"
+                              required={field.required}
+                              onChange={(e) =>
+                                handleChange(field.label, e.target.checked)
+                              }
+                              style={styles.checkboxInput}
+                            />
+                            <span>
+                              {field.label}
+                              {field.required && (
+                                <span style={{ color: "#ef4444" }}> *</span>
+                              )}
+                            </span>
+                          </label>
+                        );
+                      }
+
                       return (
                         <div key={field.id} style={styles.inputGroup}>
                           <label style={styles.label}>
@@ -641,6 +670,33 @@ const styles = {
   },
   divider: {
     borderTop: `1px solid ${C.arctic}`,
+  },
+  infoText: {
+    fontSize: "13px",
+    lineHeight: 1.7,
+    color: C.gray,
+    background: C.arctic,
+    borderRadius: "12px",
+    padding: "14px 16px",
+    whiteSpace: "pre-line",
+    margin: 0,
+  },
+  checkboxRow: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    fontSize: "13px",
+    lineHeight: 1.5,
+    color: C.teal,
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  checkboxInput: {
+    marginTop: "3px",
+    width: "16px",
+    height: "16px",
+    flexShrink: 0,
+    cursor: "pointer",
   },
   buttonContainer: {
     marginTop: "24px",

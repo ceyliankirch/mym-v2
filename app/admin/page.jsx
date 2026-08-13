@@ -13,6 +13,9 @@ export default async function AdminPage() {
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
     const [sejours, inscriptions, clients, animateurs, albums, documentsManquants] = await Promise.all([
       prisma.sejour.findMany({
+        include: {
+          _count: { select: { inscriptions: true } },
+        },
         orderBy: { createdAt: "desc" }
       }),
       prisma.inscription.findMany({

@@ -366,13 +366,36 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
 
   const DEFAULT_FORM = [
     { id: "1", type: "section", label: "Informations du représentant légal", required: false },
-    { id: "2", type: "text", label: "Nom et Prénom", required: true },
-    { id: "3", type: "email", label: "Adresse Email", required: true },
-    { id: "4", type: "tel", label: "Numéro de téléphone", required: true },
-    { id: "5", type: "section", label: "Informations du participant", required: false },
-    { id: "6", type: "text", label: "Nom et Prénom de l'enfant", required: true },
-    { id: "7", type: "date", label: "Date de naissance", required: true },
-    { id: "8", type: "textarea", label: "Allergies ou informations médicales importantes", required: false },
+    { id: "2", type: "text", label: "Nom", required: true },
+    { id: "3", type: "text", label: "Prénom", required: true },
+    { id: "4", type: "email", label: "Adresse Email", required: true },
+    { id: "5", type: "tel", label: "Téléphone n°1", required: true },
+    { id: "6", type: "tel", label: "Téléphone n°2", required: false },
+    { id: "7", type: "text", label: "N° de Sécurité Sociale", required: true },
+    { id: "8", type: "text", label: "N° de Police d'assurance", required: true },
+    { id: "9", type: "text", label: "Compagnie d'assurance", required: true },
+
+    { id: "10", type: "section", label: "Informations du participant", required: false },
+    { id: "11", type: "text", label: "Nom et Prénom de l'enfant", required: true },
+    { id: "12", type: "date", label: "Date de naissance", required: true },
+    { id: "13", type: "textarea", label: "Allergies ou informations médicales importantes", required: false },
+
+    { id: "14", type: "section", label: "Autorisations", required: false },
+    { id: "15", type: "checkbox", label: "J'autorise mon enfant à participer au séjour organisé par Make Your Moment.", required: true },
+    { id: "16", type: "checkbox", label: "J'autorise mon enfant à être véhiculé durant le séjour, le cas échéant, par le ou la directrice du séjour.", required: true },
+    { id: "17", type: "checkbox", label: "J'autorise les responsables du séjour à prendre toutes les dispositions qu'ils jugeraient utiles en cas d'urgence relative à l'état de santé de mon enfant.", required: true },
+    { id: "18", type: "checkbox", label: "J'autorise l'administration de paracétamol en cas de nécessité et d'arnica en cas de chute, choc, contusion ou hématome.", required: true },
+    { id: "19", type: "checkbox", label: "Je m'engage à rembourser l'intégralité des frais médicaux et pharmaceutiques éventuellement déboursés par Make Your Moment.", required: true },
+    { id: "20", type: "checkbox", label: "J'autorise l'utilisation de l'image de mon enfant (photos & vidéos) liée au séjour, à titre gracieux, pour permettre aux familles de suivre le déroulement du séjour, pour la réalisation de plaquettes d'informations et pour le site de l'association.", required: true },
+
+    { id: "21", type: "section", label: "Assurance annulation (partenaire MAIF)", required: false },
+    { id: "22", type: "info", label: "Vous avez la possibilité de souscrire à une assurance annulation auprès de notre partenaire MAIF. Le prix de cette assurance est de 30€, à ajouter au prix du séjour, et doit être souscrite au moment de l'inscription.\nEn cas d'annulation sous conditions, Make Your Moment retient 25% du montant du séjour ; le reste (après remboursement MAIF) vous est remboursé à la date de l'annulation.", required: false },
+    { id: "23", type: "select", label: "Souscrire à cette assurance ?", required: true, options: "Oui, Non" },
+
+    { id: "24", type: "section", label: "Paiement", required: false },
+    { id: "25", type: "info", label: "Chèque : à l'ordre de \"Make Your Moment\", à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie. Paiement en 3 fois autorisé.\nCarte bleue : paiement en ligne via une plateforme du Crédit Mutuel (5€ de frais). Un lien vous sera envoyé.\nVirement : IBAN FR76 1027 8060 3600 0209 3910 120, libellé au nom et prénom du participant.\nChèques ANCV : à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie.\nEspèces : nous contacter.", required: false },
+    { id: "26", type: "select", label: "Comment souhaitez-vous régler ?", required: true, options: "Chèque, Carte bleue, Virement bancaire, Chèques ANCV, Espèces" },
+    { id: "27", type: "checkbox", label: "J'accepte, après en avoir pris connaissance, les modalités de paiement et d'annulation.", required: true },
   ];
   
   const [formFields, setFormFields] = useState(() => {
@@ -539,10 +562,12 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
                         <option value="tel">Téléphone</option>
                         <option value="date">Date</option>
                         <option value="select">Choix multiple</option>
+                        <option value="checkbox">Case à cocher</option>
+                        <option value="info">Texte informatif</option>
                       </select>
                     )}
 
-                    {field.type !== 'section' && (
+                    {field.type !== 'section' && field.type !== 'info' && (
                       <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", background: C.arctic, padding: "8px 12px", borderRadius: "8px" }}>
                         <input type="checkbox" checked={field.required} onChange={(e) => updateField(field.id, "required", e.target.checked)} style={{ cursor: "pointer" }} />
                         <span style={{ fontSize: "11px", fontWeight: 700, color: C.teal }}>Requis</span>
