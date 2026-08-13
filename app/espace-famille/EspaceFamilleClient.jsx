@@ -24,7 +24,8 @@ import {
   MapPin,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
-import { supprimerInscriptionFamille } from "@/app/actions/inscriptions";
+import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant } from "@/app/actions/inscriptions";
+import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 const C = {
   teal: "#114C5A",
@@ -133,8 +134,214 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
   );
 }
 
+/* ─── MODALE : FICHE ENFANT (édition + documents + suppression) ────
+   Ouverte en cliquant sur un enfant dans l'onglet "Mes Enfants". Permet de
+   modifier ses informations, d'associer des documents pour les prochains
+   séjours (indépendamment de toute inscription), et de le supprimer. */
+function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId }) {
+  const [form, setForm] = useState({
+    prenom: enfant.prenom || "",
+    nom: enfant.nom || "",
+    dateNaissance: enfant.dateNaissance ? new Date(enfant.dateNaissance).toISOString().slice(0, 10) : "",
+    sexe: enfant.sexe || "",
+    taille: enfant.taille || "",
+    poids: enfant.poids || "",
+    pointure: enfant.pointure || "",
+    allergies: enfant.allergies || "",
+    informationsComplementaires: enfant.informationsComplementaires || "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const statusConfig = {
+    VALIDE: { bg: "bg-green-50", border: "border-green-200", text: "text-green-700", label: "Validé", icon: CheckCircle2 },
+    EN_COURS: { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", label: "En vérification", icon: Clock },
+    MANQUANT: { bg: "bg-red-50", border: "border-red-200", text: "text-red-700", label: "À importer", icon: XCircle },
+  };
+
+  const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const result = await modifierEnfant(enfant.id, clientId, form);
+      if (result.error) {
+        alert(`Erreur: ${result.error}`);
+      } else {
+        window.location.reload();
+      }
+    } catch (error) {
+      alert("Erreur lors de l'enregistrement");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Supprimer définitivement la fiche de ${enfant.prenom} ${enfant.nom} ?`)) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await supprimerEnfant(enfant.id, clientId);
+      if (result.error) {
+        alert(`Erreur: ${result.error}`);
+      } else {
+        onClose();
+        window.location.reload();
+      }
+    } catch (error) {
+      alert("Erreur lors de la suppression");
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const inputClass = "w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#114C5A]/20 focus:border-[#114C5A]";
+  const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5";
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
+      >
+        <div className="flex items-start justify-between p-6 border-b border-slate-200">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">{enfant.prenom} {enfant.nom}</h2>
+            <p className="text-sm text-slate-500 mt-1">Modifier la fiche et gérer les documents</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          {/* INFOS */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Prénom</label>
+              <input className={inputClass} value={form.prenom} onChange={(e) => handleChange("prenom", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Nom</label>
+              <input className={inputClass} value={form.nom} onChange={(e) => handleChange("nom", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Date de naissance</label>
+              <input type="date" className={inputClass} value={form.dateNaissance} onChange={(e) => handleChange("dateNaissance", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Sexe</label>
+              <select className={inputClass} value={form.sexe} onChange={(e) => handleChange("sexe", e.target.value)}>
+                <option value="">--</option>
+                <option value="M">Garçon</option>
+                <option value="F">Fille</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Taille (cm)</label>
+              <input type="number" min="0" className={inputClass} value={form.taille} onChange={(e) => handleChange("taille", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Poids (kg)</label>
+              <input type="number" min="0" className={inputClass} value={form.poids} onChange={(e) => handleChange("poids", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Pointure</label>
+              <input type="number" min="0" className={inputClass} value={form.pointure} onChange={(e) => handleChange("pointure", e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Allergies ou intolérances</label>
+            <textarea rows="2" className={inputClass} value={form.allergies} onChange={(e) => handleChange("allergies", e.target.value)} placeholder="ex: Allergie aux arachides..." />
+          </div>
+          <div>
+            <label className={labelClass}>Informations complémentaires</label>
+            <textarea rows="2" className={inputClass} value={form.informationsComplementaires} onChange={(e) => handleChange("informationsComplementaires", e.target.value)} placeholder="Toute information utile à l'équipe encadrante..." />
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full bg-[#114C5A] text-white font-bold py-3 rounded-xl hover:bg-[#0d3844] transition disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isSaving ? <Loader size={16} className="animate-spin" /> : null}
+            Enregistrer les modifications
+          </button>
+
+          {/* DOCUMENTS (indépendants de tout séjour, pour les prochaines inscriptions) */}
+          <div className="border-t border-slate-200 pt-5">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
+              Documents pour les prochains séjours
+            </p>
+            <div className="space-y-3">
+              {CATALOGUE_DOCUMENTS.map((docType) => {
+                const existing = enfant.documents?.find((d) => d.type === docType);
+                const statut = existing?.statut || "MANQUANT";
+                const cfg = statusConfig[statut];
+                const Icon = cfg.icon;
+
+                return (
+                  <div
+                    key={docType}
+                    className={`${cfg.bg} border ${cfg.border} rounded-xl p-4 flex items-center justify-between gap-4`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={cfg.text} size={20} />
+                      <div>
+                        <p className={`font-bold text-sm ${cfg.text}`}>{docType}</p>
+                        <p className={`text-xs ${cfg.text} opacity-75`}>{cfg.label}</p>
+                      </div>
+                    </div>
+
+                    {statut !== "VALIDE" && (
+                      <label className="cursor-pointer shrink-0">
+                        <input
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => onUpload(enfant.id, docType, e)}
+                          disabled={uploadingDocId === docType}
+                        />
+                        <div className="flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
+                          {uploadingDocId === docType ? (
+                            <Loader size={16} className="animate-spin" />
+                          ) : (
+                            <UploadCloud size={16} />
+                          )}
+                          Importer
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t border-slate-200">
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-bold text-sm transition disabled:opacity-50"
+          >
+            {isDeleting ? <Loader size={16} className="animate-spin" /> : <Trash2 size={16} />}
+            Supprimer cet enfant
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EspaceFamilleClient({
   userName = "Parent",
+  clientId,
   notifications = [],
   sejoursAVenir = [],
   sejoursCatalogue = [],
@@ -144,6 +351,7 @@ export default function EspaceFamilleClient({
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploadingDocId, setUploadingDocId] = useState(null);
   const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
+  const [enfantEnConsultation, setEnfantEnConsultation] = useState(null);
   const [isDeletingInscription, setIsDeletingInscription] = useState(false);
 
   const handleDeleteInscription = async (sejour) => {
@@ -431,7 +639,8 @@ export default function EspaceFamilleClient({
                   return (
                     <div
                       key={enfant.id}
-                      className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm"
+                      onClick={() => setEnfantEnConsultation(enfant)}
+                      className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm cursor-pointer hover:shadow-md transition-all"
                     >
                       <div className="flex items-center gap-4 mb-4">
                         <div className={`w-16 h-16 ${avatarColor} rounded-full flex items-center justify-center font-black text-2xl`}>
@@ -674,6 +883,16 @@ export default function EspaceFamilleClient({
           uploadingDocId={uploadingDocId}
           onDeleteInscription={handleDeleteInscription}
           isDeleting={isDeletingInscription}
+        />
+      )}
+
+      {enfantEnConsultation && (
+        <EnfantModal
+          enfant={enfantEnConsultation}
+          clientId={clientId}
+          onClose={() => setEnfantEnConsultation(null)}
+          onUpload={handleUploadClick}
+          uploadingDocId={uploadingDocId}
         />
       )}
     </div>

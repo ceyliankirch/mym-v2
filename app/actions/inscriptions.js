@@ -104,6 +104,38 @@ export async function modifierEnfant(enfantId, clientId, enfantData) {
   }
 }
 
+// 🗑️ SUPPRIMER UN ENFANT (espace famille — vérifie que le client est bien propriétaire)
+export async function supprimerEnfant(enfantId, clientId) {
+  if (!enfantId || !clientId) {
+    return { error: "Données incomplètes" };
+  }
+
+  try {
+    const enfant = await prisma.enfant.findUnique({
+      where: { id: enfantId },
+      include: { _count: { select: { inscriptions: true } } },
+    });
+
+    if (!enfant || enfant.clientId !== clientId) {
+      return { error: "Enfant introuvable" };
+    }
+
+    if (enfant._count.inscriptions > 0) {
+      return { error: "Impossible de supprimer un enfant ayant des inscriptions. Annulez d'abord ses inscriptions." };
+    }
+
+    await prisma.enfant.delete({ where: { id: enfantId } });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting enfant:", error);
+    return { error: "Erreur lors de la suppression de l'enfant" };
+  }
+}
+
 export async function creerInscription(
   sejourId,
   enfantData,
