@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendInscriptionReceivedEmail, sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail } from "@/lib/postmark";
+import { sendInscriptionReceivedEmail, sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail } from "@/lib/postmark";
 import { generateInscriptionPdf } from "@/lib/inscriptionPdf";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
@@ -49,6 +49,12 @@ export async function creerEnfant(clientId, enfantData) {
         dateNaissance: enfantData.dateNaissance
           ? new Date(enfantData.dateNaissance)
           : null,
+        sexe: enfantData.sexe || null,
+        taille: enfantData.taille ? parseInt(enfantData.taille, 10) : null,
+        poids: enfantData.poids ? parseInt(enfantData.poids, 10) : null,
+        pointure: enfantData.pointure ? parseInt(enfantData.pointure, 10) : null,
+        allergies: enfantData.allergies || null,
+        informationsComplementaires: enfantData.informationsComplementaires || null,
       },
     });
 
@@ -56,6 +62,45 @@ export async function creerEnfant(clientId, enfantData) {
   } catch (error) {
     console.error("Error creating enfant:", error);
     return { error: "Erreur lors de la création de l'enfant" };
+  }
+}
+
+// ✏️ MODIFIER LES INFORMATIONS D'UN ENFANT (espace famille)
+export async function modifierEnfant(enfantId, clientId, enfantData) {
+  if (!enfantId || !clientId) {
+    return { error: "Données incomplètes" };
+  }
+
+  try {
+    const enfant = await prisma.enfant.findUnique({ where: { id: enfantId } });
+    if (!enfant || enfant.clientId !== clientId) {
+      return { error: "Enfant introuvable" };
+    }
+
+    const updated = await prisma.enfant.update({
+      where: { id: enfantId },
+      data: {
+        prenom: enfantData.prenom,
+        nom: enfantData.nom,
+        dateNaissance: enfantData.dateNaissance
+          ? new Date(enfantData.dateNaissance)
+          : null,
+        sexe: enfantData.sexe || null,
+        taille: enfantData.taille ? parseInt(enfantData.taille, 10) : null,
+        poids: enfantData.poids ? parseInt(enfantData.poids, 10) : null,
+        pointure: enfantData.pointure ? parseInt(enfantData.pointure, 10) : null,
+        allergies: enfantData.allergies || null,
+        informationsComplementaires: enfantData.informationsComplementaires || null,
+      },
+    });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true, enfant: updated };
+  } catch (error) {
+    console.error("Error updating enfant:", error);
+    return { error: "Erreur lors de la mise à jour de l'enfant" };
   }
 }
 
@@ -126,20 +171,22 @@ export async function creerInscription(
 
     // 📧 Un email part toujours à la soumission : la demande de documents s'il en manque,
     // sinon un simple accusé de réception. Les deux ont en pièce jointe un récapitulatif PDF.
-    if (client.email) {
-      let pdfBuffer;
-      try {
-        pdfBuffer = await generateInscriptionPdf({ enfant, client, sejour, documentsRequis });
-      } catch (e) {
-        console.error("Erreur génération PDF inscription", e);
-      }
+    // Une notification interne (avec le même PDF) part également à l'organisation.
+    let pdfBuffer;
+    try {
+      pdfBuffer = await generateInscriptionPdf({ enfant, client, sejour, documentsRequis });
+    } catch (e) {
+      console.error("Erreur génération PDF inscription", e);
+    }
 
+    if (client.email) {
       if (documentsManquants.length > 0) {
         await sendDocumentsRequestEmail({
           to: client.email,
           prenomEnfant: enfant.prenom,
           sejourTitre: sejour.titre,
           documentsManquants,
+          lienPaiementCIC: sejour.lienPaiementCIC,
           pdfBuffer,
         });
       } else {
@@ -147,10 +194,23 @@ export async function creerInscription(
           to: client.email,
           prenomEnfant: enfant.prenom,
           sejourTitre: sejour.titre,
+          lienPaiementCIC: sejour.lienPaiementCIC,
           pdfBuffer,
         });
       }
     }
+
+    await sendNewInscriptionSubmittedEmail({
+      prenomEnfant: enfant.prenom,
+      nomEnfant: enfant.nom,
+      dateNaissanceEnfant: enfant.dateNaissance,
+      sejourTitre: sejour.titre,
+      clientNom: client.nom,
+      clientPrenom: client.prenom,
+      clientEmail: client.email,
+      clientTelephone: client.telephone,
+      pdfBuffer,
+    });
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");
@@ -187,7 +247,7 @@ export async function changerStatutInscription(id, statut) {
       const sejourTitre = inscription.sejour?.titre;
 
       if (statut === "Inscription envoyée") {
-        await sendInscriptionReceivedEmail({ to, prenomEnfant, sejourTitre });
+        await sendInscriptionReceivedEmail({ to, prenomEnfant, sejourTitre, lienPaiementCIC: inscription.sejour?.lienPaiementCIC });
       } else if (statut === "Paiement validé") {
         await sendInscriptionConfirmationEmail({
           to,

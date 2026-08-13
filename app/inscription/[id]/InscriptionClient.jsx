@@ -48,6 +48,12 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     prenom: "",
     nom: "",
     dateNaissance: "",
+    sexe: "",
+    taille: "",
+    poids: "",
+    pointure: "",
+    allergies: "",
+    informationsComplementaires: "",
   });
 
   const handleChange = (fieldId, value) => {
@@ -286,6 +292,73 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                           handleNewEnfantChange("dateNaissance", e.target.value)
                         }
                         style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Sexe</label>
+                      <select
+                        value={newEnfantData.sexe}
+                        onChange={(e) => handleNewEnfantChange("sexe", e.target.value)}
+                        style={styles.select}
+                      >
+                        <option value="">-- Sélectionner --</option>
+                        <option value="M">Garçon</option>
+                        <option value="F">Fille</option>
+                      </select>
+                    </div>
+                    <div style={{ display: "flex", gap: "16px" }}>
+                      <div style={{ ...styles.inputGroup, flex: 1 }}>
+                        <label style={styles.label}>Taille (cm)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newEnfantData.taille}
+                          onChange={(e) => handleNewEnfantChange("taille", e.target.value)}
+                          style={styles.input}
+                          placeholder="ex: 140"
+                        />
+                      </div>
+                      <div style={{ ...styles.inputGroup, flex: 1 }}>
+                        <label style={styles.label}>Poids (kg)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newEnfantData.poids}
+                          onChange={(e) => handleNewEnfantChange("poids", e.target.value)}
+                          style={styles.input}
+                          placeholder="ex: 35"
+                        />
+                      </div>
+                      <div style={{ ...styles.inputGroup, flex: 1 }}>
+                        <label style={styles.label}>Pointure</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newEnfantData.pointure}
+                          onChange={(e) => handleNewEnfantChange("pointure", e.target.value)}
+                          style={styles.input}
+                          placeholder="ex: 34"
+                        />
+                      </div>
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Allergies ou intolérances</label>
+                      <textarea
+                        value={newEnfantData.allergies}
+                        onChange={(e) => handleNewEnfantChange("allergies", e.target.value)}
+                        rows="3"
+                        style={styles.input}
+                        placeholder="ex: Allergie aux arachides, intolérance au lactose..."
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label}>Informations complémentaires</label>
+                      <textarea
+                        value={newEnfantData.informationsComplementaires}
+                        onChange={(e) => handleNewEnfantChange("informationsComplementaires", e.target.value)}
+                        rows="3"
+                        style={styles.input}
+                        placeholder="Toute information utile à l'équipe encadrante..."
                       />
                     </div>
                     <button

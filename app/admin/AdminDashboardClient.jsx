@@ -790,15 +790,22 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {inscrits.map((ins) => {
               const docsManquants = (ins.enfant?.documents || []).filter((d) => d.statut === "MANQUANT").length;
+              const dotColor = ins.enfant?.sexe === "M" ? "#3b82f6" : ins.enfant?.sexe === "F" ? "#ec4899" : C.gray;
               return (
                 <div key={ins.id} style={{ background: C.arctic, borderRadius: "16px", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                   <div>
-                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>{ins.enfant?.prenom} {ins.enfant?.nom}</p>
+                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                      {ins.enfant?.prenom} {ins.enfant?.nom}
+                    </p>
                     <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>
                       Parent : {ins.client?.prenom} {ins.client?.nom} {ins.client?.email ? `· ${ins.client.email}` : ""} {ins.client?.telephone ? `· ${ins.client.telephone}` : ""}
                     </p>
                     {docsManquants > 0 && (
                       <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
+                    )}
+                    {ins.enfant?.allergies && (
+                      <p style={{ fontSize: "11px", color: "#b45309", fontWeight: 700, marginTop: "4px" }}>⚠️ Allergies : {ins.enfant.allergies}</p>
                     )}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
@@ -852,9 +859,15 @@ function TableInscriptions({ data }) {
           <tbody>
             {recent.map(b => {
               const colors = STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
+              const dotColor = b.enfant?.sexe === "M" ? "#3b82f6" : b.enfant?.sexe === "F" ? "#ec4899" : C.gray;
               return (
                 <tr key={b.id} style={{ borderBottom: `1px solid ${C.arctic}` }}>
-                  <td style={{ padding: "16px", fontSize: "13px", fontWeight: 700, color: C.teal }}>{b.enfant?.prenom} {b.enfant?.nom}</td>
+                  <td style={{ padding: "16px", fontSize: "13px", fontWeight: 700, color: C.teal }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                      {b.enfant?.prenom} {b.enfant?.nom}
+                    </span>
+                  </td>
                   <td style={{ padding: "16px", fontSize: "13px" }}>{b.sejour?.titre}</td>
                   <td style={{ padding: "16px", fontSize: "13px", color: C.gray }}>{new Date(b.createdAt).toLocaleDateString("fr-FR")}</td>
                   <td style={{ padding: "16px" }}><span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{b.statut}</span></td>
@@ -1365,9 +1378,13 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                       </div>
                       {c.enfants?.length > 0 && (
                         <div style={{ borderTop: `1px solid ${C.arctic}`, paddingTop: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          {c.enfants.map(e => (
-                            <span key={e.id} style={{ fontSize: "12px", fontWeight: 600, color: C.teal, background: C.lilac, padding: "4px 10px", borderRadius: "999px" }}>{e.prenom} {e.nom}</span>
-                          ))}
+                          {c.enfants.map(e => {
+                            const bg = e.sexe === "M" ? "#dbeafe" : e.sexe === "F" ? "#fce7f3" : C.lilac;
+                            const fg = e.sexe === "M" ? "#1d4ed8" : e.sexe === "F" ? "#be185d" : C.teal;
+                            return (
+                              <span key={e.id} style={{ fontSize: "12px", fontWeight: 600, color: fg, background: bg, padding: "4px 10px", borderRadius: "999px" }}>{e.prenom} {e.nom}</span>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

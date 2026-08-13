@@ -421,8 +421,12 @@ export default function EspaceFamilleClient({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {enfants.map((enfant) => {
                   const initials = (enfant.prenom?.[0] || "") + (enfant.nom?.[0] || "");
-                  const colors = ["bg-blue-100 text-blue-600", "bg-pink-100 text-pink-600", "bg-green-100 text-green-600", "bg-purple-100 text-purple-600"];
-                  const colorIdx = enfant.prenom?.charCodeAt(0) % colors.length;
+                  const avatarColor =
+                    enfant.sexe === "M"
+                      ? "bg-blue-100 text-blue-600"
+                      : enfant.sexe === "F"
+                      ? "bg-pink-100 text-pink-600"
+                      : "bg-slate-100 text-slate-500";
 
                   return (
                     <div
@@ -430,7 +434,7 @@ export default function EspaceFamilleClient({
                       className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm"
                     >
                       <div className="flex items-center gap-4 mb-4">
-                        <div className={`w-16 h-16 ${colors[colorIdx] || colors[0]} rounded-full flex items-center justify-center font-black text-2xl`}>
+                        <div className={`w-16 h-16 ${avatarColor} rounded-full flex items-center justify-center font-black text-2xl`}>
                           {initials}
                         </div>
                         <div className="flex-1">
@@ -447,6 +451,45 @@ export default function EspaceFamilleClient({
                           )}
                         </div>
                       </div>
+
+                      {(enfant.taille || enfant.poids || enfant.pointure) && (
+                        <div className="flex gap-2 mb-4">
+                          {enfant.taille && (
+                            <span className="bg-slate-50 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg">
+                              {enfant.taille} cm
+                            </span>
+                          )}
+                          {enfant.poids && (
+                            <span className="bg-slate-50 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg">
+                              {enfant.poids} kg
+                            </span>
+                          )}
+                          {enfant.pointure && (
+                            <span className="bg-slate-50 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg">
+                              Pointure {enfant.pointure}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {enfant.allergies && (
+                        <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-3">
+                          <p className="text-xs font-bold text-red-700 uppercase tracking-wide mb-1">
+                            Allergies / intolérances
+                          </p>
+                          <p className="text-sm text-red-700">{enfant.allergies}</p>
+                        </div>
+                      )}
+
+                      {enfant.informationsComplementaires && (
+                        <div className="bg-slate-50 rounded-xl p-3 mb-3">
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                            Informations complémentaires
+                          </p>
+                          <p className="text-sm text-slate-600">{enfant.informationsComplementaires}</p>
+                        </div>
+                      )}
+
                       <div className="text-sm text-slate-600">
                         <p>
                           <strong>{enfant.inscriptions?.length || 0}</strong> inscription(s)

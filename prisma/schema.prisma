@@ -85,15 +85,21 @@ model Inscription {
 }
 
 model Enfant {
-  id            String        @id @default(cuid())
-  prenom        String
-  nom           String
-  dateNaissance DateTime?
-  clientId      String
-  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  documents     Document[]
-  inscriptions  Inscription[]
-  createdAt     DateTime      @default(now())
+  id                String        @id @default(cuid())
+  prenom            String
+  nom               String
+  dateNaissance     DateTime?
+  sexe              String?       // "M" ou "F" — détermine la couleur d'assignation (bleu / rose)
+  taille            Int?          // en cm
+  poids             Int?          // en kg
+  pointure          Int?
+  allergies         String?
+  informationsComplementaires String?
+  clientId          String
+  client            Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  documents         Document[]
+  inscriptions      Inscription[]
+  createdAt         DateTime      @default(now())
 }
 
 model Document {
