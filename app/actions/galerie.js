@@ -29,6 +29,7 @@ export async function creerAlbum(formData) {
 
   revalidatePath("/admin");
   revalidatePath("/galerie");
+  revalidatePath("/");
 }
 
 // ✏️ MODIFIER UN ALBUM (titre, séjour lié, ajout de nouvelles photos)
@@ -56,6 +57,7 @@ export async function modifierAlbum(id, formData) {
 
   revalidatePath("/admin");
   revalidatePath("/galerie");
+  revalidatePath("/");
 }
 
 // 🗑️ SUPPRIMER UN ALBUM (et toutes ses photos)
@@ -70,6 +72,7 @@ export async function supprimerAlbum(id) {
 
   revalidatePath("/admin");
   revalidatePath("/galerie");
+  revalidatePath("/");
 }
 
 // ⭐ METTRE/RETIRER UNE PHOTO À L'AFFICHE (page d'accueil)
@@ -94,4 +97,5 @@ export async function supprimerPhoto(id) {
 
   revalidatePath("/admin");
   revalidatePath("/galerie");
+  revalidatePath("/");
 }

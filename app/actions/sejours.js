@@ -82,6 +82,7 @@ export async function creerSejour(formData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/sejours-enfants-ados");
 }
 
@@ -180,6 +181,7 @@ export async function modifierSejour(id, formData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/sejours-enfants-ados");
   revalidatePath(`/sejours-enfants-ados/${id}`);
 }
@@ -205,6 +207,7 @@ export async function supprimerSejour(id) {
   });
   
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/sejours-enfants-ados");
 }
 
@@ -215,6 +218,7 @@ export async function toggleStatut(id, nouveauStatut) {
     data: { statut: nouveauStatut },
   });
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/sejours-enfants-ados");
 }
 
@@ -225,6 +229,7 @@ export async function toggleEnAvant(id, enAvant) {
     data: { enAvant: enAvant },
   });
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/sejours-enfants-ados");
 }
 
