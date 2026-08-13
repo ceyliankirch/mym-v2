@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Plus,
   CheckCircle2,
+  Tag,
 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useSession } from "next-auth/react";
@@ -66,6 +67,21 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     (f) => f.type === "select" && f.label?.toLowerCase().includes("assurance")
   );
   const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
+
+  // 🏷️ Code promo "Île-de-France" : -100€ sur le prix du séjour
+  const [codePromo, setCodePromo] = useState("");
+  const [promoAppliquee, setPromoAppliquee] = useState(false);
+  const [promoErreur, setPromoErreur] = useState("");
+
+  const handleAppliquerPromo = () => {
+    if (codePromo.trim().toUpperCase() === "VAL_DE_MARNE_94") {
+      setPromoAppliquee(true);
+      setPromoErreur("");
+    } else {
+      setPromoAppliquee(false);
+      setPromoErreur("Code promo invalide");
+    }
+  };
 
   const handleNewEnfantChange = (key, value) => {
     setNewEnfantData((prev) => ({ ...prev, [key]: value }));
@@ -193,6 +209,41 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
             Veuillez remplir les informations ci-dessous pour finaliser la
             demande d'inscription.
           </p>
+
+          <div style={styles.promoBanner}>
+            <div style={styles.promoBannerText}>
+              <Tag size={18} color={C.saffron} style={{ flexShrink: 0, marginTop: "2px" }} />
+              <p style={{ margin: 0 }}>
+                <strong>-100€ pour les habitants du Val-de-Marne !</strong> Entrez votre code de réduction ci-dessous pour en bénéficier.
+              </p>
+            </div>
+            <div style={styles.promoInputRow}>
+              <input
+                type="text"
+                value={codePromo}
+                onChange={(e) => {
+                  setCodePromo(e.target.value);
+                  if (promoAppliquee) setPromoAppliquee(false);
+                  if (promoErreur) setPromoErreur("");
+                }}
+                placeholder="Code de réduction"
+                style={styles.promoInput}
+              />
+              <button
+                type="button"
+                onClick={handleAppliquerPromo}
+                style={styles.promoButton}
+              >
+                Appliquer
+              </button>
+            </div>
+            {promoAppliquee && (
+              <p style={styles.promoSuccess}>
+                <CheckCircle2 size={14} /> Code appliqué : -100€ sur le prix du séjour
+              </p>
+            )}
+            {promoErreur && <p style={styles.promoError}>{promoErreur}</p>}
+          </div>
 
           {status === "loading" ? (
             <div style={styles.loadingContainer}>
@@ -484,9 +535,21 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         <span>+ 30,00 €</span>
                       </div>
                     )}
+                    {promoAppliquee && (
+                      <div style={{ ...styles.priceRow, color: "#10b981", fontWeight: 800 }}>
+                        <span>Réduction Val-de-Marne</span>
+                        <span>- 100,00 €</span>
+                      </div>
+                    )}
                     <div style={styles.priceTotalRow}>
                       <span>Total</span>
-                      <span>{(sejour.prix + (assuranceSouscrite ? 30 : 0)).toFixed(2)} €</span>
+                      <span>
+                        {Math.max(
+                          0,
+                          sejour.prix + (assuranceSouscrite ? 30 : 0) - (promoAppliquee ? 100 : 0)
+                        ).toFixed(2)}{" "}
+                        €
+                      </span>
                     </div>
                   </div>
                 )}
@@ -555,6 +618,64 @@ const styles = {
     fontSize: "14px",
     fontWeight: 500,
     marginBottom: "32px",
+  },
+  promoBanner: {
+    background: `${C.saffron}14`,
+    border: `1px solid ${C.saffron}40`,
+    borderRadius: "16px",
+    padding: "18px 20px",
+    marginBottom: "32px",
+  },
+  promoBannerText: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    fontSize: "14px",
+    color: C.teal,
+    lineHeight: 1.5,
+    marginBottom: "14px",
+  },
+  promoInputRow: {
+    display: "flex",
+    gap: "10px",
+  },
+  promoInput: {
+    flex: 1,
+    padding: "12px 14px",
+    borderRadius: "10px",
+    border: `1px solid ${C.lightGray}`,
+    background: C.white,
+    fontFamily: "inherit",
+    fontSize: "14px",
+    textTransform: "uppercase",
+  },
+  promoButton: {
+    background: C.teal,
+    color: C.white,
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "10px",
+    fontWeight: 800,
+    fontSize: "13px",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+  },
+  promoSuccess: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    color: "#10b981",
+    fontSize: "13px",
+    fontWeight: 700,
+    marginTop: "10px",
+    marginBottom: 0,
+  },
+  promoError: {
+    color: "#ef4444",
+    fontSize: "13px",
+    fontWeight: 700,
+    marginTop: "10px",
+    marginBottom: 0,
   },
   loadingContainer: {
     padding: "40px",
