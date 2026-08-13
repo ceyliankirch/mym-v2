@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   LayoutDashboard,
   Users,
@@ -18,6 +19,9 @@ import {
   Loader,
   X,
   Trash2,
+  Compass,
+  Sparkles,
+  MapPin,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
 import { supprimerInscriptionFamille } from "@/app/actions/inscriptions";
@@ -133,6 +137,7 @@ export default function EspaceFamilleClient({
   userName = "Parent",
   notifications = [],
   sejoursAVenir = [],
+  sejoursCatalogue = [],
   documents = [],
   enfants = [],
 }) {
@@ -237,6 +242,21 @@ export default function EspaceFamilleClient({
               </p>
             </header>
 
+            {/* MESSAGE D'ACCUEIL */}
+            <div className="bg-gradient-to-r from-[#114C5A] to-[#0d3844] rounded-2xl p-6 md:p-8 flex items-center gap-5 shadow-sm">
+              <div className="hidden sm:flex w-14 h-14 rounded-xl bg-white/10 items-center justify-center shrink-0">
+                <Compass className="text-[#FFC801]" size={28} />
+              </div>
+              <div>
+                <h2 className="text-white text-lg md:text-xl font-black">
+                  Envie de partir à l'aventure ?
+                </h2>
+                <p className="text-white/70 font-medium mt-1">
+                  Trouvez le séjour parfait pour votre enfant parmi nos prochains départs.
+                </p>
+              </div>
+            </div>
+
             {/* NOTIFICATIONS */}
             {notifications.length > 0 && (
               <div className="space-y-3">
@@ -264,13 +284,26 @@ export default function EspaceFamilleClient({
               </div>
             )}
 
-            {/* UPCOMING TRIPS */}
-            {sejoursAVenir.length > 0 && (
-              <section>
-                <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <Calendar className="text-[#FF9932]" size={24} /> Mes séjours
-                  inscrits
-                </h2>
+            {/* MES SÉJOURS INSCRITS */}
+            <section>
+              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Calendar className="text-[#FF9932]" size={24} /> Mes séjours
+                inscrits
+              </h2>
+
+              {sejoursAVenir.length === 0 ? (
+                <div className="bg-slate-100 rounded-2xl p-8 text-center flex flex-col items-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <Sparkles className="text-[#FF9932]" size={26} />
+                  </div>
+                  <p className="text-slate-600 font-bold">
+                    Pas de séjour de prévu... mais ce n'est pas trop tard !
+                  </p>
+                  <p className="text-slate-500 text-sm">
+                    Jetez un œil à nos prochains séjours juste en dessous.
+                  </p>
+                </div>
+              ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {sejoursAVenir.map((sejour) => (
                     <div
@@ -312,6 +345,55 @@ export default function EspaceFamilleClient({
                         </span>
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* DÉCOUVREZ NOS SÉJOURS À VENIR */}
+            {sejoursCatalogue.length > 0 && (
+              <section>
+                <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <Compass className="text-[#114C5A]" size={24} /> Découvrez nos
+                  séjours à venir
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {sejoursCatalogue.map((sejour) => (
+                    <Link
+                      key={sejour.id}
+                      href={`/sejours-enfants-ados/${sejour.id}`}
+                      className="group bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all"
+                    >
+                      <div className="relative w-full h-36 bg-slate-100 overflow-hidden">
+                        {sejour.imageUrl ? (
+                          <img
+                            src={sejour.imageUrl}
+                            alt={sejour.titre}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Compass className="text-slate-300" size={32} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-black text-slate-900 mb-1">
+                          {sejour.titre}
+                        </h3>
+                        {sejour.lieu && (
+                          <p className="text-sm text-slate-500 flex items-center gap-1 mb-2">
+                            <MapPin size={14} /> {sejour.lieu}
+                          </p>
+                        )}
+                        {sejour.dates && (
+                          <p className="text-xs text-slate-500 mb-3">{sejour.dates}</p>
+                        )}
+                        <span className="inline-flex items-center gap-1 text-sm font-bold text-[#114C5A] group-hover:gap-2 transition-all">
+                          Découvrir <ChevronRight size={16} />
+                        </span>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </section>

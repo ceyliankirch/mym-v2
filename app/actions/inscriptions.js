@@ -1,7 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendNewInscriptionNotificationEmail } from "@/lib/postmark";
+import { sendInscriptionReceivedEmail, sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail } from "@/lib/postmark";
+import { generateInscriptionPdf } from "@/lib/inscriptionPdf";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
@@ -123,13 +124,32 @@ export async function creerInscription(
       }
     }
 
-    if (documentsManquants.length > 0 && client.email) {
-      await sendDocumentsRequestEmail({
-        to: client.email,
-        prenomEnfant: enfant.prenom,
-        sejourTitre: sejour.titre,
-        documentsManquants,
-      });
+    // 📧 Un email part toujours à la soumission : la demande de documents s'il en manque,
+    // sinon un simple accusé de réception. Les deux ont en pièce jointe un récapitulatif PDF.
+    if (client.email) {
+      let pdfBuffer;
+      try {
+        pdfBuffer = await generateInscriptionPdf({ enfant, client, sejour, documentsRequis });
+      } catch (e) {
+        console.error("Erreur génération PDF inscription", e);
+      }
+
+      if (documentsManquants.length > 0) {
+        await sendDocumentsRequestEmail({
+          to: client.email,
+          prenomEnfant: enfant.prenom,
+          sejourTitre: sejour.titre,
+          documentsManquants,
+          pdfBuffer,
+        });
+      } else {
+        await sendInscriptionReceivedEmail({
+          to: client.email,
+          prenomEnfant: enfant.prenom,
+          sejourTitre: sejour.titre,
+          pdfBuffer,
+        });
+      }
     }
 
     revalidatePath("/espace-famille");
@@ -159,25 +179,38 @@ export async function changerStatutInscription(id, statut) {
       include: { client: true, enfant: true, sejour: true },
     });
 
-    // 📧 On envoie les emails de confirmation uniquement au moment où l'inscription BASCULE vers "Paiement validé"
-    if (statut === "Paiement validé" && inscriptionActuelle?.statut !== "Paiement validé") {
-      if (inscription.client?.email) {
-        await sendInscriptionConfirmationEmail({
-          to: inscription.client.email,
-          prenomEnfant: inscription.enfant?.prenom,
-          sejourTitre: inscription.sejour?.titre,
-        });
-      }
+    // 📧 On envoie un email à la famille à chaque BASCULEMENT réel vers un nouveau statut
+    const aChangeDeStatut = inscriptionActuelle?.statut !== statut;
+    if (aChangeDeStatut && inscription.client?.email) {
+      const { email: to } = inscription.client;
+      const prenomEnfant = inscription.enfant?.prenom;
+      const sejourTitre = inscription.sejour?.titre;
 
-      await sendNewInscriptionNotificationEmail({
-        prenomEnfant: inscription.enfant?.prenom,
-        nomEnfant: inscription.enfant?.nom,
-        sejourTitre: inscription.sejour?.titre,
-        clientNom: inscription.client?.nom,
-        clientPrenom: inscription.client?.prenom,
-        clientEmail: inscription.client?.email,
-        clientTelephone: inscription.client?.telephone,
-      });
+      if (statut === "Inscription envoyée") {
+        await sendInscriptionReceivedEmail({ to, prenomEnfant, sejourTitre });
+      } else if (statut === "Paiement validé") {
+        await sendInscriptionConfirmationEmail({
+          to,
+          prenomEnfant,
+          nomEnfant: inscription.enfant?.nom,
+          sejourTitre,
+          dateDebut: inscription.sejour?.dateDebut,
+          dateFin: inscription.sejour?.dateFin,
+          lienPaiementCIC: inscription.sejour?.lienPaiementCIC,
+          documentsRequis: inscription.sejour?.documentsRequis,
+        });
+        await sendNewInscriptionNotificationEmail({
+          prenomEnfant,
+          nomEnfant: inscription.enfant?.nom,
+          sejourTitre,
+          clientNom: inscription.client?.nom,
+          clientPrenom: inscription.client?.prenom,
+          clientEmail: inscription.client?.email,
+          clientTelephone: inscription.client?.telephone,
+        });
+      } else if (statut === "Annulée") {
+        await sendInscriptionCancelledEmail({ to, prenomEnfant, sejourTitre });
+      }
     }
 
     revalidatePath("/espace-famille");

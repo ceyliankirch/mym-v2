@@ -51,7 +51,6 @@ const MENU = [
 
 const STATUT_INSCRIPTION_COLORS = {
   "Inscription envoyée": { bg: "#e0f2fe", color: "#075985" },
-  "Paiement en attente": { bg: "#fef3c7", color: "#92400e" },
   "Paiement validé": { bg: "#d1fae5", color: "#065f46" },
   "Annulée": { bg: "#fee2e2", color: "#991b1b" },
 };

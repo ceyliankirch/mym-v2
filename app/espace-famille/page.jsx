@@ -33,6 +33,7 @@ export default async function EspaceFamillePage() {
   const sejoursAVenir = enfants.flatMap((enfant) =>
     enfant.inscriptions.map((ins) => ({
       id: ins.id,
+      sejourId: ins.sejour.id,
       titre: ins.sejour.titre,
       enfant: enfant.prenom,
       enfantId: enfant.id,
@@ -46,9 +47,17 @@ export default async function EspaceFamillePage() {
     }))
   );
 
-  // Aplatir et formater les documents
-  const documents = enfants.flatMap((enfant) =>
-    enfant.documents.map((doc) => {
+  // Aplatir et formater les documents (uniquement ceux encore requis par une
+  // inscription active — sinon les documents d'une inscription annulée/supprimée
+  // restent en base et déclenchent de fausses alertes)
+  const documents = enfants.flatMap((enfant) => {
+    const typesRequisActuels = new Set(
+      enfant.inscriptions.flatMap((ins) => ins.sejour.documentsRequis || [])
+    );
+
+    return enfant.documents
+      .filter((doc) => typesRequisActuels.has(doc.type))
+      .map((doc) => {
       let etatVisuel = "warning";
       if (doc.statut === "VALIDE") etatVisuel = "success";
       if (doc.statut === "MANQUANT") etatVisuel = "error";
@@ -64,8 +73,8 @@ export default async function EspaceFamillePage() {
         statut: doc.statut,
         etat: etatVisuel,
       };
-    })
-  );
+    });
+  });
 
   const docsManquants = documents.filter((d) => d.etat === "error");
   const notifications = [];
@@ -78,10 +87,36 @@ export default async function EspaceFamillePage() {
     });
   }
 
+  // Séjours du catalogue à découvrir (publiés, à venir, non déjà inscrits)
+  const idsSejoursInscrits = new Set(sejoursAVenir.map((s) => s.sejourId).filter(Boolean));
+  const sejoursCatalogueBruts = await prisma.sejour.findMany({
+    where: {
+      statut: "Publié",
+      OR: [{ dateDebut: { gte: new Date() } }, { dateDebut: null }],
+    },
+    orderBy: { dateDebut: "asc" },
+    take: 6,
+  });
+
+  const sejoursCatalogue = sejoursCatalogueBruts
+    .filter((s) => !idsSejoursInscrits.has(s.id))
+    .slice(0, 3)
+    .map((s) => ({
+      id: s.id,
+      titre: s.titre,
+      lieu: s.lieu,
+      imageUrl: s.imageUrl,
+      tranchesAge: s.tranchesAge,
+      dates: s.dateDebut && s.dateFin
+        ? `${new Date(s.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(s.dateFin).toLocaleDateString("fr-FR")}`
+        : null,
+    }));
+
   return (
     <EspaceFamilleClient
       userName={userName}
       sejoursAVenir={sejoursAVenir}
+      sejoursCatalogue={sejoursCatalogue}
       documents={documents}
       notifications={notifications}
       enfants={enfants}
