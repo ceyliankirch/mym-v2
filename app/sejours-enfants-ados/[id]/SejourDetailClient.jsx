@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   MapPin, Calendar, Users, Clock, Shield, CreditCard, Award,
   ChevronRight, ArrowRight, ArrowLeft, CheckCircle2,
-  Phone, Mail, Share2, ChevronLeft
+  Phone, Mail, Share2, ChevronLeft, Tag
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -182,6 +182,11 @@ function StickySidebar({ sejour }) {
         </div>
       )}
 
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"5px",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"999px",padding:"6px 12px",marginBottom:"10px"}}>
+        <Tag size={11} style={{color:"#059669"}}/>
+        <span style={{fontSize:"10px",fontWeight:800,color:"#047857",textTransform:"uppercase"}}>-100€ Val-de-Marne</span>
+      </div>
+
       <Link href={`/inscription/${sejour.id}`}
         style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"16px",textDecoration:"none",marginBottom:"8px",boxShadow:"0 6px 20px rgba(255,200,1,0.35)",width:"100%", transition:"all 0.2s"}}
         onMouseEnter={e => e.currentTarget.style.background = C.saffron} onMouseLeave={e => e.currentTarget.style.background = C.yellow}>
@@ -293,7 +298,7 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
       `}</style>
 
       {/* ── BANNIERE ──────────────────────────────────────────────────────── */}
-      <section style={{position:"relative",height:"460px",overflow:"hidden"}}>
+      <section style={{position:"relative",height:"600px",overflow:"hidden"}}>
         <img src={sejour.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600"} alt={sejour.titre} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(17,76,90,0.85) 0%,rgba(17,76,90,0.15) 50%,transparent 100%)"}}/>
 
