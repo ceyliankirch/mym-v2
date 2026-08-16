@@ -5,8 +5,8 @@ import Link from "next/link";
 import SejoursMap from "@/components/SejoursMap";
 import {
   MapPin, Calendar, Users, Clock, Search, X, SunMedium,
-  Snowflake, Flower2, Globe, Heart, ChevronDown, ArrowRight, Leaf, ChevronRight,
-  Grid, Map, Archive
+  Snowflake, Flower2, Globe, ChevronDown, ArrowRight, Leaf, ChevronRight,
+  Grid, Map, Archive, Tag
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -97,7 +97,6 @@ function Breadcrumb({ items }) {
 /* ─── SEJOUR CARD ────────────────────────────────────────────────────────────── */
 function SejourCard({ s, idx }) {
   const [hovered, setHovered] = useState(false);
-  const [liked, setLiked] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
   
   // Calcul provisoire
@@ -138,10 +137,6 @@ function SejourCard({ s, idx }) {
             )}
           </div>
 
-          <button onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }} style={{ position: "absolute", top: "12px", right: "12px", width: "32px", height: "32px", background: "white", borderRadius: "50%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
-            <Heart size={14} style={{ fill: liked ? C.saffron : "none", color: liked ? C.saffron : "#ccc" }} />
-          </button>
-
           <div style={{position:"absolute",bottom:"12px",right:"12px",background:C.yellow,borderRadius:"999px",padding:"3px 10px",display:"flex",alignItems:"center",gap:"4px"}}>
             <Clock size={9} style={{color:C.teal}}/>
             <span style={{fontSize:"10px",fontWeight:700,color:C.teal}}>{getDuree(s.dateDebut, s.dateFin)}</span>
@@ -153,7 +148,13 @@ function SejourCard({ s, idx }) {
             <h3 style={{fontSize:"14px",fontWeight:800,color:C.teal,lineHeight:1.3,margin:0}}>{s.titre}</h3>
             <span style={{fontSize:"15px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
           </div>
-          
+          {!s.isPast && (
+            <div style={{display:"inline-flex",alignSelf:"flex-start",alignItems:"center",gap:"4px",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"999px",padding:"3px 9px",marginTop:"4px"}}>
+              <Tag size={10} style={{color:"#059669"}}/>
+              <span style={{fontSize:"9px",fontWeight:800,color:"#047857",textTransform:"uppercase"}}>-100€ Val-de-Marne</span>
+            </div>
+          )}
+
           <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"12px", marginBottom:"16px", flex: 1}}>
              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
                <Calendar size={12} style={{color:C.saffron,flexShrink:0}}/>

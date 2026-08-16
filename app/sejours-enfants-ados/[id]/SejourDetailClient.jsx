@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   MapPin, Calendar, Users, Clock, Shield, CreditCard, Award,
   ChevronRight, ArrowRight, ArrowLeft, CheckCircle2,
-  Phone, Mail, Heart, Share2, ChevronLeft
+  Phone, Mail, Share2, ChevronLeft
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -141,7 +141,6 @@ function Galerie({ images }) {
 
 /* ─── STICKY CTA SIDEBAR ────────────────────────────────────────────────────── */
 function StickySidebar({ sejour }) {
-  const [liked, setLiked] = useState(false);
   const placesTotales = sejour.places || 0;
   const placesRestantes = placesTotales; 
   const urgent = placesRestantes <= 3 && placesRestantes > 0;
@@ -193,9 +192,6 @@ function StickySidebar({ sejour }) {
       </p>
 
       <div style={{display:"flex",gap:"8px"}}>
-        <button onClick={()=>setLiked(!liked)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",background:C.arctic,border:"none",borderRadius:"999px",padding:"10px",cursor:"pointer",fontSize:"11px",fontWeight:700,color:liked?"#ef4444":C.teal,fontFamily:"Montserrat,sans-serif"}}>
-          <Heart size={13} style={{fill:liked?"#ef4444":"none",color:liked?"#ef4444":C.teal}}/> Favoris
-        </button>
         <button onClick={()=>navigator?.share?.({title:sejour.titre,url:window.location.href})} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",background:C.arctic,border:"none",borderRadius:"999px",padding:"10px",cursor:"pointer",fontSize:"11px",fontWeight:700,color:C.teal,fontFamily:"Montserrat,sans-serif"}}>
           <Share2 size={13}/> Partager
         </button>

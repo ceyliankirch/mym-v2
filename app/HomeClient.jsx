@@ -6,8 +6,8 @@ import {
   ArrowRight, ArrowUpRight, ChevronRight, ChevronLeft, MapPin, Calendar, Users, Star,
   Award, CreditCard, Shield, Mountain, Waves, Globe, Landmark,
   Phone, Mail, Instagram, Facebook, Menu, X, Search, Camera,
-  GraduationCap, Sun, Snowflake, Flower2, Anchor, Heart, ChevronDown,
-  CheckCircle2, Clock, Leaf, Map, Grid, Archive
+  GraduationCap, Sun, Snowflake, Flower2, Anchor, ChevronDown,
+  CheckCircle2, Clock, Leaf, Map, Grid, Archive, Tag
 } from "lucide-react";
 
 /* ─── PALETTE DE COULEURS ────────────────────────────────────────── */
@@ -173,7 +173,6 @@ function FilterDropdown({ label, options, value, onChange }) {
 
 /* ─── COMPOSANT : CARTE DE SÉJOUR (CATALOGUE) ────────────────────── */
 function SejourCard({ s, idx }) {
-  const [liked, setLiked] = useState(false);
   const [hovered, setHovered] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
 
@@ -209,10 +208,6 @@ function SejourCard({ s, idx }) {
             )}
           </div>
 
-          <button onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
-            style={{ position: "absolute", top: "12px", right: "12px", width: "32px", height: "32px", background: "white", borderRadius: "50%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Heart size={14} style={{ fill: liked ? C.saffron : "none", color: liked ? C.saffron : "#ccc" }} />
-          </button>
         </div>
 
         <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column", background: C.white }}>
@@ -220,6 +215,12 @@ function SejourCard({ s, idx }) {
             <h3 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, lineHeight: 1.3 }}>{s.titre}</h3>
             <span style={{ fontSize: "16px", fontWeight: 900, color: C.saffron }}>{s.prix}€</span>
           </div>
+          {!s.isPast && (
+            <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: "4px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "999px", padding: "3px 9px", marginBottom: "10px" }}>
+              <Tag size={10} style={{ color: "#059669" }} />
+              <span style={{ fontSize: "9px", fontWeight: 800, color: "#047857", textTransform: "uppercase" }}>-100€ Val-de-Marne</span>
+            </div>
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "12px" }}>
             <MapPin size={12} style={{ color: "#aaa" }} />
             <span style={{ fontSize: "12px", color: "#888", fontWeight: 500 }}>{s.lieu || "Lieu à définir"}</span>
@@ -465,7 +466,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
     return b.parsedDate - a.parsedDate; 
   });
 
-  const featuredSejours = processedSejours.filter(s => s.enAvant).slice(0, 2);
+  const featuredSejours = processedSejours.filter(s => s.enAvant).slice(0, 8);
 
   const matchesActiveFilters = (s) => {
     const passCategory = matchCategory(s, cat);
@@ -525,6 +526,11 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
+        .featured-slider {
+          -webkit-mask-image: linear-gradient(to right, black 70%, transparent 96%);
+          mask-image: linear-gradient(to right, black 70%, transparent 96%);
+        }
+
         .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
         @media (max-width: 768px) {
           .hero-search-wrap { width: calc(100% - 32px) !important; }
@@ -542,13 +548,16 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "1320px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: "64px", paddingBottom: "100px", paddingTop: "80px" }}>
           
           <div style={{ flex: 1, maxWidth: "600px", color: "white" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", borderRadius: "999px", padding: "8px 16px", marginBottom: "28px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: C.yellow }} />
-              <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px" }}>ASSOCIATION MAKE YOUR MOMENT</span>
-            </div>
-            <h1 style={{ fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
-              Créez des souvenirs <br />
-              <span style={{ color: C.yellow }}>extraordinaires.</span>
+            <h1 style={{ position: "relative", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
+              <div style={{
+                position: "absolute", top: "-44px", left: "-42px",
+                width: "84px", height: "84px", borderRadius: "50%", background: "white",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 10px 28px rgba(0,0,0,0.2)", transform: "rotate(-6deg)",
+              }}>
+                <img src="/mym-logo-192.png" alt="Make Your Moment" style={{ width: "74px", height: "74px", borderRadius: "16px", transform: "rotate(-15deg)" }} />
+              </div>
+              Make your <span style={{ color: C.yellow }}>Moment</span>
             </h1>
             <p style={{ fontSize: "1.1rem", lineHeight: 1.6, opacity: 0.9, marginBottom: "40px", maxWidth: "500px", fontWeight: 500 }}>
               Des colonies de vacances, séjours scolaires et sorties séniors encadrés par des passionnés, pour une aventure humaine inoubliable.
@@ -560,26 +569,28 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             </div>
           </div>
 
-          <div style={{ flex: 1, display: "flex", position: "relative", minHeight: "600px", maxWidth: "640px", marginLeft: "auto" }} className="hidden lg:block">
-             {featuredSejours[0] && (
-               <div style={{ position: "absolute", top: "90px", left: "70px", width: "280px", zIndex: 1, transform: "rotate(-4deg) scale(1.25)", transition: "all 0.3s" }}
-                    onMouseEnter={e => { e.currentTarget.style.zIndex = 10; e.currentTarget.style.transform = "rotate(-4deg) scale(1.3)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.zIndex = 1; e.currentTarget.style.transform = "rotate(-4deg) scale(1.25)"; }}>
-                  <div style={{ position: "absolute", top: "-12px", left: "-12px", background: C.yellow, borderRadius: "999px", padding: "6px 14px", fontSize: "11px", fontWeight: 900, color: C.teal, zIndex: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-                    À LA UNE 🌟
+          {featuredSejours.length > 0 && (
+            <div style={{ flex: 1, position: "relative", minHeight: "460px", display: "flex", alignItems: "center" }} className="hidden lg:block">
+              <div
+                className="hide-scroll featured-slider"
+                style={{
+                  display: "flex",
+                  gap: "24px",
+                  overflowX: "auto",
+                  scrollSnapType: "x mandatory",
+                  paddingBottom: "8px",
+                  paddingRight: "140px",
+                  marginRight: "calc(-1 * (((100vw - 1384px) / 2) + 32px))",
+                }}
+              >
+                {featuredSejours.map((s, i) => (
+                  <div key={s.id} style={{ flexShrink: 0, width: "300px", scrollSnapAlign: "start" }}>
+                    <SejourCard s={s} idx={i} />
                   </div>
-                  <SejourCard s={featuredSejours[0]} idx={0} />
-               </div>
-             )}
-
-             {featuredSejours[1] && (
-               <div style={{ position: "absolute", bottom: "40px", right: "30px", width: "280px", zIndex: 2, transform: "rotate(3deg) scale(1.25)", transition: "all 0.3s" }}
-                    onMouseEnter={e => { e.currentTarget.style.zIndex = 10; e.currentTarget.style.transform = "rotate(3deg) scale(1.3)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.zIndex = 2; e.currentTarget.style.transform = "rotate(3deg) scale(1.25)"; }}>
-                  <SejourCard s={featuredSejours[1]} idx={1} />
-               </div>
-             )}
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="hero-search-wrap" style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1100px", zIndex: 10 }}>
