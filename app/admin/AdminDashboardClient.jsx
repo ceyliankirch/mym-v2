@@ -1289,7 +1289,10 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                             <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{s.titre}</p>
                             <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>{formatSejourDates(s.dateDebut, s.dateFin)}</p>
                           </div>
-                          <button onClick={() => { setActiveTab("sejours"); setSejourInscritsEnView(s); }} style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, flexShrink: 0 }} title="Voir les inscrits"><Users size={14} /></button>
+                          <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                            <button onClick={() => { setActiveTab("sejours"); setSejourInscritsEnView(s); }} style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal }} title="Voir les inscrits"><Users size={14} /></button>
+                            <button onClick={() => { setActiveTab("sejours"); setSejourEnEdition(s); }} style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal }} title="Modifier le séjour"><Edit size={14} /></button>
+                          </div>
                         </div>
                       ))}
                     </div>
