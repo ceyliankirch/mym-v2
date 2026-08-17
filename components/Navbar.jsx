@@ -25,6 +25,7 @@ const NAV = [
   { label: "Accueil", href: "/" },
   { label: "Qui sommes-nous", href: "/qui-sommes-nous" },
   { label: "Séjours enfants / ados", href: "/sejours-enfants-ados" },
+  { label: "Séjours scolaires", href: "/sejours-scolaires" },
   { label: "Sorties séniors", href: "/sorties-seniors" },
   { label: "Galerie", href: "/galerie" },
   { label: "FAQ", href: "/faq" }

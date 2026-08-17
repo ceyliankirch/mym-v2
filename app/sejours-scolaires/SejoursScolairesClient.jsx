@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { 
-  ArrowRight, BookOpen, ShieldCheck, Bus, 
+  ArrowRight, BookOpen, ShieldCheck, Bus,
   CheckCircle2, FileText, Mountain, Waves, Landmark,
-  ChevronRight, Users
+  ChevronRight, Users, Mail, Phone
 } from "lucide-react";
 
 /* ─── PALETTE ────────────────────────────────────────────────────────────── */
@@ -18,9 +18,9 @@ const C = {
 
 /* ─── DONNÉES ────────────────────────────────────────────────────────────── */
 const THEMATIQUES = [
-  { id: 1, titre: "Classes de Neige", desc: "Découverte du milieu montagnard, apprentissage du ski et sensibilisation à l'environnement.", lieu: "Châtel, Alpes", img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80", Icon: Mountain },
-  { id: 2, titre: "Classes Découverte & Nature", desc: "Étude des écosystèmes, activités nautiques et vie en collectivité en bord d'océan.", lieu: "Landes, Littoral", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", Icon: Waves },
-  { id: 3, titre: "Voyages Culturels & Histoire", desc: "Plongée au cœur de l'histoire européenne, visites de musées et lieux de mémoire.", lieu: "France & Europe", img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&q=80", Icon: Landmark },
+  { id: 1, titre: "Classes de Neige", desc: "Séjours au ski : découverte du milieu montagnard, apprentissage du ski et sensibilisation à l'environnement.", lieu: "Alpes", img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80", Icon: Mountain },
+  { id: 2, titre: "Nature & Découverte", desc: "Étude des écosystèmes, activités nautiques et vie en collectivité en bord d'océan.", lieu: "Sud-Ouest de la France", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", Icon: Waves },
+  { id: 3, titre: "Voyages Linguistiques & Culturels", desc: "Immersion linguistique, découverte du patrimoine et de la culture locale.", lieu: "Espagne & Italie", img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&q=80", Icon: Landmark },
 ];
 
 const ARGUMENTS = [
@@ -103,13 +103,16 @@ export default function Scolaires() {
           <div style={{ flex: "1 1 500px" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.lilac, borderRadius: "999px", padding: "8px 16px", marginBottom: "24px" }}>
               <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: C.yellow, flexShrink: 0 }} />
-              <span style={{ fontSize: "11px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "1px" }}>Pour les écoles et collèges</span>
+              <span style={{ fontSize: "11px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "1px" }}>Primaire, collège, lycée & université</span>
             </div>
-            <h1 style={{ fontWeight: 900, fontSize: "clamp(2.4rem, 4vw, 4.2rem)", color: C.teal, lineHeight: 1.1, letterSpacing: "-1px", marginBottom: "24px" }}>
+            <h1 style={{ fontWeight: 900, fontSize: "clamp(2.4rem, 4vw, 4.2rem)", color: C.teal, lineHeight: 1.1, letterSpacing: "-1px", marginBottom: "16px" }}>
               Apprendre autrement, <br/><span style={{ color: C.yellow }}>grandir ensemble.</span>
             </h1>
+            <p style={{ fontSize: "14px", fontWeight: 700, color: C.saffron, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "24px" }}>
+              Vivez l'apprentissage autrement
+            </p>
             <p style={{ fontSize: "16px", color: "#5a7a84", lineHeight: 1.8, marginBottom: "40px", maxWidth: "500px" }}>
-              Parce que nous sommes nous-mêmes enseignants, nous connaissons vos enjeux. Make Your Moment vous accompagne dans la création de classes de découvertes et séjours scolaires 100% sur mesure.
+              Nous proposons l'organisation de séjours pédagogiques pour élèves de l'école primaire, du collège, du lycée et même de l'université, combinant découverte, pédagogie et plaisir dans un cadre sécurisé.
             </p>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
               <Btn>Demander un devis <ArrowRight size={14} /></Btn>
@@ -222,12 +225,12 @@ export default function Scolaires() {
             Remplissez notre formulaire de contact rapide pour recevoir une première estimation gratuite et sans engagement.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
-            <button style={{ background: C.yellow, color: C.teal, border: "none", padding: "16px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 8px 24px rgba(255,200,1,0.35)", transition: "all .2s" }}>
-              Demander un devis gratuit <ArrowRight size={16} />
-            </button>
-            <button style={{ background: "transparent", color: C.teal, border: `2px solid ${C.teal}`, padding: "14px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", transition: "all .2s" }}>
-              Nous appeler
-            </button>
+            <a href="mailto:mym.makeyourmoment@gmail.com" style={{ textDecoration: "none", background: C.yellow, color: C.teal, border: "none", padding: "16px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 8px 24px rgba(255,200,1,0.35)", transition: "all .2s" }}>
+              <Mail size={16} /> Demander un devis gratuit
+            </a>
+            <a href="tel:+33698965002" style={{ textDecoration: "none", background: "transparent", color: C.teal, border: `2px solid ${C.teal}`, padding: "14px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", transition: "all .2s" }}>
+              <Phone size={14} /> +33 6 98 96 50 02
+            </a>
           </div>
           <p style={{ fontSize: "11px", color: "#8aaa", marginTop: "20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
             <CheckCircle2 size={12} style={{ color: C.saffron }} />

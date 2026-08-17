@@ -16,43 +16,55 @@ const C = {
   white:   "#ffffff",
 };
 
-/* ─── DONNÉES DE LA FAQ (Issues de make-your-moment.com/blank-11) ────────── */
+/* ─── DONNÉES DE LA FAQ (reprises de make-your-moment.com/blank-11) ──────── */
 const FAQS = [
   {
     id: 1,
-    question: "Comment réserver un séjour avec Make Your Moment ?",
-    reponse: "Pour réserver, rendez-vous sur le site et choisissez votre séjour dans nos rubriques. Cliquez ensuite sur « S'inscrire ici » pour accéder au formulaire de pré-inscription. Une fois rempli, vous recevrez les documents nécessaires. Attention : l'inscription définitive n'est validée qu'à réception du règlement (les places étant limitées).",
-    Icon: MousePointerClick
-  },
-  {
-    id: 2,
-    question: "Quelles sont les modalités et moyens de paiement ?",
-    reponse: "L'inscription est validée à réception de la totalité du montant du séjour. Nous acceptons : les chèques bancaires (à l'ordre de Make Your Moment), les virements bancaires, les espèces, et les chèques ANCV. Nous proposons également un paiement échelonné jusqu'à 8× sans frais.",
-    Icon: CreditCard
-  },
-  {
-    id: 3,
-    question: "Quelles sont les assurances incluses avec le séjour ?",
-    reponse: "L'association Make Your Moment est couverte par la MAIF (n°4530967B). Nous sommes assurés en responsabilité civile professionnelle et pour les dommages (hors dégradations volontaires). Nous assurons également chaque enfant en matière de responsabilité civile lors de la survenance d'un événement de caractère accidentel.",
+    question: "Assurance de l'association Make Your Moment",
+    reponse: "L'association est couverte par la MAIF sous le n°4530967B. Elle dispose d'une assurance responsabilité civile professionnelle couvrant les dommages (sauf dégradations volontaires), et assure chaque enfant en responsabilité civile pour les événements accidentels.",
     Icon: ShieldCheck
   },
   {
+    id: 2,
+    question: "Réservation d'un séjour avec Make Your Moment",
+    reponse: "Accédez au site, sélectionnez votre séjour dans les rubriques appropriées, puis cliquez sur « S'inscrire ici ». Après remplissage du formulaire de pré-inscription, vous recevrez les documents d'inscription définitive. L'inscription se valide à réception du paiement. Le paiement peut se faire en trois fois par chèque.",
+    Icon: MousePointerClick
+  },
+  {
+    id: 3,
+    question: "Modalités de paiement des séjours de vacances",
+    reponse: "L'inscription se valide uniquement à réception du paiement intégral. Les moyens acceptés sont : chèques bancaires à l'ordre de l'association, virements bancaires, espèces et chèques ANCV.",
+    Icon: CreditCard
+  },
+  {
     id: 4,
-    question: "Quelles sont les conditions d'annulation ?",
-    reponse: "Si MYM annule le séjour (ex: manque de participants), vous êtes intégralement remboursé. Si la famille annule, un pourcentage est retenu selon la date d'annulation (réception du courrier en AR). Vous pouvez souscrire à l'assurance annulation MAIF uniquement lors de l'inscription. À noter : tout séjour écourté pendant les vacances ne donne droit à aucun remboursement.",
-    Icon: AlertCircle
+    question: "Conditions d'annulation d'un séjour",
+    reponse: "L'association peut annuler si le nombre de participants est insuffisant (remboursement intégral). Pour les annulations par les participants, un pourcentage est conservé selon la date d'annulation, comme détaillé ci-dessous. Une assurance annulation MAIF est disponible à l'inscription. Aucun remboursement n'est accordé pour les séjours écourtés.",
+    Icon: AlertCircle,
+    tableData: {
+      headers: ["Période d'annulation", "Pourcentage ou somme retenue"],
+      rows: [
+        ["+ 120 jours avant le départ", "100% du montant du séjour seront remboursés à la famille"],
+        ["120 jours à 91 jours avant le départ", "50 euros seront retenus par Make Your Moment"],
+        ["90 jours à 61 jours avant le départ", "25 % du montant du séjour seront retenus par Make Your Moment"],
+        ["60 jours à 31 jours avant le départ", "50% du montant du séjour seront retenus par Make Your Moment"],
+        ["30 jours à 15 jours avant le départ", "70% du montant du séjour seront retenus par Make Your Moment"],
+        ["14 jours à 7 jours avant le départ", "85% du montant du séjour seront retenus par Make Your Moment"],
+        ["à moins de 7 jours avant le départ", "95% du montant du séjour seront retenus par Make Your Moment"],
+      ],
+    },
   },
   {
     id: 5,
-    question: "Comment sont gérés les frais médicaux pendant le séjour ?",
-    reponse: "Pour garantir une prise en charge immédiate, les frais médicaux et pharmaceutiques nécessaires pendant le séjour sont systématiquement avancés par Make Your Moment. Le remboursement complet sera ensuite demandé aux familles au retour de l'enfant.",
-    Icon: HeartPulse
+    question: "Renvoi d'un participant pendant un séjour",
+    reponse: "En cas de comportement déviant compromettant le séjour, l'association peut renvoyer immédiatement le participant sans remboursement. Les frais de retour restent entièrement à la charge de la famille.",
+    Icon: FileWarning
   },
   {
     id: 6,
-    question: "Que se passe-t-il en cas de problème de comportement ?",
-    reponse: "Si un enfant a un comportement déviant compromettant le bon déroulement du séjour (non-respect des lois, violence, vol, etc.), MYM se réserve le droit de le renvoyer immédiatement. Les frais de retour de l'enfant (et de son accompagnateur) seront entièrement à la charge de la famille. Aucun remboursement du séjour ne pourra être réclamé.",
-    Icon: FileWarning
+    question: "Frais médicaux lors d'un séjour de vacances",
+    reponse: "L'association avance les frais médicaux et pharmaceutiques nécessaires pendant le séjour, mais en demande le remboursement aux familles au retour de l'enfant.",
+    Icon: HeartPulse
   }
 ];
 
@@ -105,16 +117,43 @@ function AccordionItem({ f, isOpen, onClick }) {
         </div>
       </button>
 
-      <div style={{ 
-        maxHeight: isOpen ? "500px" : "0", 
+      <div style={{
+        maxHeight: isOpen ? (f.tableData ? "1000px" : "500px") : "0",
         opacity: isOpen ? 1 : 0,
-        overflow: "hidden", 
+        overflow: "hidden",
         transition: "all .4s cubic-bezier(0.4, 0, 0.2, 1)",
         padding: isOpen ? "0 32px 32px 100px" : "0 32px 0 100px"
       }}>
-        <p style={{ fontSize: "14px", color: "#5a7a84", lineHeight: 1.8 }}>
+        <p style={{ fontSize: "14px", color: "#5a7a84", lineHeight: 1.8, marginBottom: f.tableData ? "20px" : 0 }}>
           {f.reponse}
         </p>
+
+        {f.tableData && (
+          <div style={{ overflowX: "auto", borderRadius: "12px", border: `1px solid ${C.arctic}` }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr>
+                  {f.tableData.headers.map((h, i) => (
+                    <th key={i} style={{ textAlign: "left", padding: "12px 16px", background: C.teal, color: C.white, fontWeight: 800, fontSize: "12px" }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {f.tableData.rows.map((row, i) => (
+                  <tr key={i} style={{ background: i % 2 === 0 ? C.arctic : C.white }}>
+                    {row.map((cell, j) => (
+                      <td key={j} style={{ padding: "12px 16px", color: C.teal, fontWeight: j === 0 ? 700 : 500, lineHeight: 1.5 }}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

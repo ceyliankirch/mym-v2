@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import {
-  Shield, Users, GraduationCap, Heart, CheckCircle2,
+  Users, CheckCircle2,
   ArrowRight, Award, Target, MapPin, ChevronLeft, ChevronRight
 } from "lucide-react";
 
@@ -19,22 +19,24 @@ export default function QuiSommesNousClient({ equipe }) {
 
   return (
     <div className="min-h-screen bg-[#F1F6F4] text-[#114C5A] font-sans overflow-x-hidden selection:bg-[#FFC801] selection:text-[#114C5A]">
-      
+
+      {/* ── BANDEAU ENCADRANTS ──────────────────────────────────────────────── */}
+      <div className="bg-[#FFC801] py-3 px-4">
+        <p className="text-center text-xs sm:text-sm font-black text-[#114C5A] uppercase tracking-wide">
+          Encadré par des enseignants &amp; des éducateurs diplômés
+        </p>
+      </div>
+
       {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
       <section className="relative px-8 pt-24 pb-20 max-w-[1320px] mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
         <div className="flex-1 w-full animate-[fadeUp_0.8s_ease_both]">
           <div className="inline-flex items-center gap-2 bg-[#9c0039] rounded-full px-4 py-2 mb-8">
             <span className="w-2 h-2 rounded-full bg-[#FFC801] shrink-0" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">Notre Histoire</span>
+            <span className="text-xs font-bold text-white uppercase tracking-wider">Notre association</span>
           </div>
           <h1 className="font-black leading-[1.1] tracking-tight mb-6 text-5xl lg:text-7xl text-[#114C5A]">
-            Créateurs de <br />
-            <span className="text-[#FFC801]">souvenirs</span> <br />
-            depuis 2023.
+            Qui sommes-<span className="text-[#FFC801]">nous</span> ?
           </h1>
-          <p className="text-[#5a7a84] text-base lg:text-lg leading-relaxed mb-8 max-w-lg">
-            Make Your Moment est une association loi 1901 basée à Sucy-en-Brie. Notre mission ? Créer des séjours enrichissants, sécurisés et mémorables pour les enfants, les adolescents et nos aînés.
-          </p>
           <div className="flex flex-wrap gap-6 items-center">
             <div className="flex -space-x-3">
               {/* ⚡ BOUCLE DYNAMIQUE SUR L'ÉQUIPE NEON */}
@@ -73,51 +75,48 @@ export default function QuiSommesNousClient({ equipe }) {
           <div className="absolute bottom-0 left-0 w-[55%] h-[45%] rounded-[24px] overflow-hidden border-8 border-[#F1F6F4] shadow-xl shadow-[#114c5a15]">
             <img src="QSN/QSN-03.webp" alt="Activités enfants" className="w-full h-full object-cover" />
           </div>
-          {/* Badge Agréé remonté juste au-dessus de l'image du bas (bottom-[42%]) */}
-          <div className="absolute bottom-[42%] -left-6 bg-[#114C5A] rounded-2xl p-4 shadow-xl z-10 flex flex-col gap-1">
-             <div className="flex items-center gap-2">
-                <Shield size={16} className="text-[#FFC801]" />
-                <span className="text-[10px] font-bold text-[#FFC801] uppercase tracking-widest">Agréé</span>
-             </div>
-             <p className="text-xs font-bold text-white">Jeunesse & Sports</p>
+        </div>
+      </section>
+
+      {/* ── À PROPOS DE NOUS (contenu repris de l'ancien site) ──────────────── */}
+      <section className="bg-white py-20 px-8">
+        <div className="max-w-[900px] mx-auto text-center">
+          <p className="text-xs font-bold text-[#FF9932] uppercase tracking-widest mb-3">À propos de nous</p>
+          <h2 className="text-3xl lg:text-4xl font-black text-[#114C5A] tracking-tight mb-8">Notre histoire</h2>
+          <div className="space-y-5 text-[#5a7a84] text-base leading-relaxed text-left">
+            <p>
+              L'association Make Your Moment a été créée par des parents : une enseignante, professeure d'EPS et un éducateur sportif, responsable d'une école multisports.
+            </p>
+            <p>
+              Nous souhaitions par-dessus tout, proposer un encadrement de qualité aux parents et à leurs enfants.
+            </p>
+            <p>
+              Make Your Moment développe et organise des séjours de vacances et des sorties destinés aux enfants, aux adolescents mais également aux séniors, avec pour objectif de proposer des activités qui font sens pour être acteur de son expérience !
+            </p>
+            <p>
+              Durant nos séjours et nos sorties, nous concevons des programmes adaptés aux envies réelles de nos participants : découverte, immersion, créativité, sport, nature, culture… Dans le respect de l'environnement, en privilégiant des pratiques responsables et durables. Nos séjours mêlent liberté, autonomie, exploration et développement personnel.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── NOTRE APPROCHE ────────────────────────────────────────────────────── */}
-      <section className="bg-white py-24 px-8">
-        <div className="max-w-[1320px] mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-xs font-bold text-[#FF9932] uppercase tracking-widest mb-3">Nos valeurs</p>
-            <h2 className="text-3xl lg:text-5xl font-black text-[#114C5A] tracking-tight">Ce qui nous rend uniques</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: GraduationCap,
-                title: "Exigence Pédagogique",
-                desc: "À un âge où les enfants débordent de curiosité, il est essentiel de nourrir leur appétence. Nos séjours sont pensés par des professionnels de l'éducation pour allier fun et apprentissage."
-              },
-              {
-                icon: Shield,
-                title: "Sécurité Absolue",
-                desc: "Taux d'encadrement supérieur aux normes (1 pour 8). Tous nos animateurs et directeurs sont diplômés (BAFA, BAFD, Diplômes d'État, Enseignants)."
-              },
-              {
-                icon: Heart,
-                title: "Bienveillance & Inclusion",
-                desc: "Nous créons un cadre où chaque enfant trouve sa place, prend confiance en lui et apprend le vivre-ensemble dans le respect de chacun."
-              }
-            ].map((item, i) => (
-              <div key={i} className="bg-[#F1F6F4] rounded-[24px] p-8 transition-transform hover:-translate-y-2 duration-300">
-                <div className="w-14 h-14 rounded-2xl bg-[#FFC801]/20 flex items-center justify-center mb-6">
-                  <item.icon size={28} className="text-[#114C5A]" />
-                </div>
-                <h3 className="text-xl font-extrabold text-[#114C5A] mb-4">{item.title}</h3>
-                <p className="text-[#5a7a84] text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+      {/* ── NOTRE CONCEPT (contenu repris de l'ancien site) ──────────────────── */}
+      <section className="bg-[#114C5A] py-20 px-8">
+        <div className="max-w-[900px] mx-auto text-center">
+          <p className="text-xs font-bold text-[#FFC801] uppercase tracking-widest mb-3">Notre concept</p>
+          <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight mb-8">
+            Make Your Moment souhaite rassurer les parents avec un encadrement de qualité !
+          </h2>
+          <div className="space-y-5 text-white/75 text-base leading-relaxed text-left">
+            <p>
+              Il est malheureusement devenu trop fréquent d'entendre des parents dire qu'ils n'enverront jamais leur enfant en colonie de vacances par manque de confiance en l'encadrement.
+            </p>
+            <p>
+              Vous faites peut-être partie des personnes qui pensent ainsi ! Sachez que nous aussi, on pouvait le penser. C'est pourquoi, l'association Make Your Moment s'est créée !
+            </p>
+            <p className="font-black text-white text-lg">
+              Make Your Moment met l'accent sur l'<span className="text-[#FFC801]">ENCADREMENT</span> !
+            </p>
           </div>
         </div>
       </section>
@@ -127,9 +126,9 @@ export default function QuiSommesNousClient({ equipe }) {
         <div className="max-w-[1320px] mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-bold text-[#FFC801] uppercase tracking-widest mb-3">Rencontrez-nous</p>
-            <h2 className="text-3xl lg:text-5xl font-black text-[#114C5A] tracking-tight">Notre Équipe d'Encadrants</h2>
+            <h2 className="text-3xl lg:text-5xl font-black text-[#114C5A] tracking-tight">Tous enseignants & des éducateurs diplômés</h2>
             <p className="text-[#5a7a84] mt-6 max-w-2xl mx-auto">
-              Des professionnels dévoués à l'épanouissement de vos enfants.
+              Tous nos séjours de vacances sont encadrés exclusivement par des enseignants de l'Éducation nationale et des éducateurs diplômés. Pour rassurer pleinement les familles : l'encadrement est au cœur de notre engagement !
             </p>
           </div>
 
@@ -202,10 +201,10 @@ export default function QuiSommesNousClient({ equipe }) {
           <div className="flex-1">
             <p className="text-xs font-bold text-[#FFC801] uppercase tracking-widest mb-4">L'Équipe de direction</p>
             <h2 className="text-3xl lg:text-5xl font-black text-white tracking-tight mb-6">
-              Des professionnels de l'éducation nationale.
+              Savoir à qui l'on confie nos enfants ne doit pas être une option !
             </h2>
             <p className="text-white/70 text-base leading-relaxed mb-8">
-              Make Your Moment a été fondée par des enseignants passionnés. Nous connaissons les enfants, nous connaissons le terrain. Notre objectif est de transposer l'exigence de l'école dans un cadre de vacances, où l'épanouissement personnel est au centre de tout.
+              Make Your Moment vous garantit professionnalisme, sécurité et bienveillance. Notre mission : offrir des vacances qui marquent, qui élèvent, qui ouvrent des horizons et surtout qui donnent aux familles une confiance absolue ! Fort de notre réseau, nous connaissons personnellement tous nos animateurs et nos directeurs, et les parents aussi pourront faire leur connaissance lors de nos réunions d'information qui précèdent nos séjours de vacances.
             </p>
             
             <ul className="space-y-4 mb-10">

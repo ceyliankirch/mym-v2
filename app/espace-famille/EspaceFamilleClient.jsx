@@ -22,9 +22,11 @@ import {
   Compass,
   Sparkles,
   MapPin,
+  Plus,
+  UserCog,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
-import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant } from "@/app/actions/inscriptions";
+import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant, creerEnfant, modifierClient } from "@/app/actions/inscriptions";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 const C = {
@@ -339,17 +341,221 @@ function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId }) {
   );
 }
 
+/* ─── MODALE : AJOUTER UN ENFANT ────────────────────────────────────
+   Créer un nouvel enfant indépendamment de toute inscription à un séjour. */
+function AjouterEnfantModal({ clientId, onClose }) {
+  const [form, setForm] = useState({
+    prenom: "", nom: "", dateNaissance: "", sexe: "",
+    taille: "", poids: "", pointure: "", allergies: "", informationsComplementaires: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const handleSave = async () => {
+    if (!form.prenom || !form.nom) {
+      setError("Le prénom et le nom sont obligatoires");
+      return;
+    }
+    setIsSaving(true);
+    setError("");
+    try {
+      const result = await creerEnfant(clientId, form);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      setError("Erreur lors de la création");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const inputClass = "w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#114C5A]/20 focus:border-[#114C5A]";
+  const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5";
+
+  return (
+    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        <div className="flex items-start justify-between p-6 border-b border-slate-200">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Ajouter un enfant</h2>
+            <p className="text-sm text-slate-500 mt-1">Renseignez les informations de votre enfant</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-semibold rounded-xl px-4 py-3">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Prénom *</label>
+              <input className={inputClass} value={form.prenom} onChange={(e) => handleChange("prenom", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Nom *</label>
+              <input className={inputClass} value={form.nom} onChange={(e) => handleChange("nom", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Date de naissance</label>
+              <input type="date" className={inputClass} value={form.dateNaissance} onChange={(e) => handleChange("dateNaissance", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Sexe</label>
+              <select className={inputClass} value={form.sexe} onChange={(e) => handleChange("sexe", e.target.value)}>
+                <option value="">--</option>
+                <option value="M">Garçon</option>
+                <option value="F">Fille</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Taille (cm)</label>
+              <input type="number" min="0" className={inputClass} value={form.taille} onChange={(e) => handleChange("taille", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Poids (kg)</label>
+              <input type="number" min="0" className={inputClass} value={form.poids} onChange={(e) => handleChange("poids", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Pointure</label>
+              <input type="number" min="0" className={inputClass} value={form.pointure} onChange={(e) => handleChange("pointure", e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Allergies ou intolérances</label>
+            <textarea rows="2" className={inputClass} value={form.allergies} onChange={(e) => handleChange("allergies", e.target.value)} placeholder="ex: Allergie aux arachides..." />
+          </div>
+          <div>
+            <label className={labelClass}>Informations complémentaires</label>
+            <textarea rows="2" className={inputClass} value={form.informationsComplementaires} onChange={(e) => handleChange("informationsComplementaires", e.target.value)} placeholder="Toute information utile à l'équipe encadrante..." />
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full bg-[#114C5A] text-white font-bold py-3 rounded-xl hover:bg-[#0d3844] transition disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isSaving ? <Loader size={16} className="animate-spin" /> : <Plus size={16} />}
+            Ajouter cet enfant
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── MODALE : REPRÉSENTANT LÉGAL ────────────────────────────────────
+   Modifier les informations du client (le parent/représentant légal). */
+function ModifierClientModal({ client, onClose }) {
+  const [form, setForm] = useState({
+    prenom: client?.prenom || "",
+    nom: client?.nom || "",
+    email: client?.email || "",
+    telephone: client?.telephone || "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setError("");
+    try {
+      const result = await modifierClient(client.id, form);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      setError("Erreur lors de l'enregistrement");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const inputClass = "w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#114C5A]/20 focus:border-[#114C5A]";
+  const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5";
+
+  return (
+    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex items-start justify-between p-6 border-b border-slate-200">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Représentant légal</h2>
+            <p className="text-sm text-slate-500 mt-1">Vos informations personnelles</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-semibold rounded-xl px-4 py-3">
+              {error}
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Prénom</label>
+              <input className={inputClass} value={form.prenom} onChange={(e) => handleChange("prenom", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelClass}>Nom</label>
+              <input className={inputClass} value={form.nom} onChange={(e) => handleChange("nom", e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Email</label>
+            <input type="email" className={inputClass} value={form.email} onChange={(e) => handleChange("email", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelClass}>Téléphone</label>
+            <input type="tel" className={inputClass} value={form.telephone} onChange={(e) => handleChange("telephone", e.target.value)} />
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full bg-[#114C5A] text-white font-bold py-3 rounded-xl hover:bg-[#0d3844] transition disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isSaving ? <Loader size={16} className="animate-spin" /> : null}
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EspaceFamilleClient({
   userName = "Parent",
-  clientId,
+  client = null,
   notifications = [],
   sejoursAVenir = [],
   sejoursCatalogue = [],
   documents = [],
   enfants = [],
 }) {
+  const clientId = client?.id;
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploadingDocId, setUploadingDocId] = useState(null);
+  const [showAjouterEnfant, setShowAjouterEnfant] = useState(false);
+  const [showModifierClient, setShowModifierClient] = useState(false);
   const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
   const [enfantEnConsultation, setEnfantEnConsultation] = useState(null);
   const [isDeletingInscription, setIsDeletingInscription] = useState(false);
@@ -612,11 +818,27 @@ export default function EspaceFamilleClient({
         {/* MES ENFANTS */}
         {activeTab === "enfants" && (
           <div className="animate-in fade-in duration-500 space-y-8">
-            <header className="pb-6 border-b border-slate-200">
-              <h1 className="text-3xl font-black text-slate-900">Mes Enfants</h1>
-              <p className="text-slate-500 mt-2 font-medium">
-                Voici la liste de vos enfants inscrits.
-              </p>
+            <header className="pb-6 border-b border-slate-200 flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-black text-slate-900">Mes Enfants</h1>
+                <p className="text-slate-500 mt-2 font-medium">
+                  Voici la liste de vos enfants inscrits.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setShowModifierClient(true)}
+                  className="flex items-center gap-2 bg-white border border-slate-200 text-[#114C5A] px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-50 transition"
+                >
+                  <UserCog size={16} /> Représentant légal
+                </button>
+                <button
+                  onClick={() => setShowAjouterEnfant(true)}
+                  className="flex items-center gap-2 bg-[#114C5A] text-white px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-[#0d3844] transition"
+                >
+                  <Plus size={16} /> Ajouter un enfant
+                </button>
+              </div>
             </header>
 
             {enfants.length === 0 ? (
@@ -893,6 +1115,20 @@ export default function EspaceFamilleClient({
           onClose={() => setEnfantEnConsultation(null)}
           onUpload={handleUploadClick}
           uploadingDocId={uploadingDocId}
+        />
+      )}
+
+      {showAjouterEnfant && (
+        <AjouterEnfantModal
+          clientId={clientId}
+          onClose={() => setShowAjouterEnfant(false)}
+        />
+      )}
+
+      {showModifierClient && (
+        <ModifierClientModal
+          client={client}
+          onClose={() => setShowModifierClient(false)}
         />
       )}
     </div>

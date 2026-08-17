@@ -53,13 +53,6 @@ function ImageCard({ image, idx }) {
           transition: "transform .4s ease"
         }}
       />
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
-        padding: '40px 20px 20px',
-      }}>
-        <p style={{color: 'white', fontSize: '13px', fontWeight: 600, textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>{image.alt}</p>
-      </div>
     </div>
   );
 }

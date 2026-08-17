@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  MapPin, Calendar, Users, Clock, Shield, CreditCard, Award,
+  MapPin, Calendar, Users, Clock, CreditCard, Award,
   ChevronRight, ArrowRight, ArrowLeft, CheckCircle2,
-  Phone, Mail, Share2, ChevronLeft, Tag
+  Phone, Mail, Share2, ChevronLeft, HelpCircle
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -139,6 +139,27 @@ function Galerie({ images }) {
   );
 }
 
+/* ─── INFOBULLE RÉDUCTION VAL-DE-MARNE ──────────────────────────────────────── */
+function ReductionTooltip() {
+  const [show, setShow] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      style={{position:"absolute",top:"-8px",right:"-8px",zIndex:20}}
+    >
+      <div style={{width:"20px",height:"20px",borderRadius:"50%",background:C.white,boxShadow:"0 2px 6px rgba(0,0,0,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"help"}}>
+        <HelpCircle size={13} style={{color:"#059669"}}/>
+      </div>
+      {show && (
+        <div style={{position:"absolute",top:"26px",right:"0",width:"220px",background:C.teal,color:"white",fontSize:"11px",fontWeight:600,lineHeight:1.5,borderRadius:"10px",padding:"10px 12px",boxShadow:"0 8px 24px rgba(0,0,0,0.2)"}}>
+          Cette réduction est applicable pour tous les résidents du Val-de-Marne. Pour plus d'informations, contactez-nous.
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── STICKY CTA SIDEBAR ────────────────────────────────────────────────────── */
 function StickySidebar({ sejour }) {
   const placesTotales = sejour.places || 0;
@@ -149,8 +170,15 @@ function StickySidebar({ sejour }) {
     <div style={{position:"sticky",top:"90px",background:C.white,borderRadius:"24px",padding:"28px",boxShadow:"0 8px 40px rgba(17,76,90,0.12)"}}>
       <div style={{marginBottom:"20px",paddingBottom:"20px",borderBottom:`1px solid ${C.arctic}`}}>
         <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"1px"}}>Prix par personne</p>
-        <div style={{display:"flex",alignItems:"baseline",gap:"8px"}}>
-          <span style={{fontSize:"2.4rem",fontWeight:900,color:C.teal,lineHeight:1}}>{sejour.prix || 0}€</span>
+        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"16px",flexWrap:"wrap"}}>
+          <span style={{fontSize:"2.8rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px"}}>{sejour.prix || 0}€</span>
+          {sejour.prix > 0 && (
+            <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
+              <ReductionTooltip />
+              <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
+              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Val-de-Marne</p>
+            </div>
+          )}
         </div>
         <p style={{fontSize:"11px",color:"#8aa",marginTop:"4px"}}>Paiement jusqu'à 8× sans frais possible</p>
       </div>
@@ -181,11 +209,6 @@ function StickySidebar({ sejour }) {
           <p style={{fontSize:"12px",fontWeight:700,color:"#dc2626"}}>Plus que {placesRestantes} places disponibles !</p>
         </div>
       )}
-
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"5px",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"999px",padding:"6px 12px",marginBottom:"10px"}}>
-        <Tag size={11} style={{color:"#059669"}}/>
-        <span style={{fontSize:"10px",fontWeight:800,color:"#047857",textTransform:"uppercase"}}>-100€ Val-de-Marne</span>
-      </div>
 
       <Link href={`/inscription/${sejour.id}`}
         style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"16px",textDecoration:"none",marginBottom:"8px",boxShadow:"0 6px 20px rgba(255,200,1,0.35)",width:"100%", transition:"all 0.2s"}}
@@ -352,7 +375,6 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
 
               <div style={{display:"flex",flexWrap:"wrap",gap:"10px",marginTop:"24px",paddingTop:"24px",borderTop:`1px solid ${C.arctic}`}}>
                 {[
-                  {Icon:Shield,     text:"Déclaration DDCS"},
                   {Icon:CreditCard, text:"Paiement 8× sans frais"},
                   {Icon:Award,      text:"Encadrants diplômés"},
                   {Icon:CheckCircle2,text:"Places limitées"},

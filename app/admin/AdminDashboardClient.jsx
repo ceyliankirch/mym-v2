@@ -794,9 +794,58 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
   );
 }
 
+/* ── LIGNE DOCUMENT AVEC DROPDOWN VALIDE / INVALIDE (admin) ── */
+function DocumentValidationRow({ doc }) {
+  const [saving, setSaving] = useState(false);
+  const estValide = doc.statut === "VALIDE";
+
+  const handleChange = async (e) => {
+    setSaving(true);
+    try {
+      if (e.target.value === "VALIDE") {
+        await validerDocument(doc.id);
+      } else {
+        await rejeterDocument(doc.id);
+      }
+      window.location.reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 12px", background: C.white, borderRadius: "10px", border: `1px solid ${C.lightGray}` }}>
+      <div style={{ flex: 1 }}>
+        <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>{doc.type}</p>
+        {doc.url && (
+          <a href={doc.url} target="_blank" rel="noreferrer" style={{ fontSize: "11px", color: C.saffron, fontWeight: 600 }}>
+            Voir le fichier →
+          </a>
+        )}
+      </div>
+      <select
+        value={estValide ? "VALIDE" : "INVALIDE"}
+        onChange={handleChange}
+        disabled={saving || !doc.url}
+        title={!doc.url ? "Aucun fichier importé" : ""}
+        style={{
+          background: estValide ? "#d1fae5" : "#fee2e2",
+          color: estValide ? "#065f46" : "#991b1b",
+          padding: "6px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: saving || !doc.url ? "not-allowed" : "pointer", outline: "none",
+          opacity: !doc.url ? 0.5 : 1,
+        }}
+      >
+        <option value="INVALIDE">Doc invalide</option>
+        <option value="VALIDE">Doc valide</option>
+      </select>
+    </div>
+  );
+}
+
 /* ── MODALE : LISTE DES INSCRITS D'UN SÉJOUR ── */
 function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete }) {
   const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
+  const [enfantOuvertId, setEnfantOuvertId] = useState(null);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
@@ -816,51 +865,102 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
             {inscrits.map((ins) => {
               const docsManquants = (ins.enfant?.documents || []).filter((d) => d.statut === "MANQUANT").length;
               const dotColor = ins.enfant?.sexe === "M" ? "#3b82f6" : ins.enfant?.sexe === "F" ? "#ec4899" : C.gray;
+              const estOuvert = enfantOuvertId === ins.id;
               return (
-                <div key={ins.id} style={{ background: C.arctic, borderRadius: "16px", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-                  <div>
-                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
-                      {ins.enfant?.prenom} {ins.enfant?.nom}
-                    </p>
-                    <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>
-                      Parent : {ins.client?.prenom} {ins.client?.nom} {ins.client?.email ? `· ${ins.client.email}` : ""} {ins.client?.telephone ? `· ${ins.client.telephone}` : ""}
-                    </p>
-                    {docsManquants > 0 && (
-                      <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
-                    )}
-                    {ins.enfant?.allergies && (
-                      <p style={{ fontSize: "11px", color: "#b45309", fontWeight: 700, marginTop: "4px" }}>⚠️ Allergies : {ins.enfant.allergies}</p>
-                    )}
+                <div key={ins.id} style={{ background: C.arctic, borderRadius: "16px", overflow: "hidden" }}>
+                  <div
+                    onClick={() => setEnfantOuvertId(estOuvert ? null : ins.id)}
+                    style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap", cursor: "pointer" }}
+                  >
+                    <div>
+                      <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                        {ins.enfant?.prenom} {ins.enfant?.nom}
+                      </p>
+                      <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>
+                        Parent : {ins.client?.prenom} {ins.client?.nom} {ins.client?.email ? `· ${ins.client.email}` : ""} {ins.client?.telephone ? `· ${ins.client.telephone}` : ""}
+                      </p>
+                      {docsManquants > 0 && (
+                        <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
+                      )}
+                      {ins.enfant?.allergies && (
+                        <p style={{ fontSize: "11px", color: "#b45309", fontWeight: 700, marginTop: "4px" }}>⚠️ Allergies : {ins.enfant.allergies}</p>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                      <select
+                        value={ins.statut}
+                        onChange={(e) => onChangerStatut(ins.id, e.target.value)}
+                        style={{
+                          background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                          padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                        }}
+                      >
+                        {STATUTS_INSCRIPTION.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => onDelete(ins)}
+                        title="Supprimer l'inscription"
+                        style={{ background: "#fee2e2", border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                      <div style={{ color: C.gray, transform: estOuvert ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s", display: "flex" }}>
+                        <ChevronDown size={16} />
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                    <select
-                      value={ins.statut}
-                      onChange={(e) => onChangerStatut(ins.id, e.target.value)}
-                      style={{
-                        background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                        color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-                      }}
-                    >
-                      {STATUTS_INSCRIPTION.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
-                    <button
-                      onClick={() => onDelete(ins)}
-                      title="Supprimer l'inscription"
-                      style={{ background: "#fee2e2", border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+
+                  {estOuvert && (
+                    <div style={{ padding: "0 20px 20px" }}>
+                      <div style={{ borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>
+                        {/* Fiche enfant complète */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "10px", marginBottom: "16px" }}>
+                          {ins.enfant?.dateNaissance && (
+                            <InfoPill label="Né(e) le" value={new Date(ins.enfant.dateNaissance).toLocaleDateString("fr-FR")} />
+                          )}
+                          {ins.enfant?.taille && <InfoPill label="Taille" value={`${ins.enfant.taille} cm`} />}
+                          {ins.enfant?.poids && <InfoPill label="Poids" value={`${ins.enfant.poids} kg`} />}
+                          {ins.enfant?.pointure && <InfoPill label="Pointure" value={ins.enfant.pointure} />}
+                        </div>
+                        {ins.enfant?.informationsComplementaires && (
+                          <div style={{ background: C.white, borderRadius: "10px", padding: "10px 12px", marginBottom: "16px" }}>
+                            <p style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", marginBottom: "2px" }}>Informations complémentaires</p>
+                            <p style={{ fontSize: "13px", color: C.teal }}>{ins.enfant.informationsComplementaires}</p>
+                          </div>
+                        )}
+
+                        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Documents</p>
+                        {(!ins.enfant?.documents || ins.enfant.documents.length === 0) ? (
+                          <p style={{ fontSize: "13px", color: C.gray }}>Aucun document déposé.</p>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                            {ins.enfant.documents.map((doc) => (
+                              <DocumentValidationRow key={doc.id} doc={doc} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function InfoPill({ label, value }) {
+  return (
+    <div style={{ background: C.white, borderRadius: "10px", padding: "8px 12px" }}>
+      <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>{label}</p>
+      <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>{value}</p>
     </div>
   );
 }

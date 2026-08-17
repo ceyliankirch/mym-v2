@@ -6,7 +6,7 @@ import SejoursMap from "@/components/SejoursMap";
 import {
   MapPin, Calendar, Users, Clock, Search, X, SunMedium,
   Snowflake, Flower2, Globe, ChevronDown, ArrowRight, Leaf, ChevronRight,
-  Grid, Map, Archive, Tag
+  Grid, Map, Archive, HelpCircle
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -94,6 +94,28 @@ function Breadcrumb({ items }) {
   );
 }
 
+/* ─── INFOBULLE RÉDUCTION VAL-DE-MARNE ──────────────────────────────────────── */
+function ReductionTooltip() {
+  const [show, setShow] = useState(false);
+  return (
+    <div
+      onMouseEnter={(e) => { e.stopPropagation(); setShow(true); }}
+      onMouseLeave={() => setShow(false)}
+      onClick={(e) => e.preventDefault()}
+      style={{position:"absolute",top:"-8px",right:"-8px",zIndex:20}}
+    >
+      <div style={{width:"20px",height:"20px",borderRadius:"50%",background:C.white,boxShadow:"0 2px 6px rgba(0,0,0,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"help"}}>
+        <HelpCircle size={13} style={{color:"#059669"}}/>
+      </div>
+      {show && (
+        <div style={{position:"absolute",top:"26px",right:"0",width:"200px",background:C.teal,color:"white",fontSize:"11px",fontWeight:600,lineHeight:1.5,borderRadius:"10px",padding:"10px 12px",boxShadow:"0 8px 24px rgba(0,0,0,0.2)"}}>
+          Cette réduction est applicable pour tous les résidents du Val-de-Marne. Pour plus d'informations, contactez-nous.
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── SEJOUR CARD ────────────────────────────────────────────────────────────── */
 function SejourCard({ s, idx }) {
   const [hovered, setHovered] = useState(false);
@@ -146,16 +168,17 @@ function SejourCard({ s, idx }) {
         <div style={{padding:"18px 20px 20px", flex: 1, display: "flex", flexDirection: "column"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px",marginBottom:"4px"}}>
             <h3 style={{fontSize:"14px",fontWeight:800,color:C.teal,lineHeight:1.3,margin:0}}>{s.titre}</h3>
-            <span style={{fontSize:"15px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
+            <span style={{fontSize:"20px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
           </div>
-          {!s.isPast && (
-            <div style={{display:"inline-flex",alignSelf:"flex-start",alignItems:"center",gap:"4px",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"999px",padding:"3px 9px",marginTop:"4px"}}>
-              <Tag size={10} style={{color:"#059669"}}/>
-              <span style={{fontSize:"9px",fontWeight:800,color:"#047857",textTransform:"uppercase"}}>-100€ Val-de-Marne</span>
+          {!s.isPast && s.prix > 0 && (
+            <div style={{position:"relative",alignSelf:"flex-end",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 16px",marginTop:"8px",textAlign:"center"}}>
+              <ReductionTooltip />
+              <p style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1.1}}>{Math.max(0, s.prix - 100)}€</p>
+              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Val-de-Marne</p>
             </div>
           )}
 
-          <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"12px", marginBottom:"16px", flex: 1}}>
+          <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"6px", marginBottom:"16px", flex: 1}}>
              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
                <Calendar size={12} style={{color:C.saffron,flexShrink:0}}/>
                <span style={{fontSize:"11px",color:"#8aa",fontWeight:600}}>{formatSejourDates(s.dateDebut, s.dateFin)}</span>

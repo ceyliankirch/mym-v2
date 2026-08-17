@@ -582,24 +582,34 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
                 {sejour.prix > 0 && (
                   <div style={styles.priceSummary}>
-                    <div style={styles.priceRow}>
-                      <span>Prix du séjour</span>
-                      <span>{sejour.prix.toFixed(2)} €</span>
-                    </div>
                     {assuranceSouscrite && (
                       <div style={styles.priceRow}>
                         <span>Assurance annulation (MAIF)</span>
                         <span>+ 30,00 €</span>
                       </div>
                     )}
-                    {promoAppliquee && (
-                      <div style={{ ...styles.priceRow, color: "#10b981", fontWeight: 800 }}>
-                        <span>Réduction Val-de-Marne</span>
-                        <span>- 100,00 €</span>
+
+                    <div style={styles.priceBoxesRow}>
+                      <div style={{ ...styles.priceBox, ...(!promoAppliquee ? styles.priceBoxActive : {}) }}>
+                        <p style={styles.priceBoxLabel}>Prix de base</p>
+                        <p style={styles.priceBoxAmount}>
+                          {(sejour.prix + (assuranceSouscrite ? 30 : 0)).toFixed(2)} €
+                        </p>
                       </div>
-                    )}
+                      <div style={{ ...styles.priceBox, ...(promoAppliquee ? styles.priceBoxActive : styles.priceBoxDisabled) }}>
+                        <p style={styles.priceBoxLabel}>
+                          <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
+                          Val-de-Marne
+                        </p>
+                        <p style={styles.priceBoxAmount}>
+                          {Math.max(0, sejour.prix + (assuranceSouscrite ? 30 : 0) - 100).toFixed(2)} €
+                        </p>
+                        {!promoAppliquee && <p style={styles.priceBoxHint}>Code requis ci-dessus</p>}
+                      </div>
+                    </div>
+
                     <div style={styles.priceTotalRow}>
-                      <span>Total</span>
+                      <span>Total à régler</span>
                       <span>
                         {Math.max(
                           0,
@@ -949,6 +959,45 @@ const styles = {
     color: C.teal,
     paddingTop: "8px",
     borderTop: `1px solid ${C.lightGray}`,
+  },
+  priceBoxesRow: {
+    display: "flex",
+    gap: "10px",
+    margin: "4px 0 10px",
+  },
+  priceBox: {
+    flex: 1,
+    borderRadius: "12px",
+    padding: "12px 14px",
+    border: `2px solid ${C.lightGray}`,
+    background: C.white,
+    transition: "all 0.2s",
+  },
+  priceBoxActive: {
+    border: `2px solid ${C.teal}`,
+    background: "#ecfdf5",
+  },
+  priceBoxDisabled: {
+    opacity: 0.55,
+  },
+  priceBoxLabel: {
+    fontSize: "11px",
+    fontWeight: 800,
+    color: C.teal,
+    textTransform: "uppercase",
+    margin: "0 0 4px",
+  },
+  priceBoxAmount: {
+    fontSize: "18px",
+    fontWeight: 900,
+    color: C.teal,
+    margin: 0,
+  },
+  priceBoxHint: {
+    fontSize: "10px",
+    fontWeight: 600,
+    color: C.gray,
+    margin: "4px 0 0",
   },
   buttonContainer: {
     marginTop: "24px",

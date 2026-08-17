@@ -115,7 +115,7 @@ export default async function EspaceFamillePage() {
   return (
     <EspaceFamilleClient
       userName={userName}
-      clientId={client.id}
+      client={client}
       sejoursAVenir={sejoursAVenir}
       sejoursCatalogue={sejoursCatalogue}
       documents={documents}

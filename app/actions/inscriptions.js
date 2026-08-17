@@ -35,6 +35,33 @@ export async function getOrCreateClientForUser(userId) {
   return client;
 }
 
+// ✏️ MODIFIER LES INFORMATIONS DU REPRÉSENTANT LÉGAL (espace famille)
+export async function modifierClient(clientId, data) {
+  if (!clientId) {
+    return { error: "Données incomplètes" };
+  }
+
+  try {
+    const client = await prisma.client.update({
+      where: { id: clientId },
+      data: {
+        nom: data.nom,
+        prenom: data.prenom,
+        email: data.email,
+        telephone: data.telephone,
+      },
+    });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+
+    return { success: true, client };
+  } catch (error) {
+    console.error("Error updating client:", error);
+    return { error: "Erreur lors de la mise à jour du représentant légal" };
+  }
+}
+
 export async function creerEnfant(clientId, enfantData) {
   if (!clientId || !enfantData?.prenom || !enfantData?.nom) {
     return { error: "Données incomplètes" };

@@ -7,7 +7,7 @@ import {
   Award, CreditCard, Shield, Mountain, Waves, Globe, Landmark,
   Phone, Mail, Instagram, Facebook, Menu, X, Search, Camera,
   GraduationCap, Sun, Snowflake, Flower2, Anchor, ChevronDown,
-  CheckCircle2, Clock, Leaf, Map, Grid, Archive, Tag
+  CheckCircle2, Clock, Leaf, Map, Grid, Archive, HelpCircle
 } from "lucide-react";
 
 /* ─── PALETTE DE COULEURS ────────────────────────────────────────── */
@@ -172,6 +172,27 @@ function FilterDropdown({ label, options, value, onChange }) {
 }
 
 /* ─── COMPOSANT : CARTE DE SÉJOUR (CATALOGUE) ────────────────────── */
+function ReductionTooltip() {
+  const [show, setShow] = useState(false);
+  return (
+    <div
+      onMouseEnter={(e) => { e.stopPropagation(); setShow(true); }}
+      onMouseLeave={() => setShow(false)}
+      onClick={(e) => e.preventDefault()}
+      style={{ position: "absolute", top: "-8px", right: "-8px", zIndex: 20 }}
+    >
+      <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: C.white, boxShadow: "0 2px 6px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "help" }}>
+        <HelpCircle size={13} style={{ color: "#059669" }} />
+      </div>
+      {show && (
+        <div style={{ position: "absolute", top: "26px", right: "0", width: "200px", background: C.teal, color: "white", fontSize: "11px", fontWeight: 600, lineHeight: 1.5, borderRadius: "10px", padding: "10px 12px", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+          Cette réduction est applicable pour tous les résidents du Val-de-Marne. Pour plus d'informations, contactez-nous.
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SejourCard({ s, idx }) {
   const [hovered, setHovered] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
@@ -211,16 +232,13 @@ function SejourCard({ s, idx }) {
         </div>
 
         <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column", background: C.white }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", marginBottom: "8px" }}>
+          <div style={{ marginBottom: "8px" }}>
             <h3 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, lineHeight: 1.3 }}>{s.titre}</h3>
-            <span style={{ fontSize: "16px", fontWeight: 900, color: C.saffron }}>{s.prix}€</span>
           </div>
-          {!s.isPast && (
-            <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: "4px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "999px", padding: "3px 9px", marginBottom: "10px" }}>
-              <Tag size={10} style={{ color: "#059669" }} />
-              <span style={{ fontSize: "9px", fontWeight: 800, color: "#047857", textTransform: "uppercase" }}>-100€ Val-de-Marne</span>
-            </div>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+            <Calendar size={12} style={{ color: "#aaa" }} />
+            <span style={{ fontSize: "12px", color: "#888", fontWeight: 500 }}>{formatSejourDates(s.dateDebut, s.dateFin)}</span>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "12px" }}>
             <MapPin size={12} style={{ color: "#aaa" }} />
             <span style={{ fontSize: "12px", color: "#888", fontWeight: 500 }}>{s.lieu || "Lieu à définir"}</span>
@@ -228,6 +246,18 @@ function SejourCard({ s, idx }) {
           <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "16px", color: C.teal, fontWeight: 700, fontSize: "11px", flex: 1 }}>
             <Users size={12} /> {formatAge(s.tranchesAge)}
           </div>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "10px" }}>
+            <span style={{ fontSize: "34px", fontWeight: 900, color: C.saffron, lineHeight: 1 }}>{s.prix}€</span>
+            {!s.isPast && s.prix > 0 && (
+              <div style={{ position: "relative", marginTop: "12px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "4px 12px", textAlign: "center" }}>
+                <ReductionTooltip />
+                <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{Math.max(0, s.prix - 100)}€</p>
+                <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Val-de-Marne</p>
+              </div>
+            )}
+          </div>
+
           <div style={{ width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "10px", textAlign: "center", transition: "all 0.2s" }}>
             Voir le séjour
           </div>
@@ -545,8 +575,22 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
       {/* ── HERO SECTION ────────────────────────────────────────────────── */}
       <section className="hero-bg" style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", padding: "0 32px" }}>
+        <div style={{ position: "absolute", top: "24px", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", zIndex: 5, maxWidth: "calc(100% - 48px)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.yellow, borderRadius: "999px", padding: "8px 18px" }}>
+            <Users size={14} style={{ color: C.teal, flexShrink: 0 }} />
+            <span style={{ fontSize: "12px", fontWeight: 900, color: C.teal, textTransform: "uppercase", letterSpacing: "1px" }}>
+              Encadré par des enseignants &amp; éducateurs diplômés
+            </span>
+          </div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.red, borderRadius: "999px", padding: "8px 18px" }}>
+            <CreditCard size={14} style={{ color: "white", flexShrink: 0 }} />
+            <span style={{ fontSize: "12px", fontWeight: 900, color: "white", textTransform: "uppercase", letterSpacing: "1px", whiteSpace: "nowrap" }}>
+              Paiement jusqu'à 8× sans frais
+            </span>
+          </div>
+        </div>
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "1320px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: "64px", paddingBottom: "100px", paddingTop: "80px" }}>
-          
+
           <div style={{ flex: 1, maxWidth: "600px", color: "white" }}>
             <h1 style={{ position: "relative", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
               <div style={{
