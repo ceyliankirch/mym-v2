@@ -54,7 +54,7 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 pt-24"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -206,7 +206,7 @@ function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId }) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 pt-24"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -379,7 +379,7 @@ function AjouterEnfantModal({ clientId, onClose }) {
   const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5";
 
   return (
-    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 pt-24">
       <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div className="flex items-start justify-between p-6 border-b border-slate-200">
           <div>
@@ -491,7 +491,7 @@ function ModifierClientModal({ client, onClose }) {
   const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5";
 
   return (
-    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 pt-24">
       <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-start justify-between p-6 border-b border-slate-200">
           <div>
