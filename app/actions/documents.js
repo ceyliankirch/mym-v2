@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { put, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/postmark";
 
 export async function uploaderDocument(enfantId, docType, file) {
   if (!enfantId || !docType || !file) {
@@ -57,7 +58,20 @@ export async function validerDocument(documentId) {
     const document = await prisma.document.update({
       where: { id: documentId },
       data: { statut: "VALIDE" },
+      include: { enfant: { include: { client: true } } },
     });
+
+    if (document.enfant?.client?.email) {
+      try {
+        await sendDocumentValidatedEmail({
+          to: document.enfant.client.email,
+          prenomEnfant: document.enfant.prenom,
+          docType: document.type,
+        });
+      } catch (e) {
+        console.error("Erreur envoi email validation document", e);
+      }
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");
@@ -78,7 +92,20 @@ export async function rejeterDocument(documentId) {
     const document = await prisma.document.update({
       where: { id: documentId },
       data: { statut: "MANQUANT" },
+      include: { enfant: { include: { client: true } } },
     });
+
+    if (document.enfant?.client?.email) {
+      try {
+        await sendDocumentRejectedEmail({
+          to: document.enfant.client.email,
+          prenomEnfant: document.enfant.prenom,
+          docType: document.type,
+        });
+      } catch (e) {
+        console.error("Erreur envoi email rejet document", e);
+      }
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");

@@ -138,6 +138,8 @@ model User {
   password      String?   // Mot de passe crypté
   image         String?
   role          String    @default("PARENT")
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
 
   accounts      Account[]
   sessions      Session[]

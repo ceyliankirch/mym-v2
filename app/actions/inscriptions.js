@@ -345,7 +345,24 @@ export async function changerStatutInscription(id, statut) {
 // 🗑️ SUPPRIMER UNE INSCRIPTION (admin — pas de vérification de propriétaire)
 export async function supprimerInscription(id) {
   try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id },
+      include: { client: true, enfant: true, sejour: true },
+    });
+
     await prisma.inscription.delete({ where: { id } });
+
+    if (inscription?.client?.email) {
+      try {
+        await sendInscriptionCancelledEmail({
+          to: inscription.client.email,
+          prenomEnfant: inscription.enfant?.prenom,
+          sejourTitre: inscription.sejour?.titre,
+        });
+      } catch (e) {
+        console.error("Erreur envoi email annulation inscription", e);
+      }
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");
@@ -364,12 +381,27 @@ export async function supprimerInscriptionFamille(id, clientId) {
   }
 
   try {
-    const inscription = await prisma.inscription.findUnique({ where: { id } });
+    const inscription = await prisma.inscription.findUnique({
+      where: { id },
+      include: { client: true, enfant: true, sejour: true },
+    });
     if (!inscription || inscription.clientId !== clientId) {
       return { error: "Inscription introuvable" };
     }
 
     await prisma.inscription.delete({ where: { id } });
+
+    if (inscription.client?.email) {
+      try {
+        await sendInscriptionCancelledEmail({
+          to: inscription.client.email,
+          prenomEnfant: inscription.enfant?.prenom,
+          sejourTitre: inscription.sejour?.titre,
+        });
+      } catch (e) {
+        console.error("Erreur envoi email annulation inscription", e);
+      }
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");

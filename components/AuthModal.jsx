@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Mail, Lock, User, Phone, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react"; // ⚡ La fonction magique pour se connecter
-import { registerUser } from "@/app/actions/auth"; // ⚡ Notre fonction d'inscription
+import { registerUser, demanderReinitialisationMotDePasse } from "@/app/actions/auth"; // ⚡ Nos fonctions d'auth
 
 const C = {
   yellow:  "#FFC801",
@@ -19,11 +19,28 @@ const C = {
 
 export default function AuthModal({ isOpen, onClose }) {
   const router = useRouter();
-  const [mode, setMode] = useState("login"); // "login" | "register"
+  const [mode, setMode] = useState("login"); // "login" | "register" | "forgot"
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMsg(null);
+    try {
+      await demanderReinitialisationMotDePasse(forgotEmail);
+      setForgotSent(true);
+    } catch (err) {
+      setErrorMsg("Une erreur est survenue.");
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +98,7 @@ export default function AuthModal({ isOpen, onClose }) {
   const switchMode = (newMode) => {
     setMode(newMode);
     setErrorMsg(null);
+    setForgotSent(false);
   };
 
   return (
@@ -96,24 +114,68 @@ export default function AuthModal({ isOpen, onClose }) {
           <X size={18} />
         </button>
 
-        <div style={{ display: "flex", background: C.arctic, padding: "8px", margin: "24px 32px 0", borderRadius: "16px" }}>
-          <button onClick={() => switchMode("login")} type="button" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", fontSize: "14px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", background: mode === "login" ? C.white : "transparent", color: mode === "login" ? C.teal : C.gray, boxShadow: mode === "login" ? "0 4px 12px rgba(0,0,0,0.05)" : "none" }}>
-            Se connecter
-          </button>
-          <button onClick={() => switchMode("register")} type="button" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", fontSize: "14px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", background: mode === "register" ? C.white : "transparent", color: mode === "register" ? C.teal : C.gray, boxShadow: mode === "register" ? "0 4px 12px rgba(0,0,0,0.05)" : "none" }}>
-            Créer un compte
-          </button>
-        </div>
+        {mode !== "forgot" && (
+          <div style={{ display: "flex", background: C.arctic, padding: "8px", margin: "24px 32px 0", borderRadius: "16px" }}>
+            <button onClick={() => switchMode("login")} type="button" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", fontSize: "14px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", background: mode === "login" ? C.white : "transparent", color: mode === "login" ? C.teal : C.gray, boxShadow: mode === "login" ? "0 4px 12px rgba(0,0,0,0.05)" : "none" }}>
+              Se connecter
+            </button>
+            <button onClick={() => switchMode("register")} type="button" style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", fontSize: "14px", fontWeight: 800, cursor: "pointer", transition: "all 0.2s", background: mode === "register" ? C.white : "transparent", color: mode === "register" ? C.teal : C.gray, boxShadow: mode === "register" ? "0 4px 12px rgba(0,0,0,0.05)" : "none" }}>
+              Créer un compte
+            </button>
+          </div>
+        )}
 
+        {mode === "forgot" ? (
+          <div style={{ padding: "32px 40px" }}>
+            <div style={{ textAlign: "center", marginBottom: "32px" }}>
+              <h2 style={{ fontSize: "28px", fontWeight: 900, color: C.teal, marginBottom: "8px" }}>
+                Mot de passe oublié ? 🔑
+              </h2>
+              <p style={{ fontSize: "14px", color: C.gray, fontWeight: 500, lineHeight: 1.5 }}>
+                Entrez votre email, nous vous enverrons un lien pour choisir un nouveau mot de passe.
+              </p>
+            </div>
+
+            {forgotSent ? (
+              <div style={{ background: "#d1fae5", color: "#065f46", padding: "16px", borderRadius: "16px", fontSize: "14px", fontWeight: 600, display: "flex", alignItems: "center", gap: "10px", textAlign: "center", justifyContent: "center" }}>
+                <CheckCircle2 size={20} /> Si un compte existe avec cet email, un lien vient de lui être envoyé.
+              </div>
+            ) : (
+              <>
+                {errorMsg && (
+                  <div style={{ background: "#fef2f2", color: C.red, padding: "12px 16px", borderRadius: "12px", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", border: `1px solid #fecaca` }}>
+                    <AlertCircle size={16} /> {errorMsg}
+                  </div>
+                )}
+                <form onSubmit={handleForgotSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div style={{ position: "relative" }}>
+                    <Mail size={18} color={C.gray} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} />
+                    <input type="email" required placeholder="Adresse email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} style={{ width: "100%", padding: "14px 14px 14px 44px", borderRadius: "16px", border: `1px solid ${C.lightGray}`, background: C.arctic, color: C.teal, fontWeight: 600, outline: "none" }} />
+                  </div>
+                  <button type="submit" disabled={isSubmitting} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: C.yellow, color: C.teal, padding: "16px", borderRadius: "16px", border: "none", fontSize: "16px", fontWeight: 800, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.7 : 1 }}>
+                    {isSubmitting ? "Envoi..." : "Envoyer le lien"}
+                    {!isSubmitting && <ArrowRight size={18} />}
+                  </button>
+                </form>
+              </>
+            )}
+
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <button onClick={() => switchMode("login")} type="button" style={{ background: "none", border: "none", color: C.teal, fontWeight: 700, fontSize: "13px", cursor: "pointer" }}>
+                ← Retour à la connexion
+              </button>
+            </div>
+          </div>
+        ) : (
         <div style={{ padding: "32px 40px" }}>
-          
+
           <div style={{ textAlign: "center", marginBottom: "32px" }}>
             <h2 style={{ fontSize: "28px", fontWeight: 900, color: C.teal, marginBottom: "8px" }}>
               {mode === "login" ? "Bon retour ! 👋" : "Bienvenue ! ✨"}
             </h2>
             <p style={{ fontSize: "14px", color: C.gray, fontWeight: 500, lineHeight: 1.5 }}>
-              {mode === "login" 
-                ? "Connectez-vous pour accéder au suivi des séjours et à vos inscriptions." 
+              {mode === "login"
+                ? "Connectez-vous pour accéder au suivi des séjours et à vos inscriptions."
                 : "Créez votre compte Parent pour inscrire vos enfants à nos séjours."}
             </p>
           </div>
@@ -158,7 +220,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
             {mode === "login" && (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <a href="#" style={{ fontSize: "12px", fontWeight: 700, color: C.saffron, textDecoration: "none" }}>Mot de passe oublié ?</a>
+                <button type="button" onClick={() => switchMode("forgot")} style={{ fontSize: "12px", fontWeight: 700, color: C.saffron, background: "none", border: "none", cursor: "pointer", padding: 0 }}>Mot de passe oublié ?</button>
               </div>
             )}
 
@@ -180,6 +242,7 @@ export default function AuthModal({ isOpen, onClose }) {
           )}
 
         </div>
+        )}
       </div>
     </div>
   );
