@@ -6,6 +6,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PartnersMarquee from "@/components/PartnersMarquee";
+import EncadrantsBanner from "@/components/EncadrantsBanner";
 import AuthProvider from "@/components/AuthProvider"; // ⚡ On importe le provider
 import { prisma } from "@/lib/prisma";
 
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }) {
         {/* ⚡ On englobe toute l'application avec le AuthProvider */}
         <AuthProvider>
           <Navbar />
+          <EncadrantsBanner />
           <main>{children}</main>
           <PartnersMarquee logos={partnerLogos} />
           <Footer sejours={footerSejours} />

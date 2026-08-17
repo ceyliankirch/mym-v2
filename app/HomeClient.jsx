@@ -575,20 +575,6 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
       {/* ── HERO SECTION ────────────────────────────────────────────────── */}
       <section className="hero-bg" style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", padding: "0 32px" }}>
-        <div style={{ position: "absolute", top: "24px", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", zIndex: 5, maxWidth: "calc(100% - 48px)" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.yellow, borderRadius: "999px", padding: "8px 18px" }}>
-            <Users size={14} style={{ color: C.teal, flexShrink: 0 }} />
-            <span style={{ fontSize: "12px", fontWeight: 900, color: C.teal, textTransform: "uppercase", letterSpacing: "1px" }}>
-              Encadré par des enseignants &amp; éducateurs diplômés
-            </span>
-          </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: C.red, borderRadius: "999px", padding: "8px 18px" }}>
-            <CreditCard size={14} style={{ color: "white", flexShrink: 0 }} />
-            <span style={{ fontSize: "12px", fontWeight: 900, color: "white", textTransform: "uppercase", letterSpacing: "1px", whiteSpace: "nowrap" }}>
-              Paiement jusqu'à 8× sans frais
-            </span>
-          </div>
-        </div>
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "1320px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: "64px", paddingBottom: "100px", paddingTop: "80px" }}>
 
           <div style={{ flex: 1, maxWidth: "600px", color: "white" }}>

@@ -20,13 +20,6 @@ export default function QuiSommesNousClient({ equipe }) {
   return (
     <div className="min-h-screen bg-[#F1F6F4] text-[#114C5A] font-sans overflow-x-hidden selection:bg-[#FFC801] selection:text-[#114C5A]">
 
-      {/* ── BANDEAU ENCADRANTS ──────────────────────────────────────────────── */}
-      <div className="bg-[#FFC801] py-3 px-4">
-        <p className="text-center text-xs sm:text-sm font-black text-[#114C5A] uppercase tracking-wide">
-          Encadré par des enseignants &amp; des éducateurs diplômés
-        </p>
-      </div>
-
       {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
       <section className="relative px-8 pt-24 pb-20 max-w-[1320px] mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
         <div className="flex-1 w-full animate-[fadeUp_0.8s_ease_both]">
