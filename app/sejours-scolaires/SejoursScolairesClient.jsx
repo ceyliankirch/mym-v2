@@ -18,9 +18,9 @@ const C = {
 
 /* ─── DONNÉES ────────────────────────────────────────────────────────────── */
 const THEMATIQUES = [
-  { id: 1, titre: "Classes de Neige", desc: "Séjours au ski : découverte du milieu montagnard, apprentissage du ski et sensibilisation à l'environnement.", lieu: "Alpes", img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80", Icon: Mountain },
-  { id: 2, titre: "Nature & Découverte", desc: "Étude des écosystèmes, activités nautiques et vie en collectivité en bord d'océan.", lieu: "Sud-Ouest de la France", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", Icon: Waves },
-  { id: 3, titre: "Voyages Linguistiques & Culturels", desc: "Immersion linguistique, découverte du patrimoine et de la culture locale.", lieu: "Espagne & Italie", img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&q=80", Icon: Landmark },
+  { id: 1, titre: "Classes de Neige", desc: "Séjours au ski : découverte du milieu montagnard, apprentissage du ski et sensibilisation à l'environnement.", lieu: "Alpes", img: "/IMG_0227.JPG", Icon: Mountain },
+  { id: 2, titre: "Nature & Découverte", desc: "Étude des écosystèmes, activités nautiques et vie en collectivité en bord d'océan.", lieu: "Sud-Ouest de la France", img: "/IMG_5021.JPG", Icon: Waves },
+  { id: 3, titre: "Voyages Linguistiques & Culturels", desc: "Immersion linguistique, découverte du patrimoine et de la culture locale.", lieu: "Espagne & Italie", img: "/IMG_9936.JPG", Icon: Landmark },
 ];
 
 const ARGUMENTS = [
@@ -123,10 +123,10 @@ export default function Scolaires() {
           {/* Image */}
           <div style={{ flex: "1 1 400px", position: "relative", height: "500px" }}>
             <div style={{ position: "absolute", top: "0", right: "0", width: "85%", height: "80%", borderRadius: "32px", overflow: "hidden", boxShadow: "0 24px 64px rgba(17,76,90,0.15)", zIndex: 1 }}>
-              <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&q=80" alt="Enfants en classe verte" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src="/IMG_0162.JPG" alt="Enfants en classe verte" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div style={{ position: "absolute", bottom: "0", left: "0", width: "55%", height: "50%", borderRadius: "24px", overflow: "hidden", border: `6px solid ${C.white}`, boxShadow: "0 12px 32px rgba(17,76,90,0.1)", zIndex: 2 }}>
-              <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80" alt="Enfants activités" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src="/IMG_0398.JPG" alt="Enfants activités" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             {/* Badge Agréé EN */}
             <div style={{ position: "absolute", top: "40px", left: "-20px", background: C.teal, borderRadius: "16px", padding: "16px", boxShadow: "0 12px 32px rgba(17,76,90,0.25)", zIndex: 3, display: "flex", alignItems: "center", gap: "12px" }}>
