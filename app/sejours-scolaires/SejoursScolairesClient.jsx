@@ -67,7 +67,7 @@ function ThemeCard({ t }) {
         boxShadow: hovered ? "0 20px 56px rgba(17,76,90,0.12)" : "0 4px 16px rgba(17,76,90,0.06)",
         transition: "all .3s ease"
       }}>
-      <div style={{ position: "relative", height: "200px", overflow: "hidden" }}>
+      <div style={{ position: "relative", aspectRatio: "4 / 5", overflow: "hidden" }}>
         <img src={t.img} alt={t.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease" }} />
         <div style={{ position: "absolute", top: "16px", left: "16px", width: "40px", height: "40px", background: C.white, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
           <Ic size={20} style={{ color: C.teal }} />
