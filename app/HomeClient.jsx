@@ -253,7 +253,7 @@ function SejourCard({ s, idx }) {
               <div style={{ position: "relative", marginTop: "12px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "4px 12px", textAlign: "center" }}>
                 <ReductionTooltip />
                 <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{Math.max(0, s.prix - 100)}€</p>
-                <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Val-de-Marne</p>
+                <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Habitant du Val-de-Marne</p>
               </div>
             )}
           </div>

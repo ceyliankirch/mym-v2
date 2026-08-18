@@ -176,7 +176,7 @@ function StickySidebar({ sejour }) {
             <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
               <ReductionTooltip />
               <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
-              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Val-de-Marne</p>
+              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
             </div>
           )}
         </div>
