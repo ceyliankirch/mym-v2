@@ -68,15 +68,28 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   );
   const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
 
-  // 🏷️ Code promo "Val-de-Marne" : -100€ sur le prix du séjour
+  // 🏷️ Tarif sélectionné : "standard" ou "val_de_marne" (-100€, débloqué par un code)
+  const [tarifSelectionne, setTarifSelectionne] = useState("standard");
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
   const [promoErreur, setPromoErreur] = useState("");
+  const [showCodeInput, setShowCodeInput] = useState(false);
+
+  const handleClicPrixBase = () => setTarifSelectionne("standard");
+
+  const handleClicValDeMarne = () => {
+    if (promoAppliquee) {
+      setTarifSelectionne("val_de_marne");
+    } else {
+      setShowCodeInput(true);
+    }
+  };
 
   const handleAppliquerPromo = () => {
     if (codePromo.trim().toUpperCase() === "VAL_DE_MARNE_94") {
       setPromoAppliquee(true);
       setPromoErreur("");
+      setTarifSelectionne("val_de_marne");
     } else {
       setPromoAppliquee(false);
       setPromoErreur("Code promo invalide");
@@ -97,10 +110,17 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
       setPromoErreur("");
       setAdresseErreur("");
       setShowAdresseForm(false);
+      setTarifSelectionne("val_de_marne");
     } else {
       setAdresseErreur("Cette adresse ne semble pas être située dans le Val-de-Marne (94).");
     }
   };
+
+  // 💳 Lien de paiement à utiliser selon le tarif sélectionné (repli sur le lien standard si non configuré)
+  const lienPaiementActif =
+    tarifSelectionne === "val_de_marne" && sejour.lienPaiementCICValDeMarne
+      ? sejour.lienPaiementCICValDeMarne
+      : sejour.lienPaiementCIC;
 
   const handleNewEnfantChange = (key, value) => {
     setNewEnfantData((prev) => ({ ...prev, [key]: value }));
@@ -141,9 +161,9 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         setError(result.error);
       } else {
         setSuccess(true);
-        if (sejour.lienPaiementCIC) {
+        if (lienPaiementActif) {
           setTimeout(() => {
-            window.location.href = sejour.lienPaiementCIC;
+            window.location.href = lienPaiementActif;
           }, 2500);
         } else {
           setTimeout(() => {
@@ -189,13 +209,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
             <h1 style={{ fontSize: "28px", fontWeight: 900, color: C.teal }}>
               Inscription envoyée ! 🎉
             </h1>
-            {sejour.lienPaiementCIC ? (
+            {lienPaiementActif ? (
               <>
                 <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
                   Vous allez être redirigé vers la page de paiement pour régler le séjour...
                 </p>
                 <a
-                  href={sejour.lienPaiementCIC}
+                  href={lienPaiementActif}
                   style={{ display: "inline-block", marginTop: "24px", background: C.yellow, color: C.teal, padding: "14px 28px", borderRadius: "999px", fontWeight: 800, textDecoration: "none", fontSize: "14px" }}
                 >
                   Accéder au paiement maintenant
@@ -508,80 +528,9 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
               <div style={styles.buttonContainer}>
                 {sejour.prix > 0 && (
-                  <div style={styles.promoBanner}>
-                    <div style={styles.promoBannerText}>
-                      <Tag size={18} color={C.saffron} style={{ flexShrink: 0, marginTop: "2px" }} />
-                      <p style={{ margin: 0 }}>
-                        <strong>-100€ pour les habitants du Val-de-Marne !</strong> Entrez votre code de réduction ci-dessous pour en bénéficier.
-                      </p>
-                    </div>
-                    <div style={styles.promoInputRow}>
-                      <input
-                        type="text"
-                        value={codePromo}
-                        onChange={(e) => {
-                          setCodePromo(e.target.value);
-                          if (promoAppliquee) setPromoAppliquee(false);
-                          if (promoErreur) setPromoErreur("");
-                        }}
-                        placeholder="Code de réduction"
-                        style={styles.promoInput}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAppliquerPromo}
-                        style={styles.promoButton}
-                      >
-                        Appliquer
-                      </button>
-                    </div>
-                    {promoAppliquee && (
-                      <p style={styles.promoSuccess}>
-                        <CheckCircle2 size={14} /> Code appliqué : -100€ sur le prix du séjour
-                      </p>
-                    )}
-                    {promoErreur && <p style={styles.promoError}>{promoErreur}</p>}
-
-                    {!showAdresseForm ? (
-                      <button
-                        type="button"
-                        onClick={() => setShowAdresseForm(true)}
-                        style={styles.promoLinkButton}
-                      >
-                        Vous n'avez pas de code ? Obtenir mon code de réduction
-                      </button>
-                    ) : (
-                      <div style={styles.promoAdresseBox}>
-                        <label style={styles.promoAdresseLabel}>
-                          Entrez votre adresse pour vérifier votre éligibilité
-                        </label>
-                        <div style={styles.promoInputRow}>
-                          <input
-                            type="text"
-                            value={adresseSaisie}
-                            onChange={(e) => {
-                              setAdresseSaisie(e.target.value);
-                              if (adresseErreur) setAdresseErreur("");
-                            }}
-                            placeholder="Ex: 12 rue de Paris, 94000 Créteil"
-                            style={{ ...styles.promoInput, textTransform: "none" }}
-                          />
-                          <button
-                            type="button"
-                            onClick={handleVerifierAdresse}
-                            style={styles.promoButton}
-                          >
-                            Vérifier
-                          </button>
-                        </div>
-                        {adresseErreur && <p style={styles.promoError}>{adresseErreur}</p>}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {sejour.prix > 0 && (
                   <div style={styles.priceSummary}>
+                    <p style={styles.priceSummaryLabel}>Choisissez votre tarif</p>
+
                     {assuranceSouscrite && (
                       <div style={styles.priceRow}>
                         <span>Assurance annulation (MAIF)</span>
@@ -590,30 +539,107 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                     )}
 
                     <div style={styles.priceBoxesRow}>
-                      <div style={{ ...styles.priceBox, ...(!promoAppliquee ? styles.priceBoxActive : {}) }}>
+                      <div
+                        onClick={handleClicPrixBase}
+                        style={{
+                          ...styles.priceBox,
+                          ...(tarifSelectionne === "standard" ? styles.priceBoxActive : {}),
+                        }}
+                      >
                         <p style={styles.priceBoxLabel}>Prix de base</p>
                         <p style={styles.priceBoxAmount}>
                           {(sejour.prix + (assuranceSouscrite ? 30 : 0)).toFixed(2)} €
                         </p>
                       </div>
-                      <div style={{ ...styles.priceBox, ...(promoAppliquee ? styles.priceBoxActive : styles.priceBoxDisabled) }}>
+                      <div
+                        onClick={handleClicValDeMarne}
+                        style={{
+                          ...styles.priceBox,
+                          ...(tarifSelectionne === "val_de_marne"
+                            ? styles.priceBoxActive
+                            : !promoAppliquee
+                            ? styles.priceBoxDisabled
+                            : {}),
+                        }}
+                      >
                         <p style={styles.priceBoxLabel}>
                           <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
-                          Val-de-Marne
+                          Habitant du Val-de-Marne
                         </p>
                         <p style={styles.priceBoxAmount}>
                           {Math.max(0, sejour.prix + (assuranceSouscrite ? 30 : 0) - 100).toFixed(2)} €
                         </p>
-                        {!promoAppliquee && <p style={styles.priceBoxHint}>Code requis ci-dessus</p>}
+                        {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
                       </div>
                     </div>
+
+                    {showCodeInput && !promoAppliquee && (
+                      <div style={styles.promoBanner} onClick={(e) => e.stopPropagation()}>
+                        <div style={styles.promoBannerText}>
+                          <Tag size={18} color={C.saffron} style={{ flexShrink: 0, marginTop: "2px" }} />
+                          <p style={{ margin: 0 }}>
+                            Entrez votre code de réduction pour débloquer le tarif Val-de-Marne.
+                          </p>
+                        </div>
+                        <div style={styles.promoInputRow}>
+                          <input
+                            type="text"
+                            value={codePromo}
+                            onChange={(e) => {
+                              setCodePromo(e.target.value);
+                              if (promoErreur) setPromoErreur("");
+                            }}
+                            placeholder="Code de réduction"
+                            style={styles.promoInput}
+                          />
+                          <button type="button" onClick={handleAppliquerPromo} style={styles.promoButton}>
+                            Appliquer
+                          </button>
+                        </div>
+                        {promoErreur && <p style={styles.promoError}>{promoErreur}</p>}
+
+                        {!showAdresseForm ? (
+                          <button type="button" onClick={() => setShowAdresseForm(true)} style={styles.promoLinkButton}>
+                            Vous n'avez pas de code ? Obtenir mon code de réduction
+                          </button>
+                        ) : (
+                          <div style={styles.promoAdresseBox}>
+                            <label style={styles.promoAdresseLabel}>
+                              Entrez votre adresse pour vérifier votre éligibilité
+                            </label>
+                            <div style={styles.promoInputRow}>
+                              <input
+                                type="text"
+                                value={adresseSaisie}
+                                onChange={(e) => {
+                                  setAdresseSaisie(e.target.value);
+                                  if (adresseErreur) setAdresseErreur("");
+                                }}
+                                placeholder="Ex: 12 rue de Paris, 94000 Créteil"
+                                style={{ ...styles.promoInput, textTransform: "none" }}
+                              />
+                              <button type="button" onClick={handleVerifierAdresse} style={styles.promoButton}>
+                                Vérifier
+                              </button>
+                            </div>
+                            {adresseErreur && <p style={styles.promoError}>{adresseErreur}</p>}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {promoAppliquee && (
+                      <p style={styles.promoSuccess}>
+                        <CheckCircle2 size={14} /> Code appliqué : le tarif Val-de-Marne est débloqué
+                      </p>
+                    )}
 
                     <div style={styles.priceTotalRow}>
                       <span>Total à régler</span>
                       <span>
                         {Math.max(
                           0,
-                          sejour.prix + (assuranceSouscrite ? 30 : 0) - (promoAppliquee ? 100 : 0)
+                          sejour.prix + (assuranceSouscrite ? 30 : 0) - (tarifSelectionne === "val_de_marne" ? 100 : 0)
                         ).toFixed(2)}{" "}
                         €
                       </span>
@@ -944,6 +970,14 @@ const styles = {
     flexDirection: "column",
     gap: "8px",
   },
+  priceSummaryLabel: {
+    fontSize: "11px",
+    fontWeight: 800,
+    color: C.gray,
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    margin: "0 0 2px",
+  },
   priceRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -972,6 +1006,7 @@ const styles = {
     border: `2px solid ${C.lightGray}`,
     background: C.white,
     transition: "all 0.2s",
+    cursor: "pointer",
   },
   priceBoxActive: {
     border: `2px solid ${C.teal}`,

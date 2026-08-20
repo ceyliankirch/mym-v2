@@ -504,9 +504,15 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             </div>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement CIC</label>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement CIC — Tarif standard</label>
               <input type="url" name="lienPaiementCIC" defaultValue={isEditing ? sejourData.lienPaiementCIC : ""} placeholder="https://paiement.cic.fr/..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <p style={{ fontSize: "11px", color: C.gray }}>Une fois son inscription envoyée, la famille sera redirigée vers ce lien pour régler le séjour. Laissez vide si le paiement se fait autrement.</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement CIC — Tarif Habitant du Val-de-Marne</label>
+              <input type="url" name="lienPaiementCICValDeMarne" defaultValue={isEditing ? sejourData.lienPaiementCICValDeMarne : ""} placeholder="https://paiement.cic.fr/..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+              <p style={{ fontSize: "11px", color: C.gray }}>Lien utilisé quand la famille sélectionne le tarif réduit (-100€) réservé aux habitants du Val-de-Marne.</p>
             </div>
 
             <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} />

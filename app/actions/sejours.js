@@ -23,6 +23,7 @@ export async function creerSejour(formData) {
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
+  const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
 
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
   const prixPrincipal = prixArray[0] || 0;
@@ -78,6 +79,7 @@ export async function creerSejour(formData) {
       documentsRequis,
       galerie: galerieUrls,
       lienPaiementCIC,
+      lienPaiementCICValDeMarne,
     },
   });
 
@@ -106,6 +108,7 @@ export async function modifierSejour(id, formData) {
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
+  const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
 
   const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
   const prixPrincipal = prixArray[0] || 0;
@@ -177,6 +180,7 @@ export async function modifierSejour(id, formData) {
       documentsRequis,
       galerie: finalGalerie,
       lienPaiementCIC,
+      lienPaiementCICValDeMarne,
     },
   });
 
@@ -259,6 +263,7 @@ export async function dupliquerSejour(id) {
       formSchema: source.formSchema,
       documentsRequis: source.documentsRequis,
       lienPaiementCIC: source.lienPaiementCIC,
+      lienPaiementCICValDeMarne: source.lienPaiementCICValDeMarne,
     },
   });
 

@@ -33,6 +33,7 @@ model Sejour {
   formSchema       String?  // Le JSON du constructeur de formulaire
   documentsRequis  String[] @default([]) // Sous-ensemble du catalogue fixe
   lienPaiementCIC  String?  // Lien de paiement CIC vers lequel rediriger la famille après inscription
+  lienPaiementCICValDeMarne String? // Lien de paiement CIC pour le tarif réduit "Habitant du Val-de-Marne"
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
   albums       Album[]
