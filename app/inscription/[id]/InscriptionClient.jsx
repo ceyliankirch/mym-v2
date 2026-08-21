@@ -68,6 +68,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   );
   const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
 
+  // 💳 Détecte si la famille a choisi de régler par carte bleue (champ "select"
+  // dont le libellé évoque le moyen de règlement) pour ajouter les frais bancaires.
+  const champPaiement = formFields.find(
+    (f) => f.type === "select" && f.label?.toLowerCase().includes("régler")
+  );
+  const paiementParCarteBleue = champPaiement && formData[champPaiement.label] === "Carte bleue";
+
   // 🏷️ Tarif sélectionné : "standard" ou "val_de_marne" (-100€, débloqué par un code)
   const [tarifSelectionne, setTarifSelectionne] = useState("standard");
   const [codePromo, setCodePromo] = useState("");
@@ -634,12 +641,22 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       </p>
                     )}
 
+                    {paiementParCarteBleue && (
+                      <div style={styles.priceRow}>
+                        <span>Frais bancaires (carte bleue)</span>
+                        <span>+ 5,00 €</span>
+                      </div>
+                    )}
+
                     <div style={styles.priceTotalRow}>
                       <span>Total à régler</span>
                       <span>
                         {Math.max(
                           0,
-                          sejour.prix + (assuranceSouscrite ? 30 : 0) - (tarifSelectionne === "val_de_marne" ? 100 : 0)
+                          sejour.prix +
+                            (assuranceSouscrite ? 30 : 0) -
+                            (tarifSelectionne === "val_de_marne" ? 100 : 0) +
+                            (paiementParCarteBleue ? 5 : 0)
                         ).toFixed(2)}{" "}
                         €
                       </span>
