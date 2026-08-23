@@ -569,12 +569,35 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
         @media (max-width: 768px) {
           .hero-search-wrap { width: calc(100% - 32px) !important; }
-          .hero-search-bar { flex-direction: column; align-items: stretch; border-radius: 24px !important; padding: 20px !important; gap: 12px; }
+          .hero-search-bar { flex-direction: column; align-items: stretch; border-radius: 24px !important; padding: 16px 20px !important; gap: 12px; }
           .hero-search-bar .search-divider { display: none; }
           .hero-search-bar input { min-width: 0 !important; padding: 8px 4px; }
-          .hero-search-bar button { align-self: flex-end; }
-          .hero-search-filters { flex-wrap: wrap; gap: 16px !important; }
-          .hero-search-filters > div { flex: 1 1 30%; min-width: 90px; }
+          .hero-search-input-row { gap: 8px !important; }
+          .hero-search-filters { flex-wrap: wrap; gap: 12px !important; }
+          .hero-search-filters > div { flex: 1 1 45%; min-width: 90px; }
+        }
+
+        @media (max-width: 768px) {
+          .hero-title { display: flex !important; flex-direction: column; align-items: flex-start; }
+          .hero-logo-badge { position: static !important; top: auto !important; left: auto !important; margin: 0 0 16px !important; transform: none !important; }
+          .hero-logo-img { transform: none !important; }
+        }
+
+        @media (max-width: 640px) {
+          .sejours-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 16px !important;
+            padding-bottom: 4px;
+            margin: 0 -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+          }
+          .sejours-grid-item {
+            flex: 0 0 200px;
+            scroll-snap-align: start;
+          }
         }
       `}</style>
 
@@ -583,14 +606,14 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "1320px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: "64px", paddingBottom: "100px", paddingTop: "80px" }}>
 
           <div style={{ flex: 1, maxWidth: "600px", color: "white" }}>
-            <h1 style={{ position: "relative", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
-              <div style={{
+            <h1 className="hero-title" style={{ position: "relative", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
+              <div className="hero-logo-badge" style={{
                 position: "absolute", top: "-44px", left: "-42px",
                 width: "84px", height: "84px", borderRadius: "50%", background: "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 10px 28px rgba(0,0,0,0.2)", transform: "rotate(-6deg)",
               }}>
-                <img src="/mym-logo-192.png" alt="Make Your Moment" style={{ width: "74px", height: "74px", borderRadius: "16px", transform: "rotate(-15deg)" }} />
+                <img className="hero-logo-img" src="/mym-logo-192.png" alt="Make Your Moment" style={{ width: "74px", height: "74px", borderRadius: "16px", transform: "rotate(-15deg)" }} />
               </div>
               Make your <span style={{ color: C.yellow }}>Moment</span>
             </h1>
@@ -636,12 +659,14 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               <FilterDropdown label="Saison" options={saisonOptions} value={heroSaison} onChange={setHeroSaison} />
             </div>
             <div className="search-divider" style={{ width: "1px", height: "30px", background: "#eee" }} />
-            <input type="text" placeholder="Rechercher par mot-clé..." value={heroSearchTerm} onChange={e => setHeroSearchTerm(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: "14px", fontWeight: 600, color: C.teal, minWidth: "120px" }} />
+            <div className="hero-search-input-row" style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+              <input type="text" placeholder="Rechercher par mot-clé..." value={heroSearchTerm} onChange={e => setHeroSearchTerm(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: "14px", fontWeight: 600, color: C.teal, minWidth: "0" }} />
 
-            <button onClick={handleSearch} style={{ width: "52px", height: "52px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)", flexShrink: 0 }}
-              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
-              <Search size={22} />
-            </button>
+              <button onClick={handleSearch} style={{ width: "52px", height: "52px", borderRadius: "50%", background: C.teal, color: "white", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s", boxShadow: "0 8px 24px rgba(17,76,90,0.3)", flexShrink: 0 }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
+                <Search size={22} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -681,8 +706,12 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               <p style={{ fontSize: "15px", fontWeight: 600, color: "#8aaa" }}>Aucun séjour pour cette sélection pour le moment.</p>
             </div>
           ) : viewMode === "grid" ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
-              {sejoursToDisplay.map((s, i) => <SejourCard key={s.id} s={s} idx={i} />)}
+            <div className="sejours-grid hide-scroll" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
+              {sejoursToDisplay.map((s, i) => (
+                <div className="sejours-grid-item" key={s.id}>
+                  <SejourCard s={s} idx={i} />
+                </div>
+              ))}
             </div>
           ) : (
             <SejoursMap sejours={[...sejoursToDisplay, ...sejoursPassesToDisplay]} renderCard={(s, i) => <SejourCard s={s} idx={i} />} C={C} height="950px" />
