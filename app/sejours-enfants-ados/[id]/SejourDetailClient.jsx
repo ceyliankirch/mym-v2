@@ -295,22 +295,24 @@ function MobileBottomBar({ sejour }) {
 
       <button
         onClick={() => setExpanded(v => !v)}
-        style={{position:"absolute",top:"-32px",left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:"4px",background:C.white,border:"none",borderRadius:"14px 14px 0 0",padding:"8px 20px",boxShadow:"0 -6px 16px rgba(17,76,90,0.1)",cursor:"pointer",color:C.teal,fontWeight:800,fontSize:"11px",fontFamily:"Montserrat,sans-serif"}}
+        style={{width:"100%",display:"flex",justifyContent:"center",alignItems:"center",gap:"4px",background:"none",border:"none",padding:"8px 0 0",cursor:"pointer",color:C.teal,fontWeight:800,fontSize:"11px",fontFamily:"Montserrat,sans-serif"}}
       >
         {expanded ? <ChevronDown size={16}/> : <ChevronUp size={16}/>}
         Voir plus
       </button>
 
-      <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"14px 16px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"8px",flex:1,minWidth:0}}>
-          <div>
-            <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0}}>Prix</p>
-            <p style={{fontSize:"17px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
-          </div>
+      <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"8px 16px 14px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"10px",flex:1,minWidth:0}}>
+          <p style={{display:"flex",alignItems:"baseline",gap:"5px",margin:0,whiteSpace:"nowrap"}}>
+            <span style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase"}}>Prix</span>
+            <span style={{fontSize:"24px",fontWeight:900,color:C.teal,lineHeight:1}}>{sejour.prix || 0}€</span>
+          </p>
           {sejour.prix > 0 && (
-            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 10px",textAlign:"center",flexShrink:0}}>
-              <p style={{fontSize:"14px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.prix - 100)}€</p>
-              <p style={{fontSize:"8px",fontWeight:700,color:"#047857",margin:0,whiteSpace:"nowrap"}}>Val-de-Marne</p>
+            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"6px 12px",flexShrink:0}}>
+              <p style={{display:"flex",alignItems:"baseline",gap:"5px",margin:0,whiteSpace:"nowrap"}}>
+                <span style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</span>
+                <span style={{fontSize:"9px",fontWeight:700,color:"#047857"}}>Val-de-Marne</span>
+              </p>
             </div>
           )}
         </div>
