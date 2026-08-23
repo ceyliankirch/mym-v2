@@ -561,6 +561,11 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
           mask-image: linear-gradient(to right, black 70%, transparent 96%);
         }
 
+        .hero-featured-wrap { display: none; }
+        @media (min-width: 1024px) {
+          .hero-featured-wrap { display: flex; }
+        }
+
         .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
         @media (max-width: 768px) {
           .hero-search-wrap { width: calc(100% - 32px) !important; }
@@ -600,7 +605,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
           </div>
 
           {featuredSejours.length > 0 && (
-            <div style={{ flex: 1, position: "relative", minHeight: "460px", display: "flex", alignItems: "center" }} className="hidden lg:block">
+            <div style={{ flex: 1, position: "relative", minHeight: "460px", alignItems: "center" }} className="hero-featured-wrap">
               <div
                 className="hide-scroll featured-slider"
                 style={{
