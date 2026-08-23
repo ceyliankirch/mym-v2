@@ -10,6 +10,7 @@ import {
   Plus,
   CheckCircle2,
   Tag,
+  CreditCard,
 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { useSession } from "next-auth/react";
@@ -642,9 +643,12 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                     )}
 
                     {paiementParCarteBleue && (
-                      <div style={styles.priceRow}>
-                        <span>Frais bancaires (carte bleue)</span>
-                        <span>+ 5,00 €</span>
+                      <div style={styles.bankFeeRow}>
+                        <span style={styles.bankFeeLabel}>
+                          <CreditCard size={15} style={{ marginRight: "6px", verticalAlign: "-3px" }} />
+                          Frais bancaires (carte bleue)
+                        </span>
+                        <span style={styles.bankFeeAmount}>+ 5,00 €</span>
                       </div>
                     )}
 
@@ -1001,6 +1005,27 @@ const styles = {
     fontSize: "13px",
     fontWeight: 600,
     color: C.gray,
+  },
+  bankFeeRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    background: "#fff7ed",
+    border: `1px solid ${C.saffron}50`,
+    borderRadius: "10px",
+    padding: "10px 14px",
+  },
+  bankFeeLabel: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "13px",
+    fontWeight: 800,
+    color: C.saffron,
+  },
+  bankFeeAmount: {
+    fontSize: "14px",
+    fontWeight: 900,
+    color: C.saffron,
   },
   priceTotalRow: {
     display: "flex",
