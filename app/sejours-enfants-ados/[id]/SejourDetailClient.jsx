@@ -303,16 +303,14 @@ function MobileBottomBar({ sejour }) {
 
       <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"8px 16px 14px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
         <div style={{display:"flex",alignItems:"center",gap:"10px",flex:1,minWidth:0}}>
-          <p style={{display:"flex",alignItems:"baseline",gap:"5px",margin:0,whiteSpace:"nowrap"}}>
-            <span style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase"}}>Prix</span>
-            <span style={{fontSize:"24px",fontWeight:900,color:C.teal,lineHeight:1}}>{sejour.prix || 0}€</span>
-          </p>
+          <div>
+            <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0,textAlign:"left"}}>Prix</p>
+            <p style={{fontSize:"24px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
+          </div>
           {sejour.prix > 0 && (
-            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"6px 12px",flexShrink:0}}>
-              <p style={{display:"flex",alignItems:"baseline",gap:"5px",margin:0,whiteSpace:"nowrap"}}>
-                <span style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</span>
-                <span style={{fontSize:"9px",fontWeight:700,color:"#047857"}}>Val-de-Marne</span>
-              </p>
+            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 12px",textAlign:"center",flexShrink:0}}>
+              <p style={{fontSize:"20px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.prix - 100)}€</p>
+              <p style={{fontSize:"8px",fontWeight:700,color:"#047857",margin:0,whiteSpace:"nowrap"}}>Val-de-Marne</p>
             </div>
           )}
         </div>
