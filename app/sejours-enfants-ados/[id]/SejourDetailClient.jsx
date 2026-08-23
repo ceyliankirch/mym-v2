@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   MapPin, Calendar, Users, Clock, CreditCard, Award,
   ChevronRight, ArrowRight, ArrowLeft, CheckCircle2,
-  Phone, Mail, Share2, ChevronLeft, HelpCircle
+  Phone, Mail, Share2, ChevronLeft, HelpCircle, ChevronUp, ChevronDown
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -238,6 +238,92 @@ function StickySidebar({ sejour }) {
   );
 }
 
+/* ─── BARRE PERSISTANTE MOBILE (incite à l'inscription, "Voir plus" pour détailler) ── */
+function MobileBottomBar({ sejour }) {
+  const [expanded, setExpanded] = useState(false);
+  const placesTotales = sejour.places || 0;
+  const urgent = placesTotales <= 3 && placesTotales > 0;
+
+  return (
+    <div className="mobile-cta-wrapper" style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:C.white,boxShadow:"0 -8px 30px rgba(17,76,90,0.15)",borderRadius:"20px 20px 0 0"}}>
+      {expanded && (
+        <div style={{maxHeight:"65vh",overflowY:"auto",padding:"20px 20px 4px"}}>
+          {sejour.prix > 0 && (
+            <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"10px 14px",textAlign:"center",marginBottom:"16px"}}>
+              <ReductionTooltip />
+              <p style={{fontSize:"22px",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
+              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
+            </div>
+          )}
+
+          <div style={{display:"flex",flexDirection:"column",gap:"12px",marginBottom:"16px"}}>
+            {[
+              {Icon:Calendar, label:"Dates", val:formatSejourDates(sejour.dateDebut, sejour.dateFin)},
+              {Icon:Clock,    label:"Durée", val:getDuree(sejour.dateDebut, sejour.dateFin)},
+              {Icon:MapPin,   label:"Lieu",  val:sejour.lieu || "À définir"},
+              {Icon:Users,    label:"Âge",   val:formatAge(sejour.tranchesAge)},
+              {Icon:Users,    label:"Places",val:`${placesTotales} place(s) max.`},
+            ].map(({Icon,label,val},i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                <div style={{width:"32px",height:"32px",borderRadius:"10px",background:`${C.yellow}22`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <Icon size={14} style={{color:C.teal}}/>
+                </div>
+                <div>
+                  <p style={{fontSize:"10px",color:"#8aa",fontWeight:600,textTransform:"uppercase",letterSpacing:"1px"}}>{label}</p>
+                  <p style={{fontSize:"12px",fontWeight:700,color:C.teal}}>{val}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {urgent && (
+            <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:"12px",padding:"10px 14px",marginBottom:"16px",display:"flex",alignItems:"center",gap:"8px"}}>
+              <span style={{fontSize:"16px"}}>⚡</span>
+              <p style={{fontSize:"12px",fontWeight:700,color:"#dc2626"}}>Plus que {placesTotales} places disponibles !</p>
+            </div>
+          )}
+
+          <div style={{display:"flex",gap:"8px",marginBottom:"16px"}}>
+            <button onClick={()=>navigator?.share?.({title:sejour.titre,url:window.location.href})} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",background:C.arctic,border:"none",borderRadius:"999px",padding:"10px",cursor:"pointer",fontSize:"11px",fontWeight:700,color:C.teal,fontFamily:"Montserrat,sans-serif"}}>
+              <Share2 size={13}/> Partager
+            </button>
+          </div>
+
+          <div style={{paddingTop:"16px",borderTop:`1px solid ${C.arctic}`,marginBottom:"8px"}}>
+            <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"10px",textTransform:"uppercase",letterSpacing:"1px"}}>Une question ?</p>
+            <a href="tel:+33698965002" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
+              <Phone size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>+33 6 98 96 50 02</span>
+            </a>
+            <a href="mailto:mym.makeyourmoment@gmail.com" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none"}}>
+              <Mail size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>mym.makeyourmoment@gmail.com</span>
+            </a>
+          </div>
+        </div>
+      )}
+
+      <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"12px 16px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
+        <button
+          onClick={() => setExpanded(v => !v)}
+          style={{display:"flex",alignItems:"center",gap:"4px",background:"none",border:"none",cursor:"pointer",padding:"8px 4px",color:C.teal,fontWeight:700,fontSize:"11px",fontFamily:"Montserrat,sans-serif",flexShrink:0}}
+        >
+          {expanded ? <ChevronDown size={16}/> : <ChevronUp size={16}/>}
+          Voir plus
+        </button>
+
+        <div style={{flex:1,minWidth:0}}>
+          <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0}}>À partir de</p>
+          <p style={{fontSize:"18px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
+        </div>
+
+        <Link href={`/inscription/${sejour.id}`}
+          style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",background:C.yellow,color:C.teal,fontSize:"13px",fontWeight:800,borderRadius:"999px",padding:"14px 20px",textDecoration:"none",boxShadow:"0 6px 20px rgba(255,200,1,0.35)",flexShrink:0,whiteSpace:"nowrap"}}>
+          S'inscrire <ArrowRight size={14}/>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 /* ─── PAGE DETAIL PRINCIPALE ─────────────────────────────────────────────────── */
 export default function SejourDetailClient({ sejour, autresSejours }) {
   const [scrolled, setScrolled] = useState(false);
@@ -297,12 +383,9 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
           display: none;
         }
 
-        /* Le bouton CTA Mobile est visible par défaut */
+        /* Barre persistante mobile : visible par défaut, cachée sur desktop */
         .mobile-cta-wrapper {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 32px;
+          display: block;
         }
 
         /* Quand l'écran est assez grand (Desktop), on passe à 2 colonnes ! */
@@ -422,16 +505,6 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
             {/* GALERIE PHOTOS */}
             <Galerie images={sejour.galerie} />
 
-            {/* CTA mobile */}
-            <div className="mobile-cta-wrapper">
-              <Link href={`/inscription/${sejour.id}`}
-                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"14px",fontWeight:800,borderRadius:"999px",padding:"18px",textDecoration:"none",boxShadow:"0 6px 20px rgba(255,200,1,0.35)"}}>
-                S'inscrire — {sejour.prix || 0}€ <ArrowRight size={14}/>
-              </Link>
-              <p style={{fontSize:"11px", color:"#8aaa", textAlign:"center", fontWeight:600}}>
-                🔒 Création de compte requise
-              </p>
-            </div>
           </div>
 
           {/* ── COL DROITE — SIDEBAR ────────────────────────────────────────── */}
@@ -439,6 +512,9 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
              <StickySidebar sejour={sejour}/>
           </div>
         </div>
+
+        {/* ── BARRE PERSISTANTE MOBILE ──────────────────────────────────────── */}
+        <MobileBottomBar sejour={sejour} />
 
         {/* ── AUTRES SÉJOURS SIMILAIRES ──────────────────────────────────── */}
         {autresSejours && autresSejours.length > 0 && (
