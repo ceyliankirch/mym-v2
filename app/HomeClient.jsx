@@ -732,8 +732,12 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               </div>
 
               {showPastSejours && (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginTop: "24px" }}>
-                  {sejoursPassesToDisplay.map((s, i) => <SejourCard key={s.id} s={s} idx={i} />)}
+                <div className="sejours-grid hide-scroll" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginTop: "24px" }}>
+                  {sejoursPassesToDisplay.map((s, i) => (
+                    <div className="sejours-grid-item" key={s.id}>
+                      <SejourCard s={s} idx={i} />
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
