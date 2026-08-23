@@ -308,7 +308,7 @@ function MobileBottomBar({ sejour }) {
             <p style={{fontSize:"24px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
           </div>
           {sejour.prix > 0 && (
-            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 12px",textAlign:"center",flexShrink:0,marginTop:"10px"}}>
+            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 12px",textAlign:"center",flexShrink:0,marginTop:"20px"}}>
               <p style={{fontSize:"26px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.prix - 100)}€</p>
               <p style={{fontSize:"8px",fontWeight:700,color:"#047857",margin:0,whiteSpace:"nowrap"}}>Val-de-Marne</p>
             </div>
