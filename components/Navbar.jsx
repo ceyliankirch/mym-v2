@@ -133,7 +133,7 @@ export default function Navbar() {
   const isAdmin = userRole === "ADMIN" || userRole === "ADMINISTRATEUR";
 
   return (
-    <div style={{ position: "relative", zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
+    <div style={{ position: "sticky", top: 0, zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
       
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }

@@ -445,7 +445,7 @@ function GalleryRotator({ photos }) {
 
   return (
     <>
-      <div className="gallery-grid" style={{ marginBottom: "48px" }}>
+      <div className="gallery-grid hide-scroll" style={{ marginBottom: "48px" }}>
         {initialSlots.map((photo, i) => (
           <GalleryTile key={i} pool={photos} initialPhoto={photo} onOpen={setLightboxPhoto} />
         ))}
@@ -544,7 +544,22 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         @keyframes galleryFadeIn { from{opacity:0} to{opacity:1} }
         .gallery-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
         @media (max-width:900px){ .gallery-grid{ grid-template-columns:repeat(2,1fr);} }
-        @media (max-width:520px){ .gallery-grid{ grid-template-columns:1fr;} }
+        @media (max-width:640px){
+          .gallery-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 16px !important;
+            padding-bottom: 4px;
+            margin: 0 -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+          }
+          .gallery-grid > div {
+            flex: 0 0 180px;
+            scroll-snap-align: start;
+          }
+        }
         .hero-bg {
           background-image: linear-gradient(rgba(17, 76, 90, 0.65), rgba(17, 76, 90, 0.4)), url('/mym-hero-cover.webp');
           background-size: cover;
