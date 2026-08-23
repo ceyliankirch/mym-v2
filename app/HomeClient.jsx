@@ -579,7 +579,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
         @media (max-width: 768px) {
           .hero-title { display: flex !important; flex-direction: column; align-items: flex-start; }
-          .hero-logo-badge { position: static !important; top: auto !important; left: auto !important; margin: 0 0 16px !important; transform: none !important; }
+          .hero-logo-badge { position: static !important; top: auto !important; left: auto !important; margin: 0 0 16px !important; transform: none !important; align-self: center; }
           .hero-logo-img { transform: none !important; }
         }
 
