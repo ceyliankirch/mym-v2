@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendInscriptionReceivedEmail, sendDocumentsRequestEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail } from "@/lib/postmark";
+import { sendInscriptionReceivedEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail, sendPreInscriptionEmail } from "@/lib/postmark";
 import { generateInscriptionPdf } from "@/lib/inscriptionPdf";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
@@ -166,11 +166,15 @@ export async function supprimerEnfant(enfantId, clientId) {
 export async function creerInscription(
   sejourId,
   enfantData,
-  userId
+  userId,
+  paiementInfo = {}
 ) {
   if (!sejourId || !enfantData || !userId) {
     return { error: "Données incomplètes" };
   }
+
+  const { moyenPaiement, lienPaiement, montantTotal } = paiementInfo;
+  const paiementParCarte = moyenPaiement === "Carte bleue";
 
   try {
     const sejour = await prisma.sejour.findUnique({
@@ -228,8 +232,12 @@ export async function creerInscription(
       }
     }
 
-    // 📧 Un email part toujours à la soumission : la demande de documents s'il en manque,
-    // sinon un simple accusé de réception. Les deux ont en pièce jointe un récapitulatif PDF.
+    // 📧 Un email part toujours à la soumission, avec un récapitulatif PDF en pièce jointe :
+    // - Carte bleue : email de "pré-inscription" avec bouton de paiement (bon lien selon le
+    //   tarif choisi) ; l'email "Inscription validée" (avec la fiche sanitaire) part plus tard,
+    //   quand l'admin constate le paiement reçu.
+    // - Autre moyen de paiement : email "Inscription validée" envoyé directement, avec un
+    //   rappel du montant à régler et la fiche sanitaire déjà jointe.
     // Une notification interne (avec le même PDF) part également à l'organisation.
     let pdfBuffer;
     try {
@@ -239,22 +247,26 @@ export async function creerInscription(
     }
 
     if (client.email) {
-      if (documentsManquants.length > 0) {
-        await sendDocumentsRequestEmail({
+      if (paiementParCarte) {
+        await sendPreInscriptionEmail({
           to: client.email,
           prenomEnfant: enfant.prenom,
           sejourTitre: sejour.titre,
+          lienPaiement: lienPaiement || sejour.lienPaiementCIC,
+          montantTotal,
           documentsManquants,
-          lienPaiementCIC: sejour.lienPaiementCIC,
           pdfBuffer,
         });
       } else {
-        await sendInscriptionReceivedEmail({
+        await sendInscriptionConfirmationEmail({
           to: client.email,
           prenomEnfant: enfant.prenom,
+          nomEnfant: enfant.nom,
           sejourTitre: sejour.titre,
-          lienPaiementCIC: sejour.lienPaiementCIC,
-          pdfBuffer,
+          dateDebut: sejour.dateDebut,
+          dateFin: sejour.dateFin,
+          documentsRequis: documentsManquants,
+          montantARegler: montantTotal,
         });
       }
     }

@@ -130,6 +130,15 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
       ? sejour.lienPaiementCICValDeMarne
       : sejour.lienPaiementCIC;
 
+  // 💶 Montant total à régler (base + assurance - réduction + frais bancaires carte)
+  const montantTotal = Math.max(
+    0,
+    sejour.prix +
+      (assuranceSouscrite ? 30 : 0) -
+      (tarifSelectionne === "val_de_marne" ? 100 : 0) +
+      (paiementParCarteBleue ? 5 : 0)
+  );
+
   const handleNewEnfantChange = (key, value) => {
     setNewEnfantData((prev) => ({ ...prev, [key]: value }));
   };
@@ -162,14 +171,19 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
       const result = await creerInscription(
         sejour.id,
         enfantData,
-        session.user.id
+        session.user.id,
+        {
+          moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
+          lienPaiement: lienPaiementActif,
+          montantTotal,
+        }
       );
 
       if (result.error) {
         setError(result.error);
       } else {
         setSuccess(true);
-        if (lienPaiementActif) {
+        if (paiementParCarteBleue && lienPaiementActif) {
           setTimeout(() => {
             window.location.href = lienPaiementActif;
           }, 2500);
@@ -217,7 +231,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
             <h1 style={{ fontSize: "28px", fontWeight: 900, color: C.teal }}>
               Inscription envoyée ! 🎉
             </h1>
-            {lienPaiementActif ? (
+            {paiementParCarteBleue && lienPaiementActif ? (
               <>
                 <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
                   Vous allez être redirigé vers la page de paiement pour régler le séjour...
@@ -654,16 +668,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
                     <div style={styles.priceTotalRow}>
                       <span>Total à régler</span>
-                      <span>
-                        {Math.max(
-                          0,
-                          sejour.prix +
-                            (assuranceSouscrite ? 30 : 0) -
-                            (tarifSelectionne === "val_de_marne" ? 100 : 0) +
-                            (paiementParCarteBleue ? 5 : 0)
-                        ).toFixed(2)}{" "}
-                        €
-                      </span>
+                      <span>{montantTotal.toFixed(2)} €</span>
                     </div>
                   </div>
                 )}
