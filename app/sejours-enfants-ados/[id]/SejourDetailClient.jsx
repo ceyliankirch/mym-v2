@@ -248,14 +248,6 @@ function MobileBottomBar({ sejour }) {
     <div className="mobile-cta-wrapper" style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:C.white,boxShadow:"0 -8px 30px rgba(17,76,90,0.15)",borderRadius:"20px 20px 0 0"}}>
       {expanded && (
         <div style={{maxHeight:"65vh",overflowY:"auto",padding:"20px 20px 4px"}}>
-          {sejour.prix > 0 && (
-            <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"10px 14px",textAlign:"center",marginBottom:"16px"}}>
-              <ReductionTooltip />
-              <p style={{fontSize:"22px",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
-              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
-            </div>
-          )}
-
           <div style={{display:"flex",flexDirection:"column",gap:"12px",marginBottom:"16px"}}>
             {[
               {Icon:Calendar, label:"Dates", val:formatSejourDates(sejour.dateDebut, sejour.dateFin)},
@@ -301,18 +293,26 @@ function MobileBottomBar({ sejour }) {
         </div>
       )}
 
-      <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"12px 16px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
-        <button
-          onClick={() => setExpanded(v => !v)}
-          style={{display:"flex",alignItems:"center",gap:"4px",background:"none",border:"none",cursor:"pointer",padding:"8px 4px",color:C.teal,fontWeight:700,fontSize:"11px",fontFamily:"Montserrat,sans-serif",flexShrink:0}}
-        >
-          {expanded ? <ChevronDown size={16}/> : <ChevronUp size={16}/>}
-          Voir plus
-        </button>
+      <button
+        onClick={() => setExpanded(v => !v)}
+        style={{position:"absolute",top:"-32px",left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:"4px",background:C.white,border:"none",borderRadius:"14px 14px 0 0",padding:"8px 20px",boxShadow:"0 -6px 16px rgba(17,76,90,0.1)",cursor:"pointer",color:C.teal,fontWeight:800,fontSize:"11px",fontFamily:"Montserrat,sans-serif"}}
+      >
+        {expanded ? <ChevronDown size={16}/> : <ChevronUp size={16}/>}
+        Voir plus
+      </button>
 
-        <div style={{flex:1,minWidth:0}}>
-          <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0}}>À partir de</p>
-          <p style={{fontSize:"18px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
+      <div style={{display:"flex",alignItems:"center",gap:"12px",padding:"14px 16px",borderTop:expanded?`1px solid ${C.arctic}`:"none"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px",flex:1,minWidth:0}}>
+          <div>
+            <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0}}>Prix</p>
+            <p style={{fontSize:"17px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
+          </div>
+          {sejour.prix > 0 && (
+            <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 10px",textAlign:"center",flexShrink:0}}>
+              <p style={{fontSize:"14px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.prix - 100)}€</p>
+              <p style={{fontSize:"8px",fontWeight:700,color:"#047857",margin:0,whiteSpace:"nowrap"}}>Val-de-Marne</p>
+            </div>
+          )}
         </div>
 
         <Link href={`/inscription/${sejour.id}`}
