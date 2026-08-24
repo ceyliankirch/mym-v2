@@ -12,6 +12,30 @@ datasource db {
 
 // --- TES MODÈLES ---
 
+model NewsletterContact {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  prenom    String?
+  nom       String?
+  tags      String[] @default([])
+  abonne    Boolean  @default(true) // false = désabonné, exclu des envois
+  source    String?  // "manuel", "import"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterCampagne {
+  id                 String    @id @default(cuid())
+  sujet              String
+  htmlContent        String    @db.Text
+  statut             String    @default("Brouillon") // Brouillon, Envoyée
+  tagsCiblage        String[]  @default([]) // vide = tous les contacts abonnés
+  destinatairesCount Int       @default(0)
+  envoyeeLe          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
 model Sejour {
   id           String    @id @default(cuid())
   titre        String

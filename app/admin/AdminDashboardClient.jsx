@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
+import NewsletterSection from "./NewsletterSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -46,6 +47,7 @@ const MENU = [
   { id: "inscriptions", label: "Inscriptions", icon: FileText },
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
+  { id: "newsletter", label: "Newsletter", icon: Mail },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
 
@@ -1262,6 +1264,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
                 {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
+                {activeTab === "newsletter" && "Newsletter 📧"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
               </h1>
               <p style={{ fontSize: "14px", color: C.gray }}>Données Neon en temps réel.</p>
@@ -1527,6 +1530,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               )}
             </>
           )}
+
+          {activeTab === "newsletter" && <NewsletterSection />}
 
           {activeTab === "settings" && (
             <div>
