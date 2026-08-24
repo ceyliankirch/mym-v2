@@ -239,7 +239,7 @@ function ContactsTab({ contacts, onRefresh }) {
 }
 
 /* ─── ÉDITEUR DE CAMPAGNE (code HTML + preview + test + envoi) ──────────── */
-function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
+function CampagneEditor({ campagne, allTags, contacts, onClose, onSaved }) {
   const isNew = !campagne;
   const isSent = campagne?.statut === "Envoyée";
   const [sujet, setSujet] = useState(campagne?.sujet || "");
@@ -253,17 +253,27 @@ function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [savedId, setSavedId] = useState(campagne?.id || null);
+  const [modeDestinataires, setModeDestinataires] = useState(campagne?.tagsCiblage?.length ? "tags" : "tous");
 
   const toggleTag = (tag) => {
     setTagsCiblage((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]);
   };
 
+  const abonnesCount = (contacts || []).filter((c) => c.abonne).length;
+  const destinatairesCount = (contacts || []).filter((c) => {
+    if (!c.abonne) return false;
+    if (modeDestinataires === "tous") return true;
+    return (c.tags || []).some((t) => tagsCiblage.includes(t));
+  }).length;
+
+  const tagsCiblageEffectif = modeDestinataires === "tous" ? [] : tagsCiblage;
+
   const handleSave = async () => {
     setIsSaving(true);
     setError("");
     const result = savedId
-      ? await modifierCampagne(savedId, { sujet, htmlContent: html, tagsCiblage })
-      : await creerCampagne({ sujet, htmlContent: html, tagsCiblage });
+      ? await modifierCampagne(savedId, { sujet, htmlContent: html, tagsCiblage: tagsCiblageEffectif })
+      : await creerCampagne({ sujet, htmlContent: html, tagsCiblage: tagsCiblageEffectif });
     setIsSaving(false);
     if (result.error) {
       setError(result.error);
@@ -286,8 +296,8 @@ function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
   };
 
   const handleSendCampagne = async () => {
-    const destTxt = tagsCiblage.length ? `aux contacts avec le(s) tag(s) : ${tagsCiblage.join(", ")}` : "à TOUS les contacts abonnés";
-    if (!window.confirm(`Envoyer définitivement cette campagne ${destTxt} ? Cette action est irréversible.`)) return;
+    const destTxt = tagsCiblageEffectif.length ? `aux contacts avec le(s) tag(s) : ${tagsCiblageEffectif.join(", ")}` : "à TOUS les contacts abonnés";
+    if (!window.confirm(`Envoyer définitivement cette campagne ${destTxt} (${destinatairesCount} destinataire(s)) ? Cette action est irréversible.`)) return;
 
     setIsSending(true);
     setError("");
@@ -321,10 +331,44 @@ function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
             <input disabled={isSent} value={sujet} onChange={(e) => setSujet(e.target.value)} style={inputStyle} placeholder="Ex: Notre nouveau site est en ligne !" />
           </div>
 
-          {allTags.length > 0 && (
-            <div style={{ marginBottom: "16px" }}>
-              <label style={labelStyle}>Ciblage (aucun tag = tous les abonnés)</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={labelStyle}>Destinataires</label>
+
+            <div style={{ display: "flex", gap: "8px", marginBottom: allTags.length > 0 ? "10px" : 0 }}>
+              <button
+                type="button"
+                disabled={isSent}
+                onClick={() => setModeDestinataires("tous")}
+                style={{
+                  flex: 1, padding: "12px", borderRadius: "12px", cursor: isSent ? "default" : "pointer", fontSize: "13px", fontWeight: 700, textAlign: "left",
+                  border: `2px solid ${modeDestinataires === "tous" ? C.teal : C.lightGray}`,
+                  background: modeDestinataires === "tous" ? C.lilac : C.white,
+                  color: C.teal,
+                }}
+              >
+                Tous les contacts abonnés
+                <div style={{ fontSize: "11px", fontWeight: 600, color: C.gray, marginTop: "2px" }}>{abonnesCount} contact{abonnesCount !== 1 ? "s" : ""}</div>
+              </button>
+              {allTags.length > 0 && (
+                <button
+                  type="button"
+                  disabled={isSent}
+                  onClick={() => setModeDestinataires("tags")}
+                  style={{
+                    flex: 1, padding: "12px", borderRadius: "12px", cursor: isSent ? "default" : "pointer", fontSize: "13px", fontWeight: 700, textAlign: "left",
+                    border: `2px solid ${modeDestinataires === "tags" ? C.teal : C.lightGray}`,
+                    background: modeDestinataires === "tags" ? C.lilac : C.white,
+                    color: C.teal,
+                  }}
+                >
+                  Une liste précise (par tag)
+                  <div style={{ fontSize: "11px", fontWeight: 600, color: C.gray, marginTop: "2px" }}>Choisir un ou plusieurs tags</div>
+                </button>
+              )}
+            </div>
+
+            {modeDestinataires === "tags" && allTags.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
                 {allTags.map((t) => (
                   <button
                     key={t}
@@ -342,8 +386,12 @@ function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+
+            <p style={{ fontSize: "12px", fontWeight: 800, color: destinatairesCount === 0 ? "#ef4444" : "#065f46" }}>
+              → {destinatairesCount} destinataire{destinatairesCount !== 1 ? "s" : ""}
+            </p>
+          </div>
 
           <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
             <button onClick={() => setView("code")} style={{ ...(view === "code" ? btnPrimary : btnGhost), padding: "8px 14px" }}><Code2 size={14} /> Code HTML</button>
@@ -384,7 +432,7 @@ function CampagneEditor({ campagne, allTags, onClose, onSaved }) {
               <button onClick={handleSave} disabled={isSaving || !sujet || !html} style={{ ...btnGhost, opacity: isSaving || !sujet || !html ? 0.6 : 1 }}>
                 {isSaving ? "Enregistrement..." : "Enregistrer le brouillon"}
               </button>
-              <button onClick={handleSendCampagne} disabled={isSending || !sujet || !html} style={{ ...btnPrimary, background: "#ef4444", color: "white", opacity: isSending || !sujet || !html ? 0.6 : 1 }}>
+              <button onClick={handleSendCampagne} disabled={isSending || !sujet || !html || destinatairesCount === 0} style={{ ...btnPrimary, background: "#ef4444", color: "white", opacity: isSending || !sujet || !html || destinatairesCount === 0 ? 0.6 : 1 }}>
                 <Radio size={14} /> {isSending ? "Envoi en cours..." : "Envoyer la campagne"}
               </button>
             </div>
@@ -447,6 +495,7 @@ function CampagnesTab({ campagnes, contacts, onRefresh }) {
         <CampagneEditor
           campagne={editorTarget}
           allTags={allTags}
+          contacts={contacts}
           onClose={() => setEditorTarget(undefined)}
           onSaved={onRefresh}
         />
