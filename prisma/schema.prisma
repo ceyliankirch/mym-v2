@@ -12,6 +12,18 @@ datasource db {
 
 // --- TES MODÈLES ---
 
+// 📊 Suivi interne léger des pages vues (maison, sans dépendance externe)
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  sejourId  String?  // renseigné quand la page vue est une fiche séjour
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([sejourId])
+  @@index([createdAt])
+}
+
 model NewsletterContact {
   id        String   @id @default(cuid())
   email     String   @unique

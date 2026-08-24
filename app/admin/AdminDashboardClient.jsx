@@ -10,11 +10,12 @@ import {
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
-  Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle
+  Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
+import StatistiquesSection from "./StatistiquesSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -48,6 +49,7 @@ const MENU = [
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "newsletter", label: "Newsletter", icon: Mail },
+  { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
 
@@ -1265,6 +1267,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
                 {activeTab === "newsletter" && "Newsletter 📧"}
+                {activeTab === "statistiques" && "Statistiques 📊"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
               </h1>
               <p style={{ fontSize: "14px", color: C.gray }}>Données Neon en temps réel.</p>
@@ -1532,6 +1535,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
           )}
 
           {activeTab === "newsletter" && <NewsletterSection />}
+
+          {activeTab === "statistiques" && <StatistiquesSection />}
 
           {activeTab === "settings" && (
             <div>
