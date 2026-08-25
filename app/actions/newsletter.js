@@ -88,23 +88,36 @@ export async function importerContactsCSV(csvText) {
     startIndex = 1;
   }
 
-  let imported = 0;
-  let skipped = 0;
+  let nouveaux = 0;
+  let misAJour = 0; // adresse déjà présente en base (doublon), fiche mise à jour
+  let doublonsFichier = 0; // adresse déjà rencontrée plus haut dans ce même fichier
+  let invalides = 0;
+
+  const emailsVusDansCeFichier = new Set();
 
   for (let i = startIndex; i < lines.length; i++) {
     const parts = lines[i].split(",").map((p) => p.trim());
     const email = (parts[0] || "").toLowerCase();
 
     if (!email || !email.includes("@")) {
-      skipped++;
+      invalides++;
       continue;
     }
+
+    if (emailsVusDansCeFichier.has(email)) {
+      doublonsFichier++;
+      // On continue quand même à traiter la ligne (dernière occurrence gagne),
+      // mais elle ne compte ni comme "nouveau" ni comme "mis à jour" séparément.
+    }
+    emailsVusDansCeFichier.add(email);
 
     const prenom = parts[1] || null;
     const nom = parts[2] || null;
     const tags = parts[3] ? parts[3].split(";").map((t) => t.trim()).filter(Boolean) : [];
 
     try {
+      const existant = await prisma.newsletterContact.findUnique({ where: { email } });
+
       await prisma.newsletterContact.upsert({
         where: { email },
         update: {
@@ -114,15 +127,26 @@ export async function importerContactsCSV(csvText) {
         },
         create: { email, prenom, nom, tags, abonne: true, source: "import" },
       });
-      imported++;
+
+      if (existant) misAJour++;
+      else nouveaux++;
     } catch (e) {
       console.error("Erreur import ligne CSV", lines[i], e);
-      skipped++;
+      invalides++;
     }
   }
 
   revalidatePath("/admin");
-  return { success: true, imported, skipped };
+  return {
+    success: true,
+    nouveaux,
+    misAJour,
+    doublonsFichier,
+    invalides,
+    // Conservés pour compatibilité avec un éventuel appelant existant
+    imported: nouveaux + misAJour,
+    skipped: invalides,
+  };
 }
 
 // 📤 Export CSV — filtré par tag si fourni

@@ -136,7 +136,11 @@ function ContactsTab({ contacts, onRefresh }) {
       if (result.error) {
         setImportMsg(`Erreur : ${result.error}`);
       } else {
-        setImportMsg(`${result.imported} contact(s) importé(s), ${result.skipped} ignoré(s).`);
+        const parts = [`${result.nouveaux} nouveau(x) contact(s)`];
+        if (result.misAJour > 0) parts.push(`${result.misAJour} déjà existant(s) (mis à jour)`);
+        if (result.doublonsFichier > 0) parts.push(`${result.doublonsFichier} doublon(s) dans le fichier`);
+        if (result.invalides > 0) parts.push(`${result.invalides} ligne(s) ignorée(s)`);
+        setImportMsg(parts.join(", ") + ".");
         onRefresh();
       }
     } catch (err) {
