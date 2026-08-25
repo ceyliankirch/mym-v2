@@ -88,12 +88,12 @@ export async function importerContactsCSV(csvText) {
     startIndex = 1;
   }
 
-  let nouveaux = 0;
-  let misAJour = 0; // adresse déjà présente en base (doublon), fiche mise à jour
   let doublonsFichier = 0; // adresse déjà rencontrée plus haut dans ce même fichier
   let invalides = 0;
 
-  const emailsVusDansCeFichier = new Set();
+  // On dé-doublonne d'abord en mémoire (dernière occurrence gagne) pour n'avoir
+  // qu'une seule opération DB par email, au lieu de 2 requêtes séquentielles/ligne.
+  const parsedByEmail = new Map();
 
   for (let i = startIndex; i < lines.length; i++) {
     const parts = lines[i].split(",").map((p) => p.trim());
@@ -104,36 +104,50 @@ export async function importerContactsCSV(csvText) {
       continue;
     }
 
-    if (emailsVusDansCeFichier.has(email)) {
-      doublonsFichier++;
-      // On continue quand même à traiter la ligne (dernière occurrence gagne),
-      // mais elle ne compte ni comme "nouveau" ni comme "mis à jour" séparément.
-    }
-    emailsVusDansCeFichier.add(email);
+    if (parsedByEmail.has(email)) doublonsFichier++;
 
-    const prenom = parts[1] || null;
-    const nom = parts[2] || null;
-    const tags = parts[3] ? parts[3].split(";").map((t) => t.trim()).filter(Boolean) : [];
+    parsedByEmail.set(email, {
+      prenom: parts[1] || null,
+      nom: parts[2] || null,
+      tags: parts[3] ? parts[3].split(";").map((t) => t.trim()).filter(Boolean) : [],
+    });
+  }
 
-    try {
-      const existant = await prisma.newsletterContact.findUnique({ where: { email } });
+  const emails = [...parsedByEmail.keys()];
+  const existants = await prisma.newsletterContact.findMany({
+    where: { email: { in: emails } },
+    select: { email: true },
+  });
+  const emailsExistants = new Set(existants.map((c) => c.email));
 
-      await prisma.newsletterContact.upsert({
-        where: { email },
-        update: {
-          ...(prenom ? { prenom } : {}),
-          ...(nom ? { nom } : {}),
-          ...(tags.length ? { tags } : {}),
-        },
-        create: { email, prenom, nom, tags, abonne: true, source: "import" },
-      });
+  let nouveaux = 0;
+  let misAJour = 0;
 
-      if (existant) misAJour++;
-      else nouveaux++;
-    } catch (e) {
-      console.error("Erreur import ligne CSV", lines[i], e);
-      invalides++;
-    }
+  // Upserts en lots pour rester rapide sans saturer la connexion DB.
+  const TAILLE_LOT = 20;
+  for (let i = 0; i < emails.length; i += TAILLE_LOT) {
+    const lot = emails.slice(i, i + TAILLE_LOT);
+    await Promise.all(
+      lot.map(async (email) => {
+        const { prenom, nom, tags } = parsedByEmail.get(email);
+        try {
+          await prisma.newsletterContact.upsert({
+            where: { email },
+            update: {
+              ...(prenom ? { prenom } : {}),
+              ...(nom ? { nom } : {}),
+              ...(tags.length ? { tags } : {}),
+            },
+            create: { email, prenom, nom, tags, abonne: true, source: "import" },
+          });
+          if (emailsExistants.has(email)) misAJour++;
+          else nouveaux++;
+        } catch (e) {
+          console.error("Erreur import contact", email, e);
+          invalides++;
+        }
+      })
+    );
   }
 
   revalidatePath("/admin");
