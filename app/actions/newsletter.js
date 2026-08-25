@@ -73,6 +73,36 @@ export async function supprimerContact(id) {
   }
 }
 
+// 🏷️ Ajoute une liste (tag) à plusieurs contacts en une fois. Un contact peut
+// appartenir à plusieurs listes ; celles déjà présentes ne sont pas dupliquées.
+export async function assignerListeContacts(contactIds, liste) {
+  const listeClean = (liste || "").trim();
+  if (!listeClean) return { error: "Nom de liste requis" };
+  if (!contactIds || contactIds.length === 0) return { error: "Aucun contact sélectionné" };
+
+  const contacts = await prisma.newsletterContact.findMany({
+    where: { id: { in: contactIds } },
+    select: { id: true, tags: true },
+  });
+
+  const TAILLE_LOT = 20;
+  for (let i = 0; i < contacts.length; i += TAILLE_LOT) {
+    const lot = contacts.slice(i, i + TAILLE_LOT);
+    await Promise.all(
+      lot.map((c) => {
+        if ((c.tags || []).includes(listeClean)) return null;
+        return prisma.newsletterContact.update({
+          where: { id: c.id },
+          data: { tags: [...(c.tags || []), listeClean] },
+        });
+      })
+    );
+  }
+
+  revalidatePath("/admin");
+  return { success: true, count: contacts.length };
+}
+
 // 📥 Import d'un lot de contacts déjà parsés côté client (voir lib/csvContacts.js) —
 // appelé plusieurs fois de suite pour afficher une progression sur les gros fichiers.
 export async function importerLotContacts(lot) {

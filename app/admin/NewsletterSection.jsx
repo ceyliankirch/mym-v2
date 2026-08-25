@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import {
   listerContacts, creerContact, modifierContact, supprimerContact,
-  importerLotContacts, exporterContactsCSV,
+  importerLotContacts, exporterContactsCSV, assignerListeContacts,
   listerCampagnes, creerCampagne, modifierCampagne, supprimerCampagne,
   envoyerTestCampagne, envoyerCampagne,
 } from "@/app/actions/newsletter";
@@ -113,6 +113,11 @@ function ContactsTab({ contacts, onRefresh }) {
   const [importProgress, setImportProgress] = useState(null); // { done, total }
   const fileInputRef = useRef(null);
 
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [nouvelleListe, setNouvelleListe] = useState("");
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [assignMsg, setAssignMsg] = useState("");
+
   const allTags = [...new Set(contacts.flatMap((c) => c.tags || []))].sort();
 
   const filtered = contacts.filter((c) => {
@@ -120,6 +125,41 @@ function ContactsTab({ contacts, onRefresh }) {
     const matchesTag = !tagFiltre || (c.tags || []).includes(tagFiltre);
     return matchesSearch && matchesTag;
   });
+
+  const toutSelectionne = filtered.length > 0 && filtered.every((c) => selectedIds.has(c.id));
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (toutSelectionne) return new Set();
+      return new Set(filtered.map((c) => c.id));
+    });
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleAssignerListe = async () => {
+    const liste = nouvelleListe.trim();
+    if (!liste || selectedIds.size === 0) return;
+    setIsAssigning(true);
+    setAssignMsg("");
+    const result = await assignerListeContacts([...selectedIds], liste);
+    setIsAssigning(false);
+    if (result.error) {
+      setAssignMsg(`Erreur : ${result.error}`);
+    } else {
+      setAssignMsg(`${result.count} contact(s) ajouté(s) à la liste "${liste}".`);
+      setNouvelleListe("");
+      setSelectedIds(new Set());
+      onRefresh();
+    }
+  };
 
   const handleDelete = async (contact) => {
     if (!window.confirm(`Supprimer ${contact.email} de la liste ?`)) return;
@@ -228,6 +268,28 @@ function ContactsTab({ contacts, onRefresh }) {
 
       {importMsg && <div style={{ background: C.arctic, color: C.teal, padding: "10px 14px", borderRadius: "10px", fontSize: "12px", fontWeight: 700, marginBottom: "16px" }}>{importMsg}</div>}
 
+      {selectedIds.size > 0 && (
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", background: C.lilac, padding: "12px 16px", borderRadius: "14px", marginBottom: "16px" }}>
+          <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{selectedIds.size} sélectionné(s)</span>
+          <input
+            list="listes-existantes"
+            value={nouvelleListe}
+            onChange={(e) => setNouvelleListe(e.target.value)}
+            placeholder="Nom de la liste (ex: séjours été)"
+            style={{ ...inputStyle, width: "220px" }}
+          />
+          <datalist id="listes-existantes">
+            {allTags.map((t) => <option key={t} value={t} />)}
+          </datalist>
+          <button onClick={handleAssignerListe} disabled={isAssigning || !nouvelleListe.trim()} style={{ ...btnPrimary, opacity: isAssigning || !nouvelleListe.trim() ? 0.6 : 1 }}>
+            {isAssigning ? "Ajout..." : "Ajouter à la liste"}
+          </button>
+          <button onClick={() => setSelectedIds(new Set())} style={btnGhost}>Annuler la sélection</button>
+        </div>
+      )}
+
+      {assignMsg && <div style={{ background: C.arctic, color: C.teal, padding: "10px 14px", borderRadius: "10px", fontSize: "12px", fontWeight: 700, marginBottom: "16px" }}>{assignMsg}</div>}
+
       <div style={{ fontSize: "13px", fontWeight: 700, color: C.gray, marginBottom: "12px" }}>{filtered.length} contact{filtered.length !== 1 ? "s" : ""}</div>
 
       <div style={{ background: C.white, borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
@@ -240,6 +302,9 @@ function ContactsTab({ contacts, onRefresh }) {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: `2px solid ${C.arctic}`, textAlign: "left" }}>
+                <th style={{ padding: "14px 16px", width: "36px" }}>
+                  <input type="checkbox" checked={toutSelectionne} onChange={toggleSelectAll} style={{ cursor: "pointer" }} />
+                </th>
                 <th style={{ padding: "14px 16px", fontSize: "11px", color: C.gray, textTransform: "uppercase" }}>Contact</th>
                 <th style={{ padding: "14px 16px", fontSize: "11px", color: C.gray, textTransform: "uppercase" }}>Tags</th>
                 <th style={{ padding: "14px 16px", fontSize: "11px", color: C.gray, textTransform: "uppercase" }}>Statut</th>
@@ -249,6 +314,9 @@ function ContactsTab({ contacts, onRefresh }) {
             <tbody>
               {filtered.map((c) => (
                 <tr key={c.id} style={{ borderBottom: `1px solid ${C.arctic}` }}>
+                  <td style={{ padding: "14px 16px" }}>
+                    <input type="checkbox" checked={selectedIds.has(c.id)} onChange={() => toggleSelect(c.id)} style={{ cursor: "pointer" }} />
+                  </td>
                   <td style={{ padding: "14px 16px" }}>
                     <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{c.email}</p>
                     {(c.prenom || c.nom) && <p style={{ fontSize: "12px", color: C.gray }}>{c.prenom} {c.nom}</p>}
