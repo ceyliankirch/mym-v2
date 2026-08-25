@@ -73,6 +73,18 @@ export async function supprimerContact(id) {
   }
 }
 
+export async function supprimerContacts(ids) {
+  if (!ids || ids.length === 0) return { error: "Aucun contact sélectionné" };
+  try {
+    const { count } = await prisma.newsletterContact.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath("/admin");
+    return { success: true, count };
+  } catch (error) {
+    console.error("Error bulk deleting newsletter contacts:", error);
+    return { error: "Erreur lors de la suppression des contacts" };
+  }
+}
+
 // 🏷️ Ajoute une liste (tag) à plusieurs contacts en une fois. Un contact peut
 // appartenir à plusieurs listes ; celles déjà présentes ne sont pas dupliquées.
 export async function assignerListeContacts(contactIds, liste) {

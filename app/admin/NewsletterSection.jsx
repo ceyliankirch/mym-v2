@@ -6,7 +6,7 @@ import {
   FileText, Radio,
 } from "lucide-react";
 import {
-  listerContacts, creerContact, modifierContact, supprimerContact,
+  listerContacts, creerContact, modifierContact, supprimerContact, supprimerContacts,
   importerLotContacts, exporterContactsCSV, assignerListeContacts,
   listerCampagnes, creerCampagne, modifierCampagne, supprimerCampagne,
   envoyerTestCampagne, envoyerCampagne,
@@ -146,7 +146,11 @@ function ContactsTab({ contacts, onRefresh }) {
 
   const handleAssignerListe = async () => {
     const liste = nouvelleListe.trim();
-    if (!liste || selectedIds.size === 0) return;
+    if (!liste) {
+      setAssignMsg("Merci de saisir un nom de liste.");
+      return;
+    }
+    if (selectedIds.size === 0) return;
     setIsAssigning(true);
     setAssignMsg("");
     const result = await assignerListeContacts([...selectedIds], liste);
@@ -165,6 +169,22 @@ function ContactsTab({ contacts, onRefresh }) {
     if (!window.confirm(`Supprimer ${contact.email} de la liste ?`)) return;
     await supprimerContact(contact.id);
     onRefresh();
+  };
+
+  const handleDeleteSelection = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`Supprimer définitivement ${selectedIds.size} contact(s) ?`)) return;
+    setIsAssigning(true);
+    setAssignMsg("");
+    const result = await supprimerContacts([...selectedIds]);
+    setIsAssigning(false);
+    if (result.error) {
+      setAssignMsg(`Erreur : ${result.error}`);
+    } else {
+      setAssignMsg(`${result.count} contact(s) supprimé(s).`);
+      setSelectedIds(new Set());
+      onRefresh();
+    }
   };
 
   const TAILLE_LOT_IMPORT = 50;
@@ -281,8 +301,11 @@ function ContactsTab({ contacts, onRefresh }) {
           <datalist id="listes-existantes">
             {allTags.map((t) => <option key={t} value={t} />)}
           </datalist>
-          <button onClick={handleAssignerListe} disabled={isAssigning || !nouvelleListe.trim()} style={{ ...btnPrimary, opacity: isAssigning || !nouvelleListe.trim() ? 0.6 : 1 }}>
-            {isAssigning ? "Ajout..." : "Ajouter à la liste"}
+          <button onClick={handleAssignerListe} disabled={isAssigning} style={{ ...btnPrimary, opacity: isAssigning ? 0.6 : 1 }}>
+            {isAssigning ? "Patientez..." : "Ajouter à la liste"}
+          </button>
+          <button onClick={handleDeleteSelection} disabled={isAssigning} style={{ background: "#fee2e2", color: "#991b1b", border: "none", padding: "10px 18px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: isAssigning ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "8px", opacity: isAssigning ? 0.6 : 1 }}>
+            <Trash2 size={15} /> Supprimer
           </button>
           <button onClick={() => setSelectedIds(new Set())} style={btnGhost}>Annuler la sélection</button>
         </div>
