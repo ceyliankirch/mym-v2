@@ -7,10 +7,11 @@ import {
 } from "lucide-react";
 import {
   listerContacts, creerContact, modifierContact, supprimerContact,
-  importerContactsCSV, exporterContactsCSV,
+  importerLotContacts, exporterContactsCSV,
   listerCampagnes, creerCampagne, modifierCampagne, supprimerCampagne,
   envoyerTestCampagne, envoyerCampagne,
 } from "@/app/actions/newsletter";
+import { parserContactsCSV } from "@/lib/csvContacts";
 
 const C = {
   yellow: "#FFC801",
@@ -109,6 +110,7 @@ function ContactsTab({ contacts, onRefresh }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importMsg, setImportMsg] = useState("");
+  const [importProgress, setImportProgress] = useState(null); // { done, total }
   const fileInputRef = useRef(null);
 
   const allTags = [...new Set(contacts.flatMap((c) => c.tags || []))].sort();
@@ -125,28 +127,49 @@ function ContactsTab({ contacts, onRefresh }) {
     onRefresh();
   };
 
+  const TAILLE_LOT_IMPORT = 50;
+
   const handleImportFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsImporting(true);
     setImportMsg("");
+    setImportProgress(null);
     try {
       const text = await file.text();
-      const result = await importerContactsCSV(text);
-      if (result.error) {
-        setImportMsg(`Erreur : ${result.error}`);
-      } else {
-        const parts = [`${result.nouveaux} nouveau(x) contact(s)`];
-        if (result.misAJour > 0) parts.push(`${result.misAJour} déjà existant(s) (mis à jour)`);
-        if (result.doublonsFichier > 0) parts.push(`${result.doublonsFichier} doublon(s) dans le fichier`);
-        if (result.invalides > 0) parts.push(`${result.invalides} ligne(s) ignorée(s)`);
-        setImportMsg(parts.join(", ") + ".");
-        onRefresh();
+      const parsed = parserContactsCSV(text);
+      if (parsed.error) {
+        setImportMsg(`Erreur : ${parsed.error}`);
+        return;
       }
+
+      const { contacts, doublonsFichier } = parsed;
+      let nouveaux = 0;
+      let misAJour = 0;
+      let invalides = parsed.invalides;
+
+      setImportProgress({ done: 0, total: contacts.length });
+
+      for (let i = 0; i < contacts.length; i += TAILLE_LOT_IMPORT) {
+        const lot = contacts.slice(i, i + TAILLE_LOT_IMPORT);
+        const result = await importerLotContacts(lot);
+        nouveaux += result.nouveaux;
+        misAJour += result.misAJour;
+        invalides += result.invalides;
+        setImportProgress({ done: Math.min(i + lot.length, contacts.length), total: contacts.length });
+      }
+
+      const parts = [`${nouveaux} nouveau(x) contact(s)`];
+      if (misAJour > 0) parts.push(`${misAJour} déjà existant(s) (mis à jour)`);
+      if (doublonsFichier > 0) parts.push(`${doublonsFichier} doublon(s) dans le fichier`);
+      if (invalides > 0) parts.push(`${invalides} ligne(s) ignorée(s)`);
+      setImportMsg(parts.join(", ") + ".");
+      onRefresh();
     } catch (err) {
       setImportMsg("Erreur lors de la lecture du fichier.");
     } finally {
       setIsImporting(false);
+      setImportProgress(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
@@ -183,6 +206,25 @@ function ContactsTab({ contacts, onRefresh }) {
         </label>
         <button onClick={() => setShowAddModal(true)} style={btnPrimary}><Plus size={15} /> Contact</button>
       </div>
+
+      {importProgress && (
+        <div style={{ background: C.arctic, borderRadius: "10px", padding: "12px 14px", marginBottom: "16px" }}>
+          <div style={{ fontSize: "12px", fontWeight: 700, color: C.teal, marginBottom: "8px" }}>
+            {importProgress.done} contact{importProgress.done !== 1 ? "s" : ""} importé{importProgress.done !== 1 ? "s" : ""} sur {importProgress.total}
+          </div>
+          <div style={{ background: "#fff", borderRadius: "999px", height: "8px", overflow: "hidden" }}>
+            <div
+              style={{
+                width: `${importProgress.total ? Math.round((importProgress.done / importProgress.total) * 100) : 0}%`,
+                height: "100%",
+                background: C.yellow,
+                borderRadius: "999px",
+                transition: "width 0.2s ease",
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {importMsg && <div style={{ background: C.arctic, color: C.teal, padding: "10px 14px", borderRadius: "10px", fontSize: "12px", fontWeight: 700, marginBottom: "16px" }}>{importMsg}</div>}
 

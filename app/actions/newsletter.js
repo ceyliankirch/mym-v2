@@ -2,7 +2,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { sendNewsletterTest, sendNewsletterBatch } from "@/lib/postmark";
+import { verifierTokenDesabonnement } from "@/lib/unsubscribeToken";
 
 /* ═══════════════════ CONTACTS ═══════════════════ */
 
@@ -71,49 +73,12 @@ export async function supprimerContact(id) {
   }
 }
 
-// 📥 Import CSV — colonnes attendues : email,prenom,nom,tags (tags séparés par ";")
-// Une ligne d'en-tête contenant "email" est détectée et ignorée automatiquement.
-export async function importerContactsCSV(csvText) {
-  if (!csvText || !csvText.trim()) {
-    return { error: "Fichier vide" };
-  }
+// 📥 Import d'un lot de contacts déjà parsés côté client (voir lib/csvContacts.js) —
+// appelé plusieurs fois de suite pour afficher une progression sur les gros fichiers.
+export async function importerLotContacts(lot) {
+  if (!lot || lot.length === 0) return { success: true, nouveaux: 0, misAJour: 0, invalides: 0 };
 
-  const lines = csvText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  if (lines.length === 0) {
-    return { error: "Fichier vide" };
-  }
-
-  let startIndex = 0;
-  if (lines[0].toLowerCase().includes("email")) {
-    startIndex = 1;
-  }
-
-  let doublonsFichier = 0; // adresse déjà rencontrée plus haut dans ce même fichier
-  let invalides = 0;
-
-  // On dé-doublonne d'abord en mémoire (dernière occurrence gagne) pour n'avoir
-  // qu'une seule opération DB par email, au lieu de 2 requêtes séquentielles/ligne.
-  const parsedByEmail = new Map();
-
-  for (let i = startIndex; i < lines.length; i++) {
-    const parts = lines[i].split(",").map((p) => p.trim());
-    const email = (parts[0] || "").toLowerCase();
-
-    if (!email || !email.includes("@")) {
-      invalides++;
-      continue;
-    }
-
-    if (parsedByEmail.has(email)) doublonsFichier++;
-
-    parsedByEmail.set(email, {
-      prenom: parts[1] || null,
-      nom: parts[2] || null,
-      tags: parts[3] ? parts[3].split(";").map((t) => t.trim()).filter(Boolean) : [],
-    });
-  }
-
-  const emails = [...parsedByEmail.keys()];
+  const emails = lot.map((c) => c.email);
   const existants = await prisma.newsletterContact.findMany({
     where: { email: { in: emails } },
     select: { email: true },
@@ -122,23 +87,22 @@ export async function importerContactsCSV(csvText) {
 
   let nouveaux = 0;
   let misAJour = 0;
+  let invalides = 0;
 
-  // Upserts en lots pour rester rapide sans saturer la connexion DB.
   const TAILLE_LOT = 20;
-  for (let i = 0; i < emails.length; i += TAILLE_LOT) {
-    const lot = emails.slice(i, i + TAILLE_LOT);
+  for (let i = 0; i < lot.length; i += TAILLE_LOT) {
+    const sousLot = lot.slice(i, i + TAILLE_LOT);
     await Promise.all(
-      lot.map(async (email) => {
-        const { prenom, nom, tags } = parsedByEmail.get(email);
+      sousLot.map(async ({ email, prenom, nom, tags }) => {
         try {
           await prisma.newsletterContact.upsert({
             where: { email },
             update: {
               ...(prenom ? { prenom } : {}),
               ...(nom ? { nom } : {}),
-              ...(tags.length ? { tags } : {}),
+              ...(tags?.length ? { tags } : {}),
             },
-            create: { email, prenom, nom, tags, abonne: true, source: "import" },
+            create: { email, prenom, nom, tags: tags || [], abonne: true, source: "import" },
           });
           if (emailsExistants.has(email)) misAJour++;
           else nouveaux++;
@@ -150,17 +114,20 @@ export async function importerContactsCSV(csvText) {
     );
   }
 
-  revalidatePath("/admin");
-  return {
-    success: true,
-    nouveaux,
-    misAJour,
-    doublonsFichier,
-    invalides,
-    // Conservés pour compatibilité avec un éventuel appelant existant
-    imported: nouveaux + misAJour,
-    skipped: invalides,
-  };
+  return { success: true, nouveaux, misAJour, invalides };
+}
+
+// 🚫 Désabonnement en un clic depuis le lien envoyé dans les campagnes
+export async function desabonnerContact(formData) {
+  const email = (formData.get("email") || "").toString().toLowerCase().trim();
+  const token = (formData.get("token") || "").toString();
+
+  if (email && verifierTokenDesabonnement(email, token)) {
+    await prisma.newsletterContact.updateMany({ where: { email }, data: { abonne: false } });
+    revalidatePath("/admin");
+  }
+
+  redirect("/desabonnement?done=1");
 }
 
 // 📤 Export CSV — filtré par tag si fourni
