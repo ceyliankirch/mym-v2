@@ -4,7 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { sendWelcomeEmail, sendPasswordResetEmail } from "@/lib/postmark";
+import { sendWelcomeEmail, sendPasswordResetEmail } from "@/lib/email";
 
 export async function registerUser(formData) {
   const prenom = formData.get("prenom");

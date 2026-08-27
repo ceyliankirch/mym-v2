@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { put, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
-import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/postmark";
+import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/email";
 
 export async function uploaderDocument(enfantId, docType, file) {
   if (!enfantId || !docType || !file) {
