@@ -50,7 +50,7 @@ const MENU = [
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "enfants", label: "Enfants", icon: Baby },
-  { id: "newsletter", label: "Newsletter", icon: Mail },
+  { id: "newsletter", label: "Liste de diffusion", icon: Mail },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
@@ -1450,7 +1450,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
                 {activeTab === "enfants" && "Fiches Enfants 🧒"}
-                {activeTab === "newsletter" && "Newsletter 📧"}
+                {activeTab === "newsletter" && "Liste de diffusion 📧"}
                 {activeTab === "statistiques" && "Statistiques 📊"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
               </h1>
