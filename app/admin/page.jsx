@@ -11,7 +11,7 @@ export default async function AdminPage() {
     console.log("📡 Admin : Récupération des données depuis Neon...");
 
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
-    const [sejours, inscriptions, clients, animateurs, albums, documentsManquants] = await Promise.all([
+    const [sejours, inscriptions, clients, animateurs, albums, documentsManquants, enfants] = await Promise.all([
       prisma.sejour.findMany({
         include: {
           _count: { select: { inscriptions: true } },
@@ -44,6 +44,15 @@ export default async function AdminPage() {
         orderBy: { createdAt: "desc" },
       }),
       prisma.document.count({ where: { statut: "MANQUANT" } }),
+      // ⚡ NOUVEAU : Fiche complète de chaque enfant (infos + documents + inscriptions + parent)
+      prisma.enfant.findMany({
+        include: {
+          client: true,
+          documents: { orderBy: { type: "asc" } },
+          inscriptions: { include: { sejour: true }, orderBy: { createdAt: "desc" } },
+        },
+        orderBy: [{ nom: "asc" }, { prenom: "asc" }],
+      }),
     ]);
 
     // Calcul des statistiques (KPIs)
@@ -73,6 +82,7 @@ export default async function AdminPage() {
         sejours={sejours}
         inscriptions={inscriptions}
         clients={clients} // ⚡ NOUVEAU : On passe les familles au client
+        enfants={enfants} // ⚡ NOUVEAU : On passe les fiches enfants complètes
         animateurs={animateurs} // ⚡ NOUVEAU : On passe les animateurs au client
         albums={albums} // ⚡ NOUVEAU : On passe les albums photos au client
         prochainsDeparts={prochainsDeparts}

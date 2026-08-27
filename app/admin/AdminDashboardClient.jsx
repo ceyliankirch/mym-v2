@@ -10,7 +10,8 @@ import {
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
-  Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3
+  Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
+  Baby, Cake, Ruler, Footprints, Weight
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -48,6 +49,7 @@ const MENU = [
   { id: "inscriptions", label: "Inscriptions", icon: FileText },
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
+  { id: "enfants", label: "Enfants", icon: Baby },
   { id: "newsletter", label: "Newsletter", icon: Mail },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
@@ -63,6 +65,17 @@ const STATUT_INSCRIPTION_COLORS = {
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toISOString().split('T')[0];
+};
+
+const calculerAge = (dateNaissance) => {
+  if (!dateNaissance) return null;
+  const naissance = new Date(dateNaissance);
+  if (Number.isNaN(naissance.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - naissance.getFullYear();
+  const m = now.getMonth() - naissance.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < naissance.getDate())) age--;
+  return age;
 };
 
 const formatAge = (ageString) => {
@@ -975,6 +988,126 @@ function InfoPill({ label, value }) {
   );
 }
 
+/* ── MODALE : FICHE COMPLÈTE D'UN ENFANT ── */
+function ModalFicheEnfant({ enfant, onClose }) {
+  if (!enfant) return null;
+
+  const age = calculerAge(enfant.dateNaissance);
+  const sexeLabel = enfant.sexe === "M" ? "Garçon" : enfant.sexe === "F" ? "Fille" : "Non renseigné";
+  const accent = enfant.sexe === "M" ? "#3b82f6" : enfant.sexe === "F" ? "#ec4899" : C.teal;
+  const documents = enfant.documents || [];
+  const docsValides = documents.filter((d) => d.statut === "VALIDE").length;
+  const docsEnCours = documents.filter((d) => d.statut === "EN_COURS").length;
+  const docsManquants = documents.filter((d) => d.statut === "MANQUANT").length;
+  const inscriptions = enfant.inscriptions || [];
+
+  const physique = [
+    { label: "Date de naissance", value: enfant.dateNaissance ? new Date(enfant.dateNaissance).toLocaleDateString("fr-FR") : null, icon: Cake },
+    { label: "Âge", value: age != null ? `${age} ans` : null, icon: Cake },
+    { label: "Taille", value: enfant.taille ? `${enfant.taille} cm` : null, icon: Ruler },
+    { label: "Poids", value: enfant.poids ? `${enfant.poids} kg` : null, icon: Weight },
+    { label: "Pointure", value: enfant.pointure ? `${enfant.pointure}` : null, icon: Footprints },
+    { label: "Sexe", value: sexeLabel, icon: Baby },
+  ];
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "720px", maxHeight: "88vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+
+        {/* En-tête */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+          <div style={{ width: "56px", height: "56px", borderRadius: "18px", background: accent + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Baby size={28} style={{ color: accent }} />
+          </div>
+          <div>
+            <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal }}>{enfant.prenom} {enfant.nom}</h2>
+            <p style={{ fontSize: "13px", color: C.gray, marginTop: "2px" }}>
+              {sexeLabel}{age != null ? ` · ${age} ans` : ""}
+            </p>
+          </div>
+        </div>
+
+        {/* Caractéristiques physiques */}
+        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Caractéristiques</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px", marginBottom: "24px" }}>
+          {physique.map((p) => (
+            <div key={p.label} style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+              <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}><p.icon size={12} /> {p.label}</p>
+              <p style={{ fontSize: "14px", fontWeight: 800, color: p.value ? C.teal : C.gray, marginTop: "4px" }}>{p.value || "—"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Allergies & médical */}
+        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Santé</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
+          <div style={{ background: enfant.allergies ? "#fef3c7" : C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+            <p style={{ fontSize: "10px", fontWeight: 700, color: enfant.allergies ? "#b45309" : C.gray, textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}>
+              {enfant.allergies && <AlertTriangle size={12} />} Allergies
+            </p>
+            <p style={{ fontSize: "13px", fontWeight: enfant.allergies ? 700 : 400, color: enfant.allergies ? "#92400e" : C.gray, marginTop: "4px", whiteSpace: "pre-wrap" }}>
+              {enfant.allergies || "Aucune allergie signalée"}
+            </p>
+          </div>
+          <div style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+            <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Informations complémentaires</p>
+            <p style={{ fontSize: "13px", color: enfant.informationsComplementaires ? C.teal : C.gray, marginTop: "4px", whiteSpace: "pre-wrap" }}>
+              {enfant.informationsComplementaires || "—"}
+            </p>
+          </div>
+        </div>
+
+        {/* Documents */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", flexWrap: "wrap" }}>
+          <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px" }}>Documents ({documents.length})</p>
+          {docsValides > 0 && <span style={{ background: "#d1fae5", color: "#065f46", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{docsValides} validé{docsValides > 1 ? "s" : ""}</span>}
+          {docsEnCours > 0 && <span style={{ background: "#fef3c7", color: "#92400e", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{docsEnCours} en vérif.</span>}
+          {docsManquants > 0 && <span style={{ background: "#fee2e2", color: "#991b1b", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{docsManquants} manquant{docsManquants > 1 ? "s" : ""}</span>}
+        </div>
+        {documents.length === 0 ? (
+          <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Aucun document rattaché à cet enfant.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
+            {documents.map((doc) => (
+              <DocumentValidationRow key={doc.id} doc={doc} />
+            ))}
+          </div>
+        )}
+
+        {/* Inscriptions */}
+        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Inscriptions ({inscriptions.length})</p>
+        {inscriptions.length === 0 ? (
+          <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Aucune inscription.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
+            {inscriptions.map((ins) => {
+              const colors = STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
+              return (
+                <div key={ins.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", background: C.arctic, borderRadius: "12px", padding: "12px 14px", flexWrap: "wrap" }}>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{ins.sejour?.titre || "Séjour supprimé"}</p>
+                    <p style={{ fontSize: "11px", color: C.gray, marginTop: "2px" }}>Inscrit le {new Date(ins.createdAt).toLocaleDateString("fr-FR")}</p>
+                  </div>
+                  <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Parent */}
+        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Représentant légal</p>
+        <div style={{ background: C.arctic, borderRadius: "12px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "6px" }}>
+          <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>{enfant.client?.prenom} {enfant.client?.nom}</p>
+          <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: C.gray }}><Mail size={14} /> {enfant.client?.email || "Non renseigné"}</span>
+          <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: C.gray }}><Phone size={14} /> {enfant.client?.telephone || "Non renseigné"}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── TABLEAUX / GRILLES ── */
 function TableInscriptions({ data }) {
   const recent = (data || []).slice(0, 8);
@@ -1171,7 +1304,7 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, animateurs, albums, prochainsDeparts }) {
+export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, enfants, animateurs, albums, prochainsDeparts }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -1179,7 +1312,9 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
   const [animEnEdition, setAnimEnEdition] = useState(null);
   const [albumEnEdition, setAlbumEnEdition] = useState(null);
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
-  
+  const [ficheEnfantId, setFicheEnfantId] = useState(null);
+  const [rechercheEnfant, setRechercheEnfant] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState("table");
 
@@ -1248,6 +1383,19 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     await togglePhotoEnAvant(photoId, false);
   };
 
+  // ── Fiches enfants ──
+  const ficheEnfant = (enfants || []).find((e) => e.id === ficheEnfantId) || null;
+  const enfantsFiltres = (enfants || []).filter((e) => {
+    const q = rechercheEnfant.trim().toLowerCase();
+    if (!q) return true;
+    const parent = `${e.client?.prenom || ""} ${e.client?.nom || ""}`.toLowerCase();
+    return (
+      `${e.prenom} ${e.nom}`.toLowerCase().includes(q) ||
+      parent.includes(q) ||
+      (e.allergies || "").toLowerCase().includes(q)
+    );
+  });
+
   return (
     <AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} activeTab={activeTab} setActiveTab={setActiveTab} MENU={MENU} C={C}>
       
@@ -1266,6 +1414,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
                 {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
+                {activeTab === "enfants" && "Fiches Enfants 🧒"}
                 {activeTab === "newsletter" && "Newsletter 📧"}
                 {activeTab === "statistiques" && "Statistiques 📊"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
@@ -1522,13 +1671,78 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                             const bg = e.sexe === "M" ? "#dbeafe" : e.sexe === "F" ? "#fce7f3" : C.lilac;
                             const fg = e.sexe === "M" ? "#1d4ed8" : e.sexe === "F" ? "#be185d" : C.teal;
                             return (
-                              <span key={e.id} style={{ fontSize: "12px", fontWeight: 600, color: fg, background: bg, padding: "4px 10px", borderRadius: "999px" }}>{e.prenom} {e.nom}</span>
+                              <button key={e.id} onClick={() => setFicheEnfantId(e.id)} title="Voir la fiche complète" style={{ fontSize: "12px", fontWeight: 600, color: fg, background: bg, padding: "4px 10px", borderRadius: "999px", border: "none", cursor: "pointer" }}>{e.prenom} {e.nom}</button>
                             );
                           })}
                         </div>
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === "enfants" && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "20px", flexWrap: "wrap" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>{enfantsFiltres.length} enfant{enfantsFiltres.length > 1 ? "s" : ""}</div>
+                <div style={{ position: "relative", width: "280px", maxWidth: "100%" }}>
+                  <Search size={16} color={C.gray} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+                  <input
+                    type="text"
+                    value={rechercheEnfant}
+                    onChange={(e) => setRechercheEnfant(e.target.value)}
+                    placeholder="Nom, parent, allergie..."
+                    style={{ width: "100%", padding: "12px 14px 12px 38px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600, fontSize: "13px" }}
+                  />
+                </div>
+              </div>
+
+              {(!enfants || enfants.length === 0) ? (
+                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
+                  <Baby size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
+                  <p>Aucun enfant enregistré pour le moment.</p>
+                </div>
+              ) : enfantsFiltres.length === 0 ? (
+                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
+                  <p>Aucun enfant ne correspond à « {rechercheEnfant} ».</p>
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+                  {enfantsFiltres.map((e) => {
+                    const accent = e.sexe === "M" ? "#3b82f6" : e.sexe === "F" ? "#ec4899" : C.teal;
+                    const age = calculerAge(e.dateNaissance);
+                    const docs = e.documents || [];
+                    const docsManquants = docs.filter((d) => d.statut === "MANQUANT").length;
+                    const docsEnCours = docs.filter((d) => d.statut === "EN_COURS").length;
+                    return (
+                      <button
+                        key={e.id}
+                        onClick={() => setFicheEnfantId(e.id)}
+                        style={{ textAlign: "left", background: C.white, padding: "20px", borderRadius: "18px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)", border: `1px solid ${C.lightGray}`, cursor: "pointer", display: "flex", flexDirection: "column", gap: "12px" }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: accent + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <Baby size={22} style={{ color: accent }} />
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: "15px", fontWeight: 800, color: C.teal, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.prenom} {e.nom}</p>
+                            <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>{age != null ? `${age} ans` : "Âge inconnu"} · {e.client?.prenom} {e.client?.nom}</p>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px", fontWeight: 700 }}>
+                          {e.taille && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>{e.taille} cm</span>}
+                          {e.poids && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>{e.poids} kg</span>}
+                          {e.pointure && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>P. {e.pointure}</span>}
+                          {e.allergies && <span style={{ background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "6px" }}>⚠️ Allergies</span>}
+                          {docsManquants > 0 && <span style={{ background: "#fee2e2", color: "#991b1b", padding: "3px 8px", borderRadius: "6px" }}>{docsManquants} doc. manquant{docsManquants > 1 ? "s" : ""}</span>}
+                          {docsManquants === 0 && docsEnCours > 0 && <span style={{ background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "6px" }}>{docsEnCours} doc. à vérifier</span>}
+                          {docs.length > 0 && docsManquants === 0 && docsEnCours === 0 && <span style={{ background: "#d1fae5", color: "#065f46", padding: "3px 8px", borderRadius: "6px" }}>Docs OK</span>}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </>
@@ -1585,6 +1799,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} />}
+      {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} />}
     </AdminLayout>
   );
 }
