@@ -46,10 +46,9 @@ const C = {
 const MENU = [
   { id: "dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
   { id: "sejours", label: "Gestion des Séjours", icon: Map },
-  { id: "inscriptions", label: "Inscriptions", icon: FileText },
+  { id: "inscriptions", label: "Inscriptions & Enfants", icon: FileText },
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
-  { id: "enfants", label: "Enfants", icon: Baby },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
@@ -60,6 +59,13 @@ const STATUT_INSCRIPTION_COLORS = {
   "Paiement validé": { bg: "#d1fae5", color: "#065f46" },
   "Annulée": { bg: "#fee2e2", color: "#991b1b" },
 };
+
+// Palette pour colorer chaque séjour (assignée dans l'ordre des séjours)
+const SEJOUR_PALETTE = [
+  "#114C5A", "#FF9932", "#7C3AED", "#0EA5E9", "#10B981",
+  "#EF4444", "#EC4899", "#6366F1", "#14B8A6", "#F59E0B",
+  "#8B5CF6", "#22C55E",
+];
 
 /* ── UTILS ── */
 const formatDateForInput = (dateString) => {
@@ -1343,6 +1349,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
   const [ficheEnfantId, setFicheEnfantId] = useState(null);
   const [rechercheEnfant, setRechercheEnfant] = useState("");
+  const [filtreSejourId, setFiltreSejourId] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState("table");
@@ -1429,16 +1436,28 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     await togglePhotoEnAvant(photoId, false);
   };
 
-  // ── Fiches enfants ──
+  // ── Inscriptions & fiches enfants ──
   const ficheEnfant = (enfants || []).find((e) => e.id === ficheEnfantId) || null;
-  const enfantsFiltres = (enfants || []).filter((e) => {
+
+  // Couleur stable par séjour (assignée dans l'ordre de la liste des séjours)
+  const sejourColorMap = {};
+  (sejours || []).forEach((s, i) => { sejourColorMap[s.id] = SEJOUR_PALETTE[i % SEJOUR_PALETTE.length]; });
+  const couleurSejour = (id) => sejourColorMap[id] || C.gray;
+
+  // Séjours qui ont au moins une inscription (pour la barre de filtres)
+  const sejoursAvecInscrits = (sejours || []).filter((s) =>
+    (inscriptions || []).some((ins) => ins.sejourId === s.id)
+  );
+
+  const inscriptionsFiltrees = (inscriptions || []).filter((ins) => {
+    if (filtreSejourId && ins.sejourId !== filtreSejourId) return false;
     const q = rechercheEnfant.trim().toLowerCase();
     if (!q) return true;
-    const parent = `${e.client?.prenom || ""} ${e.client?.nom || ""}`.toLowerCase();
+    const parent = `${ins.client?.prenom || ""} ${ins.client?.nom || ""}`.toLowerCase();
     return (
-      `${e.prenom} ${e.nom}`.toLowerCase().includes(q) ||
+      `${ins.enfant?.prenom || ""} ${ins.enfant?.nom || ""}`.toLowerCase().includes(q) ||
       parent.includes(q) ||
-      (e.allergies || "").toLowerCase().includes(q)
+      (ins.sejour?.titre || "").toLowerCase().includes(q)
     );
   });
 
@@ -1460,7 +1479,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                 {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
                 {activeTab === "galerie" && "Galerie Photos 📸"}
                 {activeTab === "clients" && "Répertoire Clients 👥"}
-                {activeTab === "enfants" && "Fiches Enfants 🧒"}
+                {activeTab === "inscriptions" && "Inscriptions & Enfants 🧒"}
                 {activeTab === "newsletter" && "Liste de diffusion 📧"}
                 {activeTab === "statistiques" && "Statistiques 📊"}
                 {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
@@ -1560,110 +1579,134 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
           )}
 
           {activeTab === "inscriptions" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              {inscriptions?.length === 0 ? (
+            <>
+              {/* Barre de recherche + filtres par séjour */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "20px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>
+                    {inscriptionsFiltrees.length} inscription{inscriptionsFiltrees.length > 1 ? "s" : ""}
+                    {filtreSejourId ? ` · ${(sejours || []).find((s) => s.id === filtreSejourId)?.titre || ""}` : ""}
+                  </div>
+                  <div style={{ position: "relative", width: "280px", maxWidth: "100%" }}>
+                    <Search size={16} color={C.gray} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+                    <input
+                      type="text"
+                      value={rechercheEnfant}
+                      onChange={(e) => setRechercheEnfant(e.target.value)}
+                      placeholder="Enfant, parent, séjour..."
+                      style={{ width: "100%", padding: "12px 14px 12px 38px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600, fontSize: "13px" }}
+                    />
+                  </div>
+                </div>
+
+                {sejoursAvecInscrits.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    <button
+                      onClick={() => setFiltreSejourId("")}
+                      style={{ fontSize: "12px", fontWeight: 800, padding: "6px 14px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${filtreSejourId === "" ? C.teal : C.lightGray}`, background: filtreSejourId === "" ? C.teal : C.white, color: filtreSejourId === "" ? C.white : C.teal }}
+                    >
+                      Tous ({inscriptions.length})
+                    </button>
+                    {sejoursAvecInscrits.map((s) => {
+                      const col = couleurSejour(s.id);
+                      const actif = filtreSejourId === s.id;
+                      const n = inscriptions.filter((ins) => ins.sejourId === s.id).length;
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => setFiltreSejourId(actif ? "" : s.id)}
+                          style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: 800, padding: "6px 14px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${actif ? col : C.lightGray}`, background: actif ? col : C.white, color: actif ? C.white : C.teal }}
+                        >
+                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: actif ? C.white : col, flexShrink: 0 }} />
+                          {s.titre} ({n})
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {(!inscriptions || inscriptions.length === 0) ? (
                 <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
                   <FileText size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
                   <p>Aucune inscription pour le moment.</p>
                 </div>
+              ) : inscriptionsFiltrees.length === 0 ? (
+                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
+                  <p>Aucune inscription ne correspond à ces critères.</p>
+                </div>
               ) : (
-                inscriptions.map(ins => (
-                  <div key={ins.id} style={{ background: C.white, padding: "24px", borderRadius: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "16px" }}>
-                      <div>
-                        <h3 style={{ fontSize: "16px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>
-                          {ins.enfant?.prenom} {ins.enfant?.nom}
-                        </h3>
-                        <p style={{ fontSize: "14px", color: C.gray }}>
-                          <strong>Séjour :</strong> {ins.sejour?.titre}
-                        </p>
-                        <p style={{ fontSize: "14px", color: C.gray }}>
-                          <strong>Parent :</strong> {ins.client?.nom} {ins.client?.prenom}
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <select
-                          value={ins.statut}
-                          onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
-                          style={{
-                            background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                            color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                            padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-                          }}
-                        >
-                          {STATUTS_INSCRIPTION.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => handleRenvoyerEmail(ins)}
-                          disabled={renvoiEnCours === ins.id}
-                          title="Renvoyer l'email d'inscription à la famille"
-                          style={{ background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: renvoiEnCours === ins.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, opacity: renvoiEnCours === ins.id ? 0.5 : 1 }}
-                        >
-                          <Mail size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteInscription(ins)}
-                          title="Supprimer l'inscription"
-                          style={{ background: "#fee2e2", border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div style={{ marginTop: "16px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>
-                      <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, marginBottom: "12px" }}>Documents requis :</p>
-                      {ins.enfant?.documents?.length === 0 ? (
-                        <p style={{ fontSize: "13px", color: C.gray }}>Aucun document requis</p>
-                      ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                          {ins.enfant?.documents?.map(doc => {
-                            const statusColor = doc.statut === "VALIDE" ? "#10b981" : doc.statut === "EN_COURS" ? "#f59e0b" : "#ef4444";
-                            const statusBg = doc.statut === "VALIDE" ? "#d1fae5" : doc.statut === "EN_COURS" ? "#fef3c7" : "#fee2e2";
-                            return (
-                              <div key={doc.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", background: C.arctic, borderRadius: "8px" }}>
-                                <div style={{ flex: 1 }}>
-                                  <p style={{ fontSize: "13px", fontWeight: 600, color: C.teal }}>{doc.type}</p>
-                                  <p style={{ fontSize: "12px", color: C.gray }}>
-                                    <span style={{ background: statusBg, color: statusColor, padding: "2px 8px", borderRadius: "4px", fontSize: "11px", fontWeight: 700 }}>
-                                      {doc.statut}
-                                    </span>
-                                  </p>
-                                </div>
-                                {doc.statut === "EN_COURS" && (
-                                  <div style={{ display: "flex", gap: "8px" }}>
-                                    <button
-                                      onClick={async () => {
-                                        await validerDocument(doc.id);
-                                        window.location.reload();
-                                      }}
-                                      style={{ background: "#d1fae5", border: "none", color: "#065f46", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
-                                    >
-                                      Valider
-                                    </button>
-                                    <button
-                                      onClick={async () => {
-                                        await rejeterDocument(doc.id);
-                                        window.location.reload();
-                                      }}
-                                      style={{ background: "#fee2e2", border: "none", color: "#991b1b", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
-                                    >
-                                      Rejeter
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                <div style={{ background: C.white, borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+                  {inscriptionsFiltrees.map((ins, idx) => {
+                    const col = couleurSejour(ins.sejourId);
+                    const docs = ins.enfant?.documents || [];
+                    const envoyes = docs.filter((d) => d.statut !== "MANQUANT").length;
+                    const total = docs.length;
+                    const docColor = total === 0 ? C.gray : envoyes === 0 ? "#991b1b" : envoyes < total ? "#92400e" : "#065f46";
+                    const dotColor = ins.enfant?.sexe === "M" ? "#3b82f6" : ins.enfant?.sexe === "F" ? "#ec4899" : C.gray;
+                    return (
+                      <div
+                        key={ins.id}
+                        style={{ display: "flex", alignItems: "center", gap: "16px", padding: "14px 18px", borderLeft: `5px solid ${col}`, borderBottom: idx < inscriptionsFiltrees.length - 1 ? `1px solid ${C.arctic}` : "none", flexWrap: "wrap" }}
+                      >
+                        <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+                          <button
+                            onClick={() => ins.enfant?.id && setFicheEnfantId(ins.enfant.id)}
+                            title="Voir la fiche complète de l'enfant"
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", fontWeight: 800, color: C.teal }}
+                          >
+                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                            {ins.enfant?.prenom} {ins.enfant?.nom}
+                          </button>
+                          <p style={{ fontSize: "12px", color: C.gray, marginTop: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                              <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: col, flexShrink: 0 }} />
+                              {ins.sejour?.titre || "Séjour supprimé"}
+                            </span>
+                            <span>· {ins.client?.prenom} {ins.client?.nom}</span>
+                          </p>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                ))
+
+                        <div style={{ flex: "0 0 auto", fontSize: "12px", fontWeight: 700, color: docColor }}>
+                          {total === 0 ? "Aucun document requis" : `${envoyes} document${envoyes > 1 ? "s" : ""} sur ${total} envoyé${envoyes > 1 ? "s" : ""}`}
+                        </div>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                          <select
+                            value={ins.statut}
+                            onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
+                            style={{
+                              background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                              color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                              padding: "6px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                            }}
+                          >
+                            {STATUTS_INSCRIPTION.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => handleRenvoyerEmail(ins)}
+                            disabled={renvoiEnCours === ins.id}
+                            title="Renvoyer l'email d'inscription à la famille"
+                            style={{ background: C.arctic, border: "none", width: "30px", height: "30px", borderRadius: "8px", cursor: renvoiEnCours === ins.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, opacity: renvoiEnCours === ins.id ? 0.5 : 1 }}
+                          >
+                            <Mail size={13} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteInscription(ins)}
+                            title="Supprimer l'inscription"
+                            style={{ background: "#fee2e2", border: "none", width: "30px", height: "30px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#991b1b" }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
-            </div>
+            </>
           )}
 
           {activeTab === "galerie" && (
@@ -1732,71 +1775,6 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                       )}
                     </div>
                   ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {activeTab === "enfants" && (
-            <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "20px", flexWrap: "wrap" }}>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>{enfantsFiltres.length} enfant{enfantsFiltres.length > 1 ? "s" : ""}</div>
-                <div style={{ position: "relative", width: "280px", maxWidth: "100%" }}>
-                  <Search size={16} color={C.gray} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
-                  <input
-                    type="text"
-                    value={rechercheEnfant}
-                    onChange={(e) => setRechercheEnfant(e.target.value)}
-                    placeholder="Nom, parent, allergie..."
-                    style={{ width: "100%", padding: "12px 14px 12px 38px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600, fontSize: "13px" }}
-                  />
-                </div>
-              </div>
-
-              {(!enfants || enfants.length === 0) ? (
-                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
-                  <Baby size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
-                  <p>Aucun enfant enregistré pour le moment.</p>
-                </div>
-              ) : enfantsFiltres.length === 0 ? (
-                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
-                  <p>Aucun enfant ne correspond à « {rechercheEnfant} ».</p>
-                </div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
-                  {enfantsFiltres.map((e) => {
-                    const accent = e.sexe === "M" ? "#3b82f6" : e.sexe === "F" ? "#ec4899" : C.teal;
-                    const age = calculerAge(e.dateNaissance);
-                    const docs = e.documents || [];
-                    const docsManquants = docs.filter((d) => d.statut === "MANQUANT").length;
-                    const docsEnCours = docs.filter((d) => d.statut === "EN_COURS").length;
-                    return (
-                      <button
-                        key={e.id}
-                        onClick={() => setFicheEnfantId(e.id)}
-                        style={{ textAlign: "left", background: C.white, padding: "20px", borderRadius: "18px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)", border: `1px solid ${C.lightGray}`, cursor: "pointer", display: "flex", flexDirection: "column", gap: "12px" }}
-                      >
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: accent + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <Baby size={22} style={{ color: accent }} />
-                          </div>
-                          <div style={{ minWidth: 0 }}>
-                            <p style={{ fontSize: "15px", fontWeight: 800, color: C.teal, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.prenom} {e.nom}</p>
-                            <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>{age != null ? `${age} ans` : "Âge inconnu"} · {e.client?.prenom} {e.client?.nom}</p>
-                          </div>
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px", fontWeight: 700 }}>
-                          {e.taille && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>{e.taille} cm</span>}
-                          {e.poids && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>{e.poids} kg</span>}
-                          {e.pointure && <span style={{ background: C.arctic, color: C.teal, padding: "3px 8px", borderRadius: "6px" }}>P. {e.pointure}</span>}
-                          {e.allergies && <span style={{ background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "6px" }}>⚠️ Allergies</span>}
-                          {docsManquants > 0 && <span style={{ background: "#fee2e2", color: "#991b1b", padding: "3px 8px", borderRadius: "6px" }}>{docsManquants} doc. manquant{docsManquants > 1 ? "s" : ""}</span>}
-                          {docsManquants === 0 && docsEnCours > 0 && <span style={{ background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "6px" }}>{docsEnCours} doc. à vérifier</span>}
-                          {docs.length > 0 && docsManquants === 0 && docsEnCours === 0 && <span style={{ background: "#d1fae5", color: "#065f46", padding: "3px 8px", borderRadius: "6px" }}>Docs OK</span>}
-                        </div>
-                      </button>
-                    );
-                  })}
                 </div>
               )}
             </>
