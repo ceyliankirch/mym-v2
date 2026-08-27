@@ -1472,24 +1472,17 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       <div style={{ flex: 1, overflowY: "auto", padding: "40px 32px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           
-          <div style={{ marginBottom: "40px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "20px", flexWrap: "wrap" }}>
-            <div>
-              <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal, marginBottom: "8px" }}>
-                {activeTab === "dashboard" && "Bonjour, l'équipe 👋"}
-                {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
-                {activeTab === "galerie" && "Galerie Photos 📸"}
-                {activeTab === "clients" && "Répertoire Clients 👥"}
-                {activeTab === "inscriptions" && "Inscriptions & Enfants 🧒"}
-                {activeTab === "newsletter" && "Liste de diffusion 📧"}
-                {activeTab === "statistiques" && "Statistiques 📊"}
-                {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
-              </h1>
-              <p style={{ fontSize: "14px", color: C.gray }}>Données Neon en temps réel.</p>
-            </div>
-            <div style={{ position: "relative", width: "320px" }}>
-              <Search size={18} color={C.gray} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} />
-              <input type="text" placeholder="Rechercher..." style={{ width: "100%", padding: "14px 16px 14px 44px", borderRadius: "14px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600 }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.lightGray} />
-            </div>
+          <div style={{ marginBottom: "40px" }}>
+            <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal }}>
+              {activeTab === "dashboard" && "Bonjour, l'équipe 👋"}
+              {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
+              {activeTab === "galerie" && "Galerie Photos 📸"}
+              {activeTab === "clients" && "Répertoire Clients 👥"}
+              {activeTab === "inscriptions" && "Inscriptions & Enfants 🧒"}
+              {activeTab === "newsletter" && "Liste de diffusion 📧"}
+              {activeTab === "statistiques" && "Statistiques 📊"}
+              {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
+            </h1>
           </div>
 
           {activeTab === "dashboard" && (
@@ -1580,50 +1573,53 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
 
           {activeTab === "inscriptions" && (
             <>
-              {/* Barre de recherche + filtres par séjour */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "20px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>
-                    {inscriptionsFiltrees.length} inscription{inscriptionsFiltrees.length > 1 ? "s" : ""}
-                    {filtreSejourId ? ` · ${(sejours || []).find((s) => s.id === filtreSejourId)?.titre || ""}` : ""}
-                  </div>
-                  <div style={{ position: "relative", width: "280px", maxWidth: "100%" }}>
-                    <Search size={16} color={C.gray} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }} />
+              {/* Filtres par séjour + recherche */}
+              <div style={{ marginBottom: "20px" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray, marginBottom: "14px" }}>
+                  {inscriptionsFiltrees.length} inscription{inscriptionsFiltrees.length > 1 ? "s" : ""}
+                  {filtreSejourId ? ` · ${(sejours || []).find((s) => s.id === filtreSejourId)?.titre || ""}` : ""}
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+                  {sejoursAvecInscrits.length > 0 && (
+                    <>
+                      <button
+                        onClick={() => setFiltreSejourId("")}
+                        style={{ fontSize: "12px", fontWeight: 800, padding: "8px 16px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${filtreSejourId === "" ? C.teal : C.lightGray}`, background: filtreSejourId === "" ? C.teal : C.white, color: filtreSejourId === "" ? C.white : C.teal }}
+                      >
+                        Tous ({inscriptions.length})
+                      </button>
+                      {sejoursAvecInscrits.map((s) => {
+                        const col = couleurSejour(s.id);
+                        const actif = filtreSejourId === s.id;
+                        const n = inscriptions.filter((ins) => ins.sejourId === s.id).length;
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => setFiltreSejourId(actif ? "" : s.id)}
+                            style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: 800, padding: "8px 16px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${actif ? col : C.lightGray}`, background: actif ? col : C.white, color: actif ? C.white : C.teal }}
+                          >
+                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: actif ? C.white : col, flexShrink: 0 }} />
+                            {s.titre} ({n})
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  <div style={{ position: "relative", flex: "1 1 280px", minWidth: "220px" }}>
+                    <Search size={18} color={C.gray} style={{ position: "absolute", left: "20px", top: "50%", transform: "translateY(-50%)" }} />
                     <input
                       type="text"
                       value={rechercheEnfant}
                       onChange={(e) => setRechercheEnfant(e.target.value)}
-                      placeholder="Enfant, parent, séjour..."
-                      style={{ width: "100%", padding: "12px 14px 12px 38px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600, fontSize: "13px" }}
+                      placeholder="Rechercher un enfant, un parent, un séjour..."
+                      style={{ width: "100%", padding: "13px 22px 13px 48px", borderRadius: "999px", border: `1px solid ${C.lightGray}`, background: C.white, outline: "none", color: C.teal, fontWeight: 600, fontSize: "14px" }}
+                      onFocus={(e) => (e.target.style.borderColor = C.yellow)}
+                      onBlur={(e) => (e.target.style.borderColor = C.lightGray)}
                     />
                   </div>
                 </div>
-
-                {sejoursAvecInscrits.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                    <button
-                      onClick={() => setFiltreSejourId("")}
-                      style={{ fontSize: "12px", fontWeight: 800, padding: "6px 14px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${filtreSejourId === "" ? C.teal : C.lightGray}`, background: filtreSejourId === "" ? C.teal : C.white, color: filtreSejourId === "" ? C.white : C.teal }}
-                    >
-                      Tous ({inscriptions.length})
-                    </button>
-                    {sejoursAvecInscrits.map((s) => {
-                      const col = couleurSejour(s.id);
-                      const actif = filtreSejourId === s.id;
-                      const n = inscriptions.filter((ins) => ins.sejourId === s.id).length;
-                      return (
-                        <button
-                          key={s.id}
-                          onClick={() => setFiltreSejourId(actif ? "" : s.id)}
-                          style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: 800, padding: "6px 14px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${actif ? col : C.lightGray}`, background: actif ? col : C.white, color: actif ? C.white : C.teal }}
-                        >
-                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: actif ? C.white : col, flexShrink: 0 }} />
-                          {s.titre} ({n})
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
 
               {(!inscriptions || inscriptions.length === 0) ? (
