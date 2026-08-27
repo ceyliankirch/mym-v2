@@ -387,6 +387,55 @@ export async function changerStatutInscription(id, statut) {
   }
 }
 
+// 📧 RENVOYER l'email à la famille pour une inscription (admin).
+// Utile quand l'envoi automatique a échoué (ex: fournisseur d'emails mal configuré).
+// Renvoie l'email correspondant au statut actuel, sans rien modifier en base.
+export async function renvoyerEmailInscription(id) {
+  try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id },
+      include: { client: true, enfant: true, sejour: true },
+    });
+
+    if (!inscription) return { error: "Inscription introuvable" };
+    if (!inscription.client?.email) {
+      return { error: "Cette famille n'a pas d'adresse email renseignée." };
+    }
+
+    const to = inscription.client.email;
+    const prenomEnfant = inscription.enfant?.prenom;
+    const sejourTitre = inscription.sejour?.titre;
+    const lienPaiementCIC = inscription.sejour?.lienPaiementCIC;
+
+    let result;
+    if (inscription.statut === "Paiement validé") {
+      result = await sendInscriptionConfirmationEmail({
+        to,
+        prenomEnfant,
+        nomEnfant: inscription.enfant?.nom,
+        sejourTitre,
+        dateDebut: inscription.sejour?.dateDebut,
+        dateFin: inscription.sejour?.dateFin,
+        lienPaiementCIC,
+        documentsRequis: inscription.sejour?.documentsRequis,
+      });
+    } else if (inscription.statut === "Annulée") {
+      result = await sendInscriptionCancelledEmail({ to, prenomEnfant, sejourTitre });
+    } else {
+      result = await sendInscriptionReceivedEmail({ to, prenomEnfant, sejourTitre, lienPaiementCIC });
+    }
+
+    if (result && result.success === false) {
+      return { error: result.error || "L'envoi de l'email a échoué." };
+    }
+
+    return { success: true, email: to };
+  } catch (error) {
+    console.error("Error resending inscription email:", error);
+    return { error: "Erreur lors du renvoi de l'email" };
+  }
+}
+
 // 🗑️ SUPPRIMER UNE INSCRIPTION (admin — pas de vérification de propriétaire)
 export async function supprimerInscription(id) {
   try {

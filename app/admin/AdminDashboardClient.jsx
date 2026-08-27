@@ -26,7 +26,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
@@ -1400,6 +1400,17 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     }
   };
 
+  const [renvoiEnCours, setRenvoiEnCours] = useState(null);
+  const handleRenvoyerEmail = async (ins) => {
+    const email = ins.client?.email;
+    if (!email) return alert("Cette famille n'a pas d'adresse email renseignée.");
+    if (!window.confirm(`Renvoyer l'email d'inscription à ${email} ?`)) return;
+    setRenvoiEnCours(ins.id);
+    const res = await renvoyerEmailInscription(ins.id);
+    setRenvoiEnCours(null);
+    alert(res?.error ? `Échec : ${res.error}` : `Email renvoyé à ${res.email}.`);
+  };
+
   const handleDeleteEnfant = async (id) => {
     const res = await supprimerEnfantAdmin(id);
     if (res?.success) setFicheEnfantId(null);
@@ -1584,6 +1595,14 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                             <option key={s} value={s}>{s}</option>
                           ))}
                         </select>
+                        <button
+                          onClick={() => handleRenvoyerEmail(ins)}
+                          disabled={renvoiEnCours === ins.id}
+                          title="Renvoyer l'email d'inscription à la famille"
+                          style={{ background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: renvoiEnCours === ins.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, opacity: renvoiEnCours === ins.id ? 0.5 : 1 }}
+                        >
+                          <Mail size={14} />
+                        </button>
                         <button
                           onClick={() => handleDeleteInscription(ins)}
                           title="Supprimer l'inscription"
