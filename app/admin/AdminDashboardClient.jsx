@@ -26,7 +26,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
@@ -989,7 +989,9 @@ function InfoPill({ label, value }) {
 }
 
 /* ── MODALE : FICHE COMPLÈTE D'UN ENFANT ── */
-function ModalFicheEnfant({ enfant, onClose }) {
+function ModalFicheEnfant({ enfant, onClose, onDelete }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   if (!enfant) return null;
 
   const age = calculerAge(enfant.dateNaissance);
@@ -1102,6 +1104,33 @@ function ModalFicheEnfant({ enfant, onClose }) {
           <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>{enfant.client?.prenom} {enfant.client?.nom}</p>
           <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: C.gray }}><Mail size={14} /> {enfant.client?.email || "Non renseigné"}</span>
           <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: C.gray }}><Phone size={14} /> {enfant.client?.telephone || "Non renseigné"}</span>
+        </div>
+
+        {/* Zone de suppression */}
+        <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: `1px solid ${C.arctic}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <p style={{ fontSize: "12px", color: C.gray, flex: 1, minWidth: "200px" }}>
+            {inscriptions.length > 0
+              ? "Cet enfant a des inscriptions : supprimez-les d'abord pour pouvoir le supprimer."
+              : "La suppression est définitive et retire aussi ses documents."}
+          </p>
+          <button
+            onClick={async () => {
+              if (inscriptions.length > 0) return;
+              if (!window.confirm(`Supprimer définitivement la fiche de ${enfant.prenom} ${enfant.nom} ?`)) return;
+              setIsDeleting(true);
+              const res = await onDelete(enfant.id);
+              setIsDeleting(false);
+              if (res?.error) {
+                alert(res.error);
+              } else {
+                onClose();
+              }
+            }}
+            disabled={isDeleting || inscriptions.length > 0}
+            style={{ display: "flex", alignItems: "center", gap: "8px", background: inscriptions.length > 0 ? C.arctic : "#fee2e2", color: inscriptions.length > 0 ? C.gray : "#991b1b", border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: isDeleting || inscriptions.length > 0 ? "not-allowed" : "pointer", flexShrink: 0 }}
+          >
+            <Trash2 size={15} /> {isDeleting ? "Suppression..." : "Supprimer l'enfant"}
+          </button>
         </div>
       </div>
     </div>
@@ -1369,6 +1398,12 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     if (window.confirm(`Supprimer définitivement l'inscription de ${nom} ?`)) {
       await supprimerInscription(ins.id);
     }
+  };
+
+  const handleDeleteEnfant = async (id) => {
+    const res = await supprimerEnfantAdmin(id);
+    if (res?.success) setFicheEnfantId(null);
+    return res;
   };
 
   const handleDeleteAlbum = async (id) => {
@@ -1799,7 +1834,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} />}
-      {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} />}
+      {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
   );
 }
