@@ -1180,9 +1180,10 @@ function ModalQrCode({ sejour, onClose }) {
           cornersDotOptions: { type: "dot", color: C.saffron },
         });
         qrRef.current = qr;
-        if (containerRef.current) {
-          containerRef.current.innerHTML = "";
-          qr.append(containerRef.current);
+        const node = containerRef.current;
+        if (node) {
+          while (node.firstChild) node.removeChild(node.firstChild);
+          qr.append(node);
           setPret(true);
         }
       } catch (e) {
@@ -1191,6 +1192,10 @@ function ModalQrCode({ sejour, onClose }) {
     })();
     return () => {
       annule = true;
+      const node = containerRef.current;
+      if (node) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+      }
     };
   }, [url]);
 
@@ -1206,10 +1211,14 @@ function ModalQrCode({ sejour, onClose }) {
         <h2 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>QR code du séjour</h2>
         <p style={{ fontSize: "13px", color: C.gray, marginBottom: "20px" }}>{sejour.titre}</p>
 
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
-          <div ref={containerRef} style={{ width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {!pret && <span style={{ fontSize: "13px", color: C.gray }}>Génération...</span>}
-          </div>
+        <div style={{ position: "relative", width: "300px", height: "300px", margin: "0 auto 16px" }}>
+          {!pret && (
+            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", color: C.gray }}>
+              Génération...
+            </span>
+          )}
+          {/* Conteneur piloté par qr-code-styling : React ne doit jamais y rendre d'enfants */}
+          <div ref={containerRef} style={{ width: "300px", height: "300px" }} />
         </div>
 
         <p style={{ fontSize: "11px", color: C.gray, wordBreak: "break-all", marginBottom: "20px" }}>{url}</p>
