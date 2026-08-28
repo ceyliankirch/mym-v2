@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 export default function EncadrantsBanner() {
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
-  if (pathname?.startsWith("/inscription/totemia")) return null;
 
   return (
     <div className="bg-[#FFC801] py-3 px-4">

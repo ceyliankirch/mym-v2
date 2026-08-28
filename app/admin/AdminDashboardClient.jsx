@@ -21,7 +21,7 @@ import CommunicationSection from "./CommunicationSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
-import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour, getOuCreerLienTotemia } from "../actions/sejours";
+import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour, genererFormulaireTotemiaPdf } from "../actions/sejours";
 // ⚡ IMPORTS ANIMATEURS
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
@@ -1296,7 +1296,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia, onShowQr }) {
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -1348,7 +1348,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                 <td style={{ padding: "16px", display: "flex", gap: "6px", justifyContent: "flex-end", alignItems: "center" }}>
                   <div className="extra-actions" style={{ display: "flex", gap: "6px" }}>
                     <button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={15} /></button>
-                    <button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={15} /></button>
+                    <button title="Télécharger le formulaire Totemia (PDF)" onClick={() => onFormulaireTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={15} /></button>
                     <button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={15} /></button>
                   </div>
                   <button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={15} /></button>
@@ -1364,7 +1364,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia, onShowQr }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -1405,7 +1405,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             </div>
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
-              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button><button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={16} /></button></div>
+              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Télécharger le formulaire Totemia (PDF)" onClick={() => onFormulaireTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button><button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={16} /></button></div>
               <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
@@ -1510,16 +1510,19 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     if (copie) setSejourEnEdition(copie);
   };
 
-  const handleCopyTotemia = async (s) => {
-    const res = await getOuCreerLienTotemia(s.id);
+  const handleFormulaireTotemia = async (s) => {
+    const res = await genererFormulaireTotemiaPdf(s.id);
     if (res?.error) return alert(res.error);
-    const url = `${window.location.origin}/inscription/totemia/${res.token}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      alert(`Lien du formulaire Totemia copié :\n${url}`);
-    } catch {
-      window.prompt("Copiez le lien du formulaire Totemia :", url);
-    }
+    const bytes = Uint8Array.from(atob(res.base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = res.filename || "formulaire-totemia.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
 
   const handleChangerStatutInscription = async (id, statut) => {
@@ -1693,8 +1696,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} onShowQr={setQrSejour} /> :
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} onShowQr={setQrSejour} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} />}
             </>
           )}
 

@@ -16,7 +16,6 @@ function isGrandLogo(filename) {
 export default function PartnersMarquee({ logos = [] }) {
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
-  if (pathname?.startsWith("/inscription/totemia")) return null;
   if (!logos || logos.length === 0) return null;
 
   return (

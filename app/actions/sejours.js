@@ -1,10 +1,10 @@
 // app/actions/sejours.js
 "use server";
 
-import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
+import { generateTotemiaFormPdf } from "@/lib/totemiaFormPdf";
 
 // ➕ CRÉER
 export async function creerSejour(formData) {
@@ -81,7 +81,6 @@ export async function creerSejour(formData) {
       galerie: galerieUrls,
       lienPaiementCIC,
       lienPaiementCICValDeMarne,
-      totemiaToken: randomUUID(), // lien du formulaire Totemia généré d'office
     },
   });
 
@@ -266,7 +265,6 @@ export async function dupliquerSejour(id) {
       documentsRequis: source.documentsRequis,
       lienPaiementCIC: source.lienPaiementCIC,
       lienPaiementCICValDeMarne: source.lienPaiementCICValDeMarne,
-      totemiaToken: randomUUID(), // jeton propre à la copie (unique)
     },
   });
 
@@ -274,27 +272,25 @@ export async function dupliquerSejour(id) {
   return copie;
 }
 
-// 🔗 Récupère (ou génère au 1er appel) le jeton du formulaire Totemia d'un séjour.
-// Utilisé par le bouton "Copier le formulaire Totemia" du dashboard admin ; les
-// séjours créés avant l'ajout de cette fonctionnalité n'ont pas encore de jeton.
-export async function getOuCreerLienTotemia(sejourId) {
+// 📄 Génère le formulaire d'inscription "Totemia" en PDF (à imprimer / remplir à la main).
+// Renvoie le PDF encodé en base64 pour un téléchargement côté client.
+export async function genererFormulaireTotemiaPdf(sejourId) {
   if (!sejourId) return { error: "Séjour introuvable" };
 
   try {
-    const sejour = await prisma.sejour.findUnique({
-      where: { id: sejourId },
-      select: { totemiaToken: true },
-    });
+    const sejour = await prisma.sejour.findUnique({ where: { id: sejourId } });
     if (!sejour) return { error: "Séjour introuvable" };
 
-    if (sejour.totemiaToken) return { token: sejour.totemiaToken };
+    const buffer = await generateTotemiaFormPdf(sejour);
+    const slug = (sejour.titre || "sejour")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "sejour";
 
-    const token = randomUUID();
-    await prisma.sejour.update({ where: { id: sejourId }, data: { totemiaToken: token } });
-    revalidatePath("/admin");
-    return { token };
+    return { base64: buffer.toString("base64"), filename: `formulaire-totemia-${slug}.pdf` };
   } catch (error) {
-    console.error("Error generating Totemia link:", error);
-    return { error: "Erreur lors de la génération du lien Totemia" };
+    console.error("Error generating Totemia form PDF:", error);
+    return { error: "Erreur lors de la génération du PDF" };
   }
 }

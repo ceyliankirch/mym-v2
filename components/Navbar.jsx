@@ -132,9 +132,6 @@ export default function Navbar() {
   const userRole = session?.user?.role?.toUpperCase();
   const isAdmin = userRole === "ADMIN" || userRole === "ADMINISTRATEUR";
 
-  // Formulaire Totemia : page autonome, sans habillage du site
-  if (pathname?.startsWith("/inscription/totemia")) return null;
-
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 1000, fontFamily: "var(--font-montserrat), sans-serif" }}>
       
