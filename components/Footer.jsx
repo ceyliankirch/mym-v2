@@ -58,6 +58,7 @@ export default function Footer({ sejours = [] }) {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
+  if (pathname?.startsWith("/inscription/totemia")) return null;
 
   return (
     <footer className="footer-wrapper" style={{ background: C.teal, color: C.white, padding: "64px 32px 32px", fontFamily: "var(--font-montserrat), sans-serif" }}>
