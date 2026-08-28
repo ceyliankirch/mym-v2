@@ -11,7 +11,7 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight
+  Baby, Cake, Ruler, Footprints, Weight, QrCode
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -1143,6 +1143,90 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
   );
 }
 
+/* ── MODALE : QR CODE D'UN SÉJOUR ── */
+function ModalQrCode({ sejour, onClose }) {
+  const containerRef = useRef(null);
+  const qrRef = useRef(null);
+  const [pret, setPret] = useState(false);
+
+  const url =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/sejours-enfants-ados/${sejour.id}`
+      : "";
+
+  const slug = (sejour.titre || "sejour")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "sejour";
+
+  useEffect(() => {
+    let annule = false;
+    (async () => {
+      try {
+        const mod = await import("qr-code-styling");
+        if (annule) return;
+        const QRCodeStyling = mod.default;
+        const qr = new QRCodeStyling({
+          width: 300,
+          height: 300,
+          type: "svg",
+          data: url,
+          margin: 6,
+          qrOptions: { errorCorrectionLevel: "Q" },
+          dotsOptions: { type: "dots", color: C.teal },
+          backgroundOptions: { color: "#ffffff" },
+          cornersSquareOptions: { type: "dot", color: C.teal },
+          cornersDotOptions: { type: "dot", color: C.saffron },
+        });
+        qrRef.current = qr;
+        if (containerRef.current) {
+          containerRef.current.innerHTML = "";
+          qr.append(containerRef.current);
+          setPret(true);
+        }
+      } catch (e) {
+        console.error("Erreur génération QR code", e);
+      }
+    })();
+    return () => {
+      annule = true;
+    };
+  }, [url]);
+
+  const telecharger = (extension) => {
+    qrRef.current?.download({ name: `qr-${slug}`, extension });
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "420px", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)", textAlign: "center" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "20px", right: "20px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+
+        <h2 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>QR code du séjour</h2>
+        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "20px" }}>{sejour.titre}</p>
+
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+          <div ref={containerRef} style={{ width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {!pret && <span style={{ fontSize: "13px", color: C.gray }}>Génération...</span>}
+          </div>
+        </div>
+
+        <p style={{ fontSize: "11px", color: C.gray, wordBreak: "break-all", marginBottom: "20px" }}>{url}</p>
+
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+          <button onClick={() => telecharger("png")} disabled={!pret} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
+            Télécharger PNG
+          </button>
+          <button onClick={() => telecharger("svg")} disabled={!pret} style={{ background: C.arctic, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
+            SVG
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── TABLEAUX / GRILLES ── */
 function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   const recent = (data || []).slice(0, 8);
@@ -1201,7 +1285,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia }) {
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia, onShowQr }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -1254,6 +1338,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                   <div className="extra-actions" style={{ display: "flex", gap: "6px" }}>
                     <button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={15} /></button>
                     <button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={15} /></button>
+                    <button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={15} /></button>
                   </div>
                   <button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={15} /></button>
                   <button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={15} /></button>
@@ -1268,7 +1353,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia, onShowQr }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -1309,7 +1394,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             </div>
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
-              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button></div>
+              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button><button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={16} /></button></div>
               <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
@@ -1364,6 +1449,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
   const [animEnEdition, setAnimEnEdition] = useState(null);
   const [albumEnEdition, setAlbumEnEdition] = useState(null);
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
+  const [qrSejour, setQrSejour] = useState(null);
   const [ficheEnfantId, setFicheEnfantId] = useState(null);
   const [rechercheEnfant, setRechercheEnfant] = useState("");
   const [filtreSejourId, setFiltreSejourId] = useState("");
@@ -1595,8 +1681,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} /> :
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} onShowQr={setQrSejour} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} onShowQr={setQrSejour} />}
             </>
           )}
 
@@ -1856,6 +1942,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} />}
+      {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
   );
