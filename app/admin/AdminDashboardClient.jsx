@@ -20,7 +20,7 @@ import StatistiquesSection from "./StatistiquesSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
-import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour } from "../actions/sejours";
+import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour, getOuCreerLienTotemia } from "../actions/sejours";
 // ⚡ IMPORTS ANIMATEURS
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
@@ -1184,7 +1184,7 @@ function TableInscriptions({ data }) {
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits }) {
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -1236,7 +1236,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                 <td style={{ padding: "16px", display: "flex", gap: "6px", justifyContent: "flex-end", alignItems: "center" }}>
                   <div className="extra-actions" style={{ display: "flex", gap: "6px" }}>
                     <button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={15} /></button>
-                    <button title="Formulaire" style={actionBtnStyle}><ClipboardList size={15} /></button>
+                    <button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={15} /></button>
                   </div>
                   <button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={15} /></button>
                   <button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={15} /></button>
@@ -1251,7 +1251,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onCopyTotemia }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -1292,7 +1292,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             </div>
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
-              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Lien du formulaire" style={actionBtnStyle}><ClipboardList size={16} /></button></div>
+              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Copier le formulaire Totemia" onClick={() => onCopyTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button></div>
               <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
@@ -1394,6 +1394,18 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
   const handleDuplicate = async (id) => {
     const copie = await dupliquerSejour(id);
     if (copie) setSejourEnEdition(copie);
+  };
+
+  const handleCopyTotemia = async (s) => {
+    const res = await getOuCreerLienTotemia(s.id);
+    if (res?.error) return alert(res.error);
+    const url = `${window.location.origin}/inscription/totemia/${res.token}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      alert(`Lien du formulaire Totemia copié :\n${url}`);
+    } catch {
+      window.prompt("Copiez le lien du formulaire Totemia :", url);
+    }
   };
 
   const handleChangerStatutInscription = async (id, statut) => {
@@ -1566,8 +1578,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} /> :
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onCopyTotemia={handleCopyTotemia} />}
             </>
           )}
 

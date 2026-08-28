@@ -26,7 +26,27 @@ const C = {
   lightGray: "#e2e8f0",
 };
 
-export default function InscriptionClient({ sejour, enfants = [] }) {
+// Sections retirées de la version "Totemia" du formulaire (identifiées par le
+// libellé de leur titre de section). Tous les champs situés sous une de ces
+// sections, jusqu'à la section suivante, sont également retirés.
+const TOTEMIA_SECTIONS_EXCLUES = /assurance|paiement|tarif/i;
+
+function filtrerChampsTotemia(fields) {
+  const resultat = [];
+  let sectionExclue = false;
+  for (const field of fields) {
+    if (field.type === "section") {
+      sectionExclue = TOTEMIA_SECTIONS_EXCLUES.test(field.label || "");
+      if (!sectionExclue) resultat.push(field);
+      continue;
+    }
+    if (!sectionExclue) resultat.push(field);
+  }
+  return resultat;
+}
+
+export default function InscriptionClient({ sejour, enfants = [], variant = "standard" }) {
+  const isTotemia = variant === "totemia";
   const router = useRouter();
   const { data: session, status } = useSession();
   const isLoggedIn = !!session;
@@ -38,12 +58,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  let formFields = [];
+  let formFieldsBruts = [];
   try {
-    formFields = sejour.formSchema ? JSON.parse(sejour.formSchema) : [];
+    formFieldsBruts = sejour.formSchema ? JSON.parse(sejour.formSchema) : [];
   } catch (e) {
     console.error("Erreur de lecture du formulaire", e);
   }
+  const formFields = isTotemia ? filtrerChampsTotemia(formFieldsBruts) : formFieldsBruts;
 
   const [formData, setFormData] = useState({});
   const [newEnfantData, setNewEnfantData] = useState({
@@ -172,11 +193,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         sejour.id,
         enfantData,
         session.user.id,
-        {
-          moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
-          lienPaiement: lienPaiementActif,
-          montantTotal,
-        }
+        isTotemia
+          ? {}
+          : {
+              moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
+              lienPaiement: lienPaiementActif,
+              montantTotal,
+            }
       );
 
       if (result.error) {
@@ -549,7 +572,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
               )}
 
               <div style={styles.buttonContainer}>
-                {sejour.prix > 0 && (
+                {!isTotemia && sejour.prix > 0 && (
                   <div style={styles.priceSummary}>
                     <p style={styles.priceSummaryLabel}>Choisissez votre tarif</p>
 

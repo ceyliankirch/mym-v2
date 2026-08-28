@@ -1,6 +1,7 @@
 // app/actions/sejours.js
 "use server";
 
+import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
@@ -80,6 +81,7 @@ export async function creerSejour(formData) {
       galerie: galerieUrls,
       lienPaiementCIC,
       lienPaiementCICValDeMarne,
+      totemiaToken: randomUUID(), // lien du formulaire Totemia généré d'office
     },
   });
 
@@ -264,9 +266,35 @@ export async function dupliquerSejour(id) {
       documentsRequis: source.documentsRequis,
       lienPaiementCIC: source.lienPaiementCIC,
       lienPaiementCICValDeMarne: source.lienPaiementCICValDeMarne,
+      totemiaToken: randomUUID(), // jeton propre à la copie (unique)
     },
   });
 
   revalidatePath("/admin");
   return copie;
+}
+
+// 🔗 Récupère (ou génère au 1er appel) le jeton du formulaire Totemia d'un séjour.
+// Utilisé par le bouton "Copier le formulaire Totemia" du dashboard admin ; les
+// séjours créés avant l'ajout de cette fonctionnalité n'ont pas encore de jeton.
+export async function getOuCreerLienTotemia(sejourId) {
+  if (!sejourId) return { error: "Séjour introuvable" };
+
+  try {
+    const sejour = await prisma.sejour.findUnique({
+      where: { id: sejourId },
+      select: { totemiaToken: true },
+    });
+    if (!sejour) return { error: "Séjour introuvable" };
+
+    if (sejour.totemiaToken) return { token: sejour.totemiaToken };
+
+    const token = randomUUID();
+    await prisma.sejour.update({ where: { id: sejourId }, data: { totemiaToken: token } });
+    revalidatePath("/admin");
+    return { token };
+  } catch (error) {
+    console.error("Error generating Totemia link:", error);
+    return { error: "Erreur lors de la génération du lien Totemia" };
+  }
 }
