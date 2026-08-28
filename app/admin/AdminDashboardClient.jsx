@@ -11,12 +11,13 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight, QrCode
+  Baby, Cake, Ruler, Footprints, Weight, QrCode, Megaphone
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
 import StatistiquesSection from "./StatistiquesSection";
+import CommunicationSection from "./CommunicationSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -50,6 +51,7 @@ const MENU = [
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail },
+  { id: "communication", label: "Communication", icon: Megaphone },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
@@ -1604,6 +1606,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
               {activeTab === "clients" && "Répertoire Clients 👥"}
               {activeTab === "inscriptions" && "Inscriptions & Enfants 🧒"}
               {activeTab === "newsletter" && "Liste de diffusion 📧"}
+              {activeTab === "communication" && "Communication 📣"}
               {activeTab === "statistiques" && "Statistiques 📊"}
               {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
             </h1>
@@ -1901,6 +1904,8 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
           )}
 
           {activeTab === "newsletter" && <NewsletterSection />}
+
+          {activeTab === "communication" && <CommunicationSection sejours={sejours} />}
 
           {activeTab === "statistiques" && <StatistiquesSection />}
 

@@ -164,6 +164,24 @@ model Animateur {
   createdAt   DateTime @default(now())
 }
 
+// 📣 Bibliothèque "Communication" : flyers / posts générés + fichiers importés
+model FichierCommunication {
+  id          String   @id @default(cuid())
+  nom         String
+  type        String   @default("import") // "flyer" | "instagram" | "import"
+  url         String   // lien Vercel Blob
+  mimeType    String?
+  taille      Int?     // en octets
+  largeur     Int?
+  hauteur     Int?
+  sejourId    String?  // séjour source (pas de relation stricte : snapshot)
+  sejourTitre String?
+  createdAt   DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
 // --- TABLES POUR L'AUTHENTIFICATION (NextAuth) ---
 
 model User {

@@ -280,12 +280,14 @@ export default function InscriptionClient({ sejour, enfants = [], variant = "sta
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <Link
-          href={`/sejours-enfants-ados/${sejour.id}`}
-          style={styles.backLink}
-        >
-          <ArrowLeft size={16} /> Retour au séjour
-        </Link>
+        {!isTotemia && (
+          <Link
+            href={`/sejours-enfants-ados/${sejour.id}`}
+            style={styles.backLink}
+          >
+            <ArrowLeft size={16} /> Retour au séjour
+          </Link>
+        )}
 
         <div style={styles.card}>
           <h1 style={styles.title}>Inscription : {sejour.titre}</h1>
