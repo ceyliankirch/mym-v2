@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Megaphone, Image as ImageIcon, Upload, Download, Trash2, Loader,
-  Instagram, FileText, X,
+  Instagram, FileText, Calendar, Clock, MapPin, Users, Phone, Mail,
 } from "lucide-react";
 import {
   listerFichiersCommunication, enregistrerVisuelCommunication,
@@ -13,6 +13,7 @@ const C = {
   yellow: "#FFC801",
   saffron: "#FF9932",
   teal: "#114C5A",
+  green: "#059669",
   lilac: "#EFDEF9",
   arctic: "#F1F6F4",
   white: "#ffffff",
@@ -23,48 +24,36 @@ const C = {
 const btnPrimary = { background: C.yellow, color: C.teal, border: "none", padding: "10px 18px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" };
 const btnGhost = { background: C.arctic, color: C.teal, border: "none", padding: "10px 18px", borderRadius: "10px", fontWeight: 700, fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" };
 
+const CONTACT_TEL = "+33 6 98 96 50 02";
+const CONTACT_EMAIL = "mym.makeyourmoment@gmail.com";
+const TAGLINE = "Encadré par des enseignants & des éducateurs diplômés";
+const LOGO_SRC = "/logo-mym-couleur.png";
+const FONT_STACK = "var(--font-montserrat), 'Segoe UI', system-ui, sans-serif";
+
 const FORMATS = {
-  flyer: { label: "Flyer", w: 1080, h: 1350, icon: FileText },
+  flyer: { label: "Flyer", w: 1080, h: 1530, icon: FileText },
   instagram: { label: "Post Instagram", w: 1080, h: 1080, icon: Instagram },
 };
 
-const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-function fmtDates(debut, fin) {
-  if (!debut) return "Dates à venir";
+const MOIS_LONG = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+function datesLongues(debut, fin) {
+  if (!debut) return "À définir";
   const d = new Date(debut);
-  if (Number.isNaN(d.getTime())) return "Dates à venir";
-  if (!fin) return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
+  if (Number.isNaN(d.getTime())) return "À définir";
+  if (!fin) return `Le ${d.getDate()} ${MOIS_LONG[d.getMonth()]}`;
   const f = new Date(fin);
   if (d.getMonth() === f.getMonth() && d.getFullYear() === f.getFullYear())
-    return `${d.getDate()} – ${f.getDate()} ${MOIS[f.getMonth()]} ${f.getFullYear()}`;
-  return `${d.getDate()} ${MOIS[d.getMonth()]} – ${f.getDate()} ${MOIS[f.getMonth()]} ${f.getFullYear()}`;
+    return `Du ${d.getDate()} au ${f.getDate()} ${MOIS_LONG[f.getMonth()]}`;
+  return `Du ${d.getDate()} ${MOIS_LONG[d.getMonth()]} au ${f.getDate()} ${MOIS_LONG[f.getMonth()]}`;
 }
 
-function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 99) {
-  const words = (text || "").trim().split(/\s+/).filter(Boolean);
-  const lines = [];
-  let line = "";
-  for (const w of words) {
-    const test = line ? `${line} ${w}` : w;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = w;
-    } else {
-      line = test;
-    }
-  }
-  if (line) lines.push(line);
-  const shown = lines.slice(0, maxLines);
-  if (lines.length > maxLines && shown.length) shown[shown.length - 1] += "…";
-  shown.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
-  return y + shown.length * lineHeight;
-}
-
-function drawCover(ctx, img, w, h) {
-  const r = Math.max(w / img.width, h / img.height);
-  const nw = img.width * r;
-  const nh = img.height * r;
-  ctx.drawImage(img, (w - nw) / 2, (h - nh) / 2, nw, nh);
+function nbJours(debut, fin) {
+  if (!debut || !fin) return null;
+  const d = new Date(debut);
+  const f = new Date(fin);
+  if (Number.isNaN(d.getTime()) || Number.isNaN(f.getTime())) return null;
+  return Math.max(1, Math.round((f - d) / 86400000) + 1);
 }
 
 function formatTaille(o) {
@@ -74,147 +63,207 @@ function formatTaille(o) {
   return `${(o / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
+/* ─── ÉLÉMENTS DE GABARIT ────────────────────────────────────────────── */
+function InfoItem({ icon: Icon, label, value }) {
+  return (
+    <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+      <div style={{ width: 58, height: 58, borderRadius: 16, background: "#FFF3D6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Icon size={25} color={C.teal} strokeWidth={2.4} />
+      </div>
+      <div style={{ paddingTop: 3, minWidth: 0 }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: 1 }}>{label}</div>
+        <div style={{ fontSize: 25, fontWeight: 800, color: C.teal, marginTop: 2, lineHeight: 1.15 }}>{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function PrixBloc({ sejour, compact }) {
+  return (
+    <div>
+      <div style={{ fontSize: 19, fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: 1 }}>Prix par personne</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 8, flexWrap: "wrap" }}>
+        <div style={{ fontSize: compact ? 74 : 84, fontWeight: 900, color: C.teal, lineHeight: 1 }}>{sejour.prix || 0}€</div>
+        {sejour.prix > 100 && (
+          <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: "12px 26px" }}>
+            <div style={{ fontSize: compact ? 52 : 60, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
+            <div style={{ position: "absolute", top: -16, right: -16, width: 38, height: 38, borderRadius: "50%", background: "#fff", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 21, fontWeight: 800, color: C.gray }}>?</div>
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 19, color: C.gray, marginTop: 10 }}>Paiement jusqu'à 8× sans frais possible</div>
+    </div>
+  );
+}
+
+function Fond({ sejour, sansImage, w, h }) {
+  if (sejour.imageUrl && !sansImage) {
+    return <img src={sejour.imageUrl} crossOrigin="anonymous" alt="" style={{ position: "absolute", top: 0, left: 0, width: w, height: h, objectFit: "cover" }} />;
+  }
+  return <div style={{ position: "absolute", top: 0, left: 0, width: w, height: h, background: `linear-gradient(135deg, ${C.teal}, ${C.saffron})` }} />;
+}
+
+function FlyerTemplate({ sejour, qrDataUrl, sansImage, innerRef }) {
+  const { w, h } = FORMATS.flyer;
+  const duree = nbJours(sejour.dateDebut, sejour.dateFin);
+  return (
+    <div ref={innerRef} style={{ position: "relative", width: w, height: h, background: "#fff", overflow: "hidden", fontFamily: FONT_STACK }}>
+      <Fond sejour={sejour} sansImage={sansImage} w={w} h={620} />
+
+      <h1 style={{ position: "absolute", top: 400, left: 60, width: 820, margin: 0, color: "#fff", fontSize: 100, fontWeight: 800, lineHeight: 1.02, letterSpacing: -1, textShadow: "0 6px 30px rgba(0,0,0,0.4)" }}>
+        {sejour.titre}
+      </h1>
+
+      <div style={{ position: "absolute", top: 600, left: 0, height: 92, width: "86%", background: C.yellow, borderTopRightRadius: 56, borderBottomRightRadius: 56, display: "flex", alignItems: "center", padding: "0 62px" }}>
+        <span style={{ color: C.teal, fontWeight: 800, fontSize: 26, textTransform: "uppercase", letterSpacing: 1, lineHeight: 1.2 }}>{TAGLINE}</span>
+      </div>
+
+      <div style={{ position: "absolute", top: 664, left: 0, right: 0, bottom: 0, background: "#fff", borderTopLeftRadius: 52, borderTopRightRadius: 52, boxShadow: "0 -18px 40px rgba(17,76,90,0.07)" }} />
+
+      <img src={LOGO_SRC} crossOrigin="anonymous" alt="" style={{ position: "absolute", top: 690, left: "50%", transform: "translateX(-50%)", width: 120, height: 120, objectFit: "contain" }} />
+
+      <div style={{ position: "absolute", top: 850, left: 60, right: 60 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", rowGap: 26, columnGap: 18 }}>
+          <InfoItem icon={Calendar} label="Dates" value={datesLongues(sejour.dateDebut, sejour.dateFin)} />
+          <InfoItem icon={Clock} label="Durée" value={duree ? `${duree} jours` : "—"} />
+          <InfoItem icon={MapPin} label="Lieu" value={sejour.lieu || "—"} />
+          <InfoItem icon={Users} label="Âge" value={sejour.tranchesAge || "—"} />
+          <InfoItem icon={Users} label="Places" value={`${sejour.places || 0} place(s) max.`} />
+        </div>
+
+        <div style={{ maxWidth: 600, marginTop: 46 }}>
+          <PrixBloc sejour={sejour} />
+          <div style={{ height: 1, background: "#e8edf0", margin: "32px 0" }} />
+          <div style={{ fontSize: 19, fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Une question ?</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, fontWeight: 700, color: C.teal, marginBottom: 8 }}>
+            <Phone size={21} color={C.saffron} strokeWidth={2.4} /> {CONTACT_TEL}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, fontWeight: 700, color: C.teal }}>
+            <Mail size={21} color={C.saffron} strokeWidth={2.4} /> {CONTACT_EMAIL}
+          </div>
+        </div>
+      </div>
+
+      {qrDataUrl && <img src={qrDataUrl} alt="" style={{ position: "absolute", right: 56, bottom: 130, width: 290, height: 290 }} />}
+    </div>
+  );
+}
+
+function InstagramTemplate({ sejour, qrDataUrl, sansImage, innerRef }) {
+  const { w, h } = FORMATS.instagram;
+  const duree = nbJours(sejour.dateDebut, sejour.dateFin);
+  return (
+    <div ref={innerRef} style={{ position: "relative", width: w, height: h, background: "#fff", overflow: "hidden", fontFamily: FONT_STACK }}>
+      <Fond sejour={sejour} sansImage={sansImage} w={w} h={430} />
+
+      <h1 style={{ position: "absolute", top: 250, left: 56, width: 760, margin: 0, color: "#fff", fontSize: 88, fontWeight: 800, lineHeight: 1.02, letterSpacing: -1, textShadow: "0 6px 30px rgba(0,0,0,0.4)" }}>
+        {sejour.titre}
+      </h1>
+
+      <div style={{ position: "absolute", top: 410, left: 0, height: 82, width: "86%", background: C.yellow, borderTopRightRadius: 48, borderBottomRightRadius: 48, display: "flex", alignItems: "center", padding: "0 56px" }}>
+        <span style={{ color: C.teal, fontWeight: 800, fontSize: 23, textTransform: "uppercase", letterSpacing: 1, lineHeight: 1.2 }}>{TAGLINE}</span>
+      </div>
+
+      <div style={{ position: "absolute", top: 470, left: 0, right: 0, bottom: 0, background: "#fff", borderTopLeftRadius: 48, borderTopRightRadius: 48 }} />
+
+      <img src={LOGO_SRC} crossOrigin="anonymous" alt="" style={{ position: "absolute", top: 492, left: "50%", transform: "translateX(-50%)", width: 96, height: 96, objectFit: "contain" }} />
+
+      <div style={{ position: "absolute", top: 620, left: 56, right: 56 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", rowGap: 22, columnGap: 16 }}>
+          <InfoItem icon={Calendar} label="Dates" value={datesLongues(sejour.dateDebut, sejour.dateFin)} />
+          <InfoItem icon={Clock} label="Durée" value={duree ? `${duree} jours` : "—"} />
+          <InfoItem icon={MapPin} label="Lieu" value={sejour.lieu || "—"} />
+          <InfoItem icon={Users} label="Âge" value={sejour.tranchesAge || "—"} />
+          <InfoItem icon={Users} label="Places" value={`${sejour.places || 0} pl. max.`} />
+        </div>
+        <div style={{ maxWidth: 620, marginTop: 34 }}>
+          <PrixBloc sejour={sejour} compact />
+        </div>
+      </div>
+
+      {qrDataUrl && <img src={qrDataUrl} alt="" style={{ position: "absolute", right: 48, bottom: 48, width: 220, height: 220 }} />}
+    </div>
+  );
+}
+
 /* ─── GÉNÉRATEUR ─────────────────────────────────────────────────────── */
 function Generateur({ sejours, onSaved }) {
-  const canvasRef = useRef(null);
+  const captureRef = useRef(null);
   const [sejourId, setSejourId] = useState(sejours?.[0]?.id || "");
   const [format, setFormat] = useState("flyer");
   const [sansImage, setSansImage] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
   const sejour = (sejours || []).find((s) => s.id === sejourId);
+  const { w, h } = FORMATS[format];
 
-  const dessiner = useCallback(() => {
-    const canvas = canvasRef.current;
-    const sejour = (sejours || []).find((s) => s.id === sejourId);
-    if (!canvas || !sejour) return;
-    const { w, h } = FORMATS[format];
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-
-    const render = (img) => {
-      // Fond
-      if (img) {
-        drawCover(ctx, img, w, h);
-      } else {
-        const g = ctx.createLinearGradient(0, 0, w, h);
-        g.addColorStop(0, C.teal);
-        g.addColorStop(1, C.saffron);
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, w, h);
-      }
-
-      // Voile dégradé pour la lisibilité
-      const veil = ctx.createLinearGradient(0, 0, 0, h);
-      veil.addColorStop(0, "rgba(17,76,90,0.25)");
-      veil.addColorStop(0.45, "rgba(17,76,90,0.15)");
-      veil.addColorStop(1, "rgba(17,76,90,0.92)");
-      ctx.fillStyle = veil;
-      ctx.fillRect(0, 0, w, h);
-
-      const pad = 72;
-      ctx.textBaseline = "alphabetic";
-
-      // Kicker
-      ctx.fillStyle = C.yellow;
-      ctx.font = "800 30px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-      ctx.fillText("MAKE YOUR MOMENT", pad, pad + 24);
-
-      // Bandeau du bas
-      const bandH = 150;
-      ctx.fillStyle = C.yellow;
-      ctx.fillRect(0, h - bandH, w, bandH);
-      ctx.fillStyle = C.teal;
-      ctx.font = "900 34px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-      ctx.fillText("INSCRIPTIONS OUVERTES", pad, h - bandH + 62);
-      ctx.font = "700 26px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-      const prixTxt = sejour.prix > 0 ? `À partir de ${sejour.prix} €` : "Nous contacter";
-      ctx.fillText(`${prixTxt}  ·  make-your-moment.com`, pad, h - bandH + 104);
-
-      // Bloc texte (au-dessus du bandeau)
-      let y = h - bandH - 60;
-
-      const infos = [fmtDates(sejour.dateDebut, sejour.dateFin), sejour.lieu, sejour.tranchesAge ? `${sejour.tranchesAge}` : null]
-        .filter(Boolean)
-        .join("   •   ");
-      ctx.fillStyle = "rgba(255,255,255,0.92)";
-      ctx.font = "700 28px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-      ctx.fillText(infos, pad, y);
-      y -= 24;
-
-      // Description courte (remontée)
-      const desc = (sejour.shortDescription || "").replace(/<[^>]+>/g, " ").trim();
-      if (desc) {
-        ctx.font = "500 30px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-        ctx.fillStyle = "rgba(255,255,255,0.9)";
-        // on mesure la hauteur puis on dessine
-        const lignesDesc = Math.min(2, Math.ceil(ctx.measureText(desc).width / (w - pad * 2)) || 1);
-        y -= lignesDesc * 40 + 18;
-        wrapText(ctx, desc, pad, y, w - pad * 2, 40, 2);
-        y -= 24;
-      }
-
-      // Titre
-      ctx.fillStyle = C.white;
-      const titleSize = format === "instagram" ? 66 : 76;
-      ctx.font = `900 ${titleSize}px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`;
-      const titleLines = Math.min(3, Math.ceil(ctx.measureText(sejour.titre || "").width / (w - pad * 2)) || 1);
-      y -= titleLines * (titleSize + 8);
-      wrapText(ctx, sejour.titre || "Séjour", pad, y, w - pad * 2, titleSize + 8, 3);
-    };
-
-    if (sejour.imageUrl && !sansImage) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => render(img);
-      img.onerror = () => render(null);
-      img.src = sejour.imageUrl;
-    } else {
-      render(null);
-    }
-  }, [sejours, sejourId, format, sansImage]);
-
+  // QR code (points ronds, coins orange) régénéré à chaque changement de séjour
   useEffect(() => {
-    dessiner();
-  }, [dessiner]);
+    let annule = false;
+    (async () => {
+      if (!sejourId || typeof window === "undefined") return;
+      try {
+        const mod = await import("qr-code-styling");
+        const QRCodeStyling = mod.default;
+        const qr = new QRCodeStyling({
+          width: 600, height: 600, type: "canvas",
+          data: `${window.location.origin}/sejours-enfants-ados/${sejourId}`,
+          margin: 0,
+          qrOptions: { errorCorrectionLevel: "Q" },
+          dotsOptions: { type: "dots", color: C.teal },
+          backgroundOptions: { color: "#ffffff" },
+          cornersSquareOptions: { type: "dot", color: C.teal },
+          cornersDotOptions: { type: "dot", color: C.saffron },
+        });
+        const blob = await qr.getRawData("png");
+        if (annule || !blob) return;
+        const url = await new Promise((res) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.readAsDataURL(blob);
+        });
+        if (!annule) setQrDataUrl(url);
+      } catch (e) {
+        console.error("Erreur QR", e);
+      }
+    })();
+    return () => { annule = true; };
+  }, [sejourId]);
 
   const handleSave = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas || !sejour) return;
+    if (!captureRef.current || !sejour) return;
     setSaving(true);
     setMsg("");
-    let dataUrl;
     try {
-      dataUrl = canvas.toDataURL("image/png");
-    } catch (e) {
+      const mod = await import("html-to-image");
+      // laisse le temps aux images (fond, logo, QR) de se charger
+      await new Promise((r) => setTimeout(r, 250));
+      const dataUrl = await mod.toPng(captureRef.current, {
+        pixelRatio: 1.5,
+        cacheBust: true,
+        backgroundColor: "#ffffff",
+        width: w,
+        height: h,
+      });
+      const res = await enregistrerVisuelCommunication({
+        dataUrl,
+        type: format,
+        nom: `${FORMATS[format].label} — ${sejour.titre}`,
+        sejourId: sejour.id,
+        sejourTitre: sejour.titre,
+        largeur: Math.round(w * 1.5),
+        hauteur: Math.round(h * 1.5),
+      });
       setSaving(false);
-      if (!sansImage) {
-        setSansImage(true);
-        setMsg("La photo de couverture bloque l'export (CORS). Version sans photo générée — cliquez à nouveau pour enregistrer.");
-      } else {
-        setMsg("Impossible d'exporter l'image.");
-      }
-      return;
-    }
-
-    const { w, h } = FORMATS[format];
-    const res = await enregistrerVisuelCommunication({
-      dataUrl,
-      type: format,
-      nom: `${FORMATS[format].label} — ${sejour.titre}`,
-      sejourId: sejour.id,
-      sejourTitre: sejour.titre,
-      largeur: w,
-      hauteur: h,
-    });
-    setSaving(false);
-    if (res.error) {
-      setMsg(`Erreur : ${res.error}`);
-    } else {
-      setMsg("Visuel enregistré dans la bibliothèque ✅");
-      onSaved();
+      if (res.error) setMsg(`Erreur : ${res.error}`);
+      else { setMsg("Visuel enregistré dans la bibliothèque ✅"); onSaved(); }
+    } catch (e) {
+      console.error(e);
+      setSaving(false);
+      setMsg("Erreur lors de la génération de l'image.");
     }
   };
 
@@ -225,6 +274,9 @@ function Generateur({ sejours, onSaved }) {
       </div>
     );
   }
+
+  const previewW = format === "instagram" ? 340 : 300;
+  const scale = previewW / w;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", alignItems: "flex-start" }}>
@@ -260,11 +312,10 @@ function Generateur({ sejours, onSaved }) {
           ))}
         </div>
 
-        {sansImage && (
-          <p style={{ fontSize: "12px", color: C.saffron, fontWeight: 700, marginBottom: "12px" }}>
-            Version sans photo de fond (fond dégradé).
-          </p>
-        )}
+        <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", fontWeight: 700, color: C.teal, cursor: "pointer", marginBottom: "16px" }}>
+          <input type="checkbox" checked={sansImage} onChange={(e) => setSansImage(e.target.checked)} />
+          Sans photo de couverture (fond dégradé)
+        </label>
 
         <button onClick={handleSave} disabled={saving} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: saving ? 0.6 : 1 }}>
           {saving ? <Loader size={15} className="animate-spin" /> : <Download size={15} />}
@@ -274,15 +325,18 @@ function Generateur({ sejours, onSaved }) {
         {msg && <p style={{ fontSize: "12px", fontWeight: 700, color: msg.startsWith("Erreur") ? "#991b1b" : C.teal, marginTop: "12px" }}>{msg}</p>}
 
         <p style={{ fontSize: "11px", color: C.gray, marginTop: "16px", lineHeight: 1.5 }}>
-          Version 1 : gabarit unique à partir du titre, des dates, du lieu, des âges, du prix et de la photo de couverture. Les gabarits seront enrichis ensuite.
+          Version 1 du gabarit. Si la photo de couverture n'apparaît pas à l'enregistrement, cochez « sans photo » ou réessayez.
         </p>
       </div>
 
-      <div style={{ flex: "0 1 340px", background: C.arctic, borderRadius: "20px", padding: "16px", display: "flex", justifyContent: "center" }}>
-        <canvas
-          ref={canvasRef}
-          style={{ width: "100%", maxWidth: format === "instagram" ? "320px" : "300px", height: "auto", borderRadius: "12px", boxShadow: "0 8px 24px rgba(17,76,90,0.15)", display: "block" }}
-        />
+      <div style={{ flex: "0 0 auto", background: C.arctic, borderRadius: "20px", padding: "16px" }}>
+        <div style={{ width: previewW, height: h * scale, overflow: "hidden", borderRadius: "12px", boxShadow: "0 8px 24px rgba(17,76,90,0.15)" }}>
+          <div style={{ transform: `scale(${scale})`, transformOrigin: "top left", width: w }}>
+            {format === "flyer"
+              ? <FlyerTemplate sejour={sejour} qrDataUrl={qrDataUrl} sansImage={sansImage} innerRef={captureRef} />
+              : <InstagramTemplate sejour={sejour} qrDataUrl={qrDataUrl} sansImage={sansImage} innerRef={captureRef} />}
+          </div>
+        </div>
       </div>
     </div>
   );
