@@ -1144,7 +1144,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
 }
 
 /* ── TABLEAUX / GRILLES ── */
-function TableInscriptions({ data }) {
+function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   const recent = (data || []).slice(0, 8);
   return (
     <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
@@ -1161,19 +1161,36 @@ function TableInscriptions({ data }) {
           </tr></thead>
           <tbody>
             {recent.map(b => {
-              const colors = STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
               const dotColor = b.enfant?.sexe === "M" ? "#3b82f6" : b.enfant?.sexe === "F" ? "#ec4899" : C.gray;
               return (
                 <tr key={b.id} style={{ borderBottom: `1px solid ${C.arctic}` }}>
                   <td style={{ padding: "16px", fontSize: "13px", fontWeight: 700, color: C.teal }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                    <button
+                      onClick={() => b.enfant?.id && onFicheEnfant(b.enfant.id)}
+                      title="Voir la fiche complète de l'enfant"
+                      style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "13px", fontWeight: 700, color: C.teal }}
+                    >
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
                       {b.enfant?.prenom} {b.enfant?.nom}
-                    </span>
+                    </button>
                   </td>
                   <td style={{ padding: "16px", fontSize: "13px" }}>{b.sejour?.titre}</td>
                   <td style={{ padding: "16px", fontSize: "13px", color: C.gray }}>{new Date(b.createdAt).toLocaleDateString("fr-FR")}</td>
-                  <td style={{ padding: "16px" }}><span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{b.statut}</span></td>
+                  <td style={{ padding: "16px" }}>
+                    <select
+                      value={b.statut}
+                      onChange={(e) => onChangerStatut(b.id, e.target.value)}
+                      style={{
+                        background: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                        color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                        padding: "6px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                      }}
+                    >
+                      {STATUTS_INSCRIPTION.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </td>
                 </tr>
               );
             })}
@@ -1530,7 +1547,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                   )}
                 </div>
 
-                <TableInscriptions data={inscriptions} />
+                <TableInscriptions data={inscriptions} onFicheEnfant={setFicheEnfantId} onChangerStatut={handleChangerStatutInscription} />
               </div>
             </>
           )}
