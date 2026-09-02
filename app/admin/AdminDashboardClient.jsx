@@ -382,7 +382,14 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
   const defaultAge = sejourData === "nouveau-senior" ? "Séniors" : "";
   
   const [tab, setTab] = useState("infos");
-  const [prixOptions, setPrixOptions] = useState(isEditing && sejourData.prix ? [sejourData.prix] : [0]);
+  const [tarifs, setTarifs] = useState(() => {
+    const principal = { montant: isEditing && sejourData.prix != null ? String(sejourData.prix) : "", label: isEditing ? (sejourData.prixLabel || "") : "" };
+    const supp = (isEditing && Array.isArray(sejourData.tarifs) ? sejourData.tarifs : []).map((t) => ({ montant: String(t?.montant ?? ""), label: t?.label || "" }));
+    return [principal, ...supp];
+  });
+  const updateTarif = (i, key, val) => setTarifs((prev) => prev.map((t, idx) => (idx === i ? { ...t, [key]: val } : t)));
+  const addTarif = () => setTarifs((prev) => [...prev, { montant: "", label: "" }]);
+  const removeTarif = (i) => setTarifs((prev) => prev.filter((_, idx) => idx !== i));
   const [compressedImage, setCompressedImage] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [documentsRequis, setDocumentsRequis] = useState(
@@ -489,6 +496,15 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           formData.set("formSchema", JSON.stringify(formFields));
           formData.set("documentsRequis", JSON.stringify(documentsRequis));
 
+          // ⚡ Tarification : 1er = tarif principal (prix + prixLabel), suivants = tarifs[]
+          formData.set("prix", tarifs[0]?.montant || "0");
+          formData.set("prixLabel", tarifs[0]?.label || "");
+          formData.set("tarifsSupp", JSON.stringify(
+            tarifs.slice(1)
+              .filter((t) => t.montant !== "" && !Number.isNaN(parseFloat(t.montant)))
+              .map((t) => ({ label: (t.label || "").trim() || "Tarif", montant: parseFloat(t.montant) }))
+          ));
+
           if (isEditing) { await modifierSejour(sejourData.id, formData); }
           else { await creerSejour(formData); }
           
@@ -508,14 +524,25 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
                <input type="number" name="places" defaultValue={isEditing ? sejourData.places : ""} placeholder="Nb. de places" style={{ width: "140px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Tarification (€)</label>
-              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                {prixOptions.map((p, idx) => (
-                  <input key={idx} type="number" name="prix" defaultValue={p} placeholder="Prix" style={{ width: "120px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
-                ))}
-                <button type="button" onClick={() => setPrixOptions([...prixOptions, 0])} style={{ background: "none", border: `1px dashed ${C.gray}`, color: C.gray, padding: "0 16px", borderRadius: "12px", fontSize: "12px", cursor: "pointer" }}>+ Prix</button>
-              </div>
+              {tarifs.map((t, i) => (
+                <div key={i} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <input type="number" min="0" value={t.montant} onChange={(e) => updateTarif(i, "montant", e.target.value)} placeholder="Prix" style={{ width: "110px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+                  <input type="text" value={t.label} onChange={(e) => updateTarif(i, "label", e.target.value)} placeholder={i === 0 ? "Libellé du tarif principal (optionnel)" : "Libellé (ex: Chambre simple)"} style={{ flex: 1, minWidth: "140px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+                  {i > 0 && (
+                    <button type="button" onClick={() => removeTarif(i)} title="Retirer ce tarif" style={{ background: "#fee2e2", border: "none", width: "36px", height: "36px", borderRadius: "10px", cursor: "pointer", color: "#991b1b", flexShrink: 0, fontSize: "16px", fontWeight: 800 }}>×</button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={addTarif} style={{ alignSelf: "flex-start", background: "none", border: `1px dashed ${C.gray}`, color: C.gray, padding: "10px 16px", borderRadius: "12px", fontSize: "12px", cursor: "pointer" }}>+ Ajouter un tarif</button>
+              <p style={{ fontSize: "11px", color: C.gray }}>Le 1er tarif est le prix principal affiché. Les suivants apparaissent en dessous avec leur libellé (comme le tarif Val-de-Marne).</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxWidth: "260px" }}>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Montant assurance annulation (€)</label>
+              <input type="number" min="0" name="montantAssurance" defaultValue={isEditing ? (sejourData.montantAssurance ?? 30) : 30} style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+              <p style={{ fontSize: "11px", color: C.gray }}>Ajouté au total si la famille choisit un champ « assurance » = Oui dans le formulaire.</p>
             </div>
             
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>

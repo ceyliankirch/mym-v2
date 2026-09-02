@@ -26,8 +26,22 @@ export async function creerSejour(formData) {
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
   const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
 
-  const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
-  const prixPrincipal = prixArray[0] || 0;
+  const prixPrincipal = parseFloat(formData.get("prix")) || 0;
+  const prixLabel = (formData.get("prixLabel") || "").toString().trim() || null;
+  const montantAssurance = formData.get("montantAssurance") != null && formData.get("montantAssurance") !== ""
+    ? parseFloat(formData.get("montantAssurance"))
+    : 30;
+
+  // Tarifs supplémentaires (libellé + montant), injectés en JSON par le formulaire admin
+  let tarifs = [];
+  try {
+    const brut = JSON.parse(formData.get("tarifsSupp") || "[]");
+    tarifs = (Array.isArray(brut) ? brut : [])
+      .map((t) => ({ label: String(t.label || "").trim(), montant: parseFloat(t.montant) }))
+      .filter((t) => t.label && !Number.isNaN(t.montant));
+  } catch (e) {
+    console.error("Erreur parsing tarifs", e);
+  }
 
   // Gestion de l'image de couverture
   const imageFile = formData.get("image");
@@ -70,6 +84,9 @@ export async function creerSejour(formData) {
       places,
       tranchesAge,
       prix: prixPrincipal,
+      prixLabel,
+      tarifs,
+      montantAssurance: Number.isNaN(montantAssurance) ? 30 : montantAssurance,
       imageUrl,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
@@ -111,8 +128,22 @@ export async function modifierSejour(id, formData) {
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
   const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
 
-  const prixArray = formData.getAll("prix").map(p => parseFloat(p)).filter(p => !isNaN(p));
-  const prixPrincipal = prixArray[0] || 0;
+  const prixPrincipal = parseFloat(formData.get("prix")) || 0;
+  const prixLabel = (formData.get("prixLabel") || "").toString().trim() || null;
+  const montantAssurance = formData.get("montantAssurance") != null && formData.get("montantAssurance") !== ""
+    ? parseFloat(formData.get("montantAssurance"))
+    : 30;
+
+  // Tarifs supplémentaires (libellé + montant), injectés en JSON par le formulaire admin
+  let tarifs = [];
+  try {
+    const brut = JSON.parse(formData.get("tarifsSupp") || "[]");
+    tarifs = (Array.isArray(brut) ? brut : [])
+      .map((t) => ({ label: String(t.label || "").trim(), montant: parseFloat(t.montant) }))
+      .filter((t) => t.label && !Number.isNaN(t.montant));
+  } catch (e) {
+    console.error("Erreur parsing tarifs", e);
+  }
 
   // Gestion de l'image de couverture
   const imageFile = formData.get("image");
@@ -171,6 +202,9 @@ export async function modifierSejour(id, formData) {
       places,
       tranchesAge,
       prix: prixPrincipal,
+      prixLabel,
+      tarifs,
+      montantAssurance: Number.isNaN(montantAssurance) ? 30 : montantAssurance,
       imageUrl,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
@@ -253,6 +287,9 @@ export async function dupliquerSejour(id) {
       imageUrl: source.imageUrl,
       places: source.places,
       prix: source.prix,
+      prixLabel: source.prixLabel,
+      tarifs: source.tarifs ?? undefined,
+      montantAssurance: source.montantAssurance ?? 30,
       statut: "Brouillon", // ⚡ Toujours en brouillon le temps de vérifier la copie
       enAvant: false,
       tranchesAge: source.tranchesAge,

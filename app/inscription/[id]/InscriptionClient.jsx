@@ -63,7 +63,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   };
 
   // 💶 Détecte si la famille a souscrit à l'assurance annulation (champ "select"
-  // dont le libellé évoque l'assurance) pour ajouter les 30€ au prix affiché.
+  // dont le libellé évoque l'assurance) pour ajouter son montant au prix affiché.
+  const montantAssurance = sejour.montantAssurance ?? 30;
   const champAssurance = formFields.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("assurance")
   );
@@ -134,7 +135,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const montantTotal = Math.max(
     0,
     sejour.prix +
-      (assuranceSouscrite ? 30 : 0) -
+      (assuranceSouscrite ? montantAssurance : 0) -
       (tarifSelectionne === "val_de_marne" ? 100 : 0) +
       (paiementParCarteBleue ? 5 : 0)
   );
@@ -555,8 +556,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
                     {assuranceSouscrite && (
                       <div style={styles.priceRow}>
-                        <span>Assurance annulation (MAIF)</span>
-                        <span>+ 30,00 €</span>
+                        <span>Assurance annulation</span>
+                        <span>+ {montantAssurance.toFixed(2).replace(".", ",")} €</span>
                       </div>
                     )}
 
@@ -570,7 +571,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       >
                         <p style={styles.priceBoxLabel}>Prix de base</p>
                         <p style={styles.priceBoxAmount}>
-                          {(sejour.prix + (assuranceSouscrite ? 30 : 0)).toFixed(2)} €
+                          {(sejour.prix + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
                         </p>
                       </div>
                       <div
@@ -589,11 +590,26 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                           Habitant du Val-de-Marne
                         </p>
                         <p style={styles.priceBoxAmount}>
-                          {Math.max(0, sejour.prix + (assuranceSouscrite ? 30 : 0) - 100).toFixed(2)} €
+                          {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - 100).toFixed(2)} €
                         </p>
                         {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
                       </div>
                     </div>
+
+                    {(sejour.prixLabel || (Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0)) && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px", margin: "4px 0 12px" }}>
+                        {sejour.prixLabel && (
+                          <p style={{ fontSize: "13px", color: C.gray }}>
+                            <strong style={{ color: C.teal }}>{sejour.prix} €</strong> — {sejour.prixLabel}
+                          </p>
+                        )}
+                        {(Array.isArray(sejour.tarifs) ? sejour.tarifs : []).map((t, i) => (
+                          <p key={i} style={{ fontSize: "13px", color: C.gray }}>
+                            <strong style={{ color: C.teal }}>{t.montant} €</strong> — {t.label}
+                          </p>
+                        ))}
+                      </div>
+                    )}
 
                     {showCodeInput && !promoAppliquee && (
                       <div style={styles.promoBanner} onClick={(e) => e.stopPropagation()}>

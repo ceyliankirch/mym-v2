@@ -180,7 +180,15 @@ function StickySidebar({ sejour }) {
             </div>
           )}
         </div>
-        <p style={{fontSize:"11px",color:"#8aa",marginTop:"4px"}}>Paiement jusqu'à 8× sans frais possible</p>
+        {(sejour.prixLabel || (Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0)) && (
+          <div style={{marginTop:"10px",display:"flex",flexDirection:"column",gap:"3px",alignItems:"center"}}>
+            {sejour.prixLabel && <p style={{fontSize:"12px",fontWeight:700,color:C.teal,margin:0}}><span style={{fontWeight:900}}>{sejour.prix}€</span> — {sejour.prixLabel}</p>}
+            {(Array.isArray(sejour.tarifs) ? sejour.tarifs : []).map((t, i) => (
+              <p key={i} style={{fontSize:"12px",fontWeight:700,color:C.teal,margin:0}}><span style={{fontWeight:900}}>{t.montant}€</span> — {t.label}</p>
+            ))}
+          </div>
+        )}
+        <p style={{fontSize:"11px",color:"#8aa",marginTop:"8px"}}>Paiement jusqu'à 8× sans frais possible</p>
       </div>
 
       <div style={{display:"flex",flexDirection:"column",gap:"12px",marginBottom:"20px"}}>

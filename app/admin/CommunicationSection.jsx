@@ -92,6 +92,15 @@ function PrixBloc({ sejour, compact }) {
           </div>
         )}
       </div>
+      {Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0 && (
+        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+          {sejour.tarifs.map((t, i) => (
+            <div key={i} style={{ fontSize: 21, fontWeight: 800, color: C.teal }}>
+              {t.montant}€ <span style={{ fontSize: 18, fontWeight: 700, color: C.gray }}>— {t.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <div style={{ fontSize: 19, color: C.gray, marginTop: 10 }}>Paiement jusqu'à 8× sans frais possible</div>
     </div>
   );

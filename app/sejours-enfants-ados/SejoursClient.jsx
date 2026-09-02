@@ -177,6 +177,14 @@ function SejourCard({ s, idx }) {
               <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
             </div>
           )}
+          {(s.prixLabel || (Array.isArray(s.tarifs) && s.tarifs.length > 0)) && (
+            <div style={{display:"flex",flexDirection:"column",gap:"2px",alignItems:"flex-end",marginTop:"6px"}}>
+              {s.prixLabel && <span style={{fontSize:"10px",fontWeight:700,color:"#8aa"}}>{s.prix}€ — {s.prixLabel}</span>}
+              {(Array.isArray(s.tarifs) ? s.tarifs : []).map((t, i) => (
+                <span key={i} style={{fontSize:"10px",fontWeight:700,color:C.teal}}>{t.montant}€ — {t.label}</span>
+              ))}
+            </div>
+          )}
 
           <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"6px", marginBottom:"16px", flex: 1}}>
              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
