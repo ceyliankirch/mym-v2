@@ -172,20 +172,32 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     setIsSubmitting(true);
 
     try {
-      if (!selectedEnfantId && !showNewEnfantForm) {
-        setError("Veuillez sélectionner ou créer un enfant");
-        setIsSubmitting(false);
-        return;
-      }
+      let enfantData;
 
-      const enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
-
-      if (!showNewEnfantForm) {
-        const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
-        if (!selectedEnfant) {
-          setError("Enfant sélectionné introuvable");
+      if (estSenior) {
+        // Séjour séniors : le participant = le titulaire du compte, pas de "Sélection de l'enfant"
+        enfantData = enfants.length > 0
+          ? { id: enfants[0].id }
+          : {
+              prenom: (session.user?.prenom || session.user?.name || "Participant").trim(),
+              nom: (session.user?.nom || "").trim() || "—",
+            };
+      } else {
+        if (!selectedEnfantId && !showNewEnfantForm) {
+          setError("Veuillez sélectionner ou créer un enfant");
           setIsSubmitting(false);
           return;
+        }
+
+        enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
+
+        if (!showNewEnfantForm) {
+          const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
+          if (!selectedEnfant) {
+            setError("Enfant sélectionné introuvable");
+            setIsSubmitting(false);
+            return;
+          }
         }
       }
 
@@ -340,6 +352,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 </div>
               )}
 
+              {!estSenior && (
               <div style={styles.section}>
                 <h3 style={styles.sectionTitle}>Sélection de l'enfant</h3>
                 {!showNewEnfantForm ? (
@@ -482,6 +495,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                   </>
                 )}
               </div>
+              )}
 
               {champsAffiches.length > 0 && (
                 <>
