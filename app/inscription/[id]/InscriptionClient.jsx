@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -45,22 +45,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     console.error("Erreur de lecture du formulaire", e);
   }
 
-  // Sur un séjour séniors, on retire la section "Informations du représentant légal"
-  // (et ses champs) : le participant renseigne directement "Mes informations".
-  const champsAffiches = (() => {
-    if (!/senior|sénior/i.test(sejour.tranchesAge || "")) return formFields;
-    const out = [];
-    let dansRL = false;
-    for (const f of formFields) {
-      if (f.type === "section") {
-        dansRL = /repr[ée]sentant l[ée]gal/i.test(f.label || "");
-        if (!dansRL) out.push(f);
-        continue;
-      }
-      if (!dansRL) out.push(f);
-    }
-    return out;
-  })();
+  const champsAffiches = formFields;
 
   const [formData, setFormData] = useState({});
   const [newEnfantData, setNewEnfantData] = useState({
@@ -75,29 +60,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     informationsComplementaires: "",
   });
 
-  // 👵 Séjour séniors : le participant s'inscrit pour lui-même ("Mes informations")
+  // 👵 Séjour séniors : pas de tarif réduit "Habitant du Val-de-Marne"
   const estSenior = /senior|sénior/i.test(sejour.tranchesAge || "");
-  const [mesInfos, setMesInfos] = useState({
-    prenom: session?.user?.prenom || "",
-    nom: session?.user?.nom || "",
-    dateNaissance: "",
-    email: session?.user?.email || "",
-    telephone: session?.user?.telephone || "",
-    telephone2: "",
-  });
-  const handleMesInfosChange = (key, value) => setMesInfos((prev) => ({ ...prev, [key]: value }));
-
-  useEffect(() => {
-    if (!estSenior || !session?.user) return;
-    setMesInfos((prev) => ({
-      ...prev,
-      prenom: prev.prenom || session.user.prenom || "",
-      nom: prev.nom || session.user.nom || "",
-      email: prev.email || session.user.email || "",
-      telephone: prev.telephone || session.user.telephone || "",
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, estSenior]);
 
   const handleChange = (fieldId, value) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
@@ -129,6 +93,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
   // 🏷️ Tarif sélectionné : "standard" ou "val_de_marne" (-100€, débloqué par un code)
   const [tarifSelectionne, setTarifSelectionne] = useState("standard");
+  // 🛏️ Quand le séjour propose plusieurs tarifs libellés, la famille en choisit un
+  const [tarifChoisiIdx, setTarifChoisiIdx] = useState(tarifsListe.length === 1 ? 0 : null);
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
   const [promoErreur, setPromoErreur] = useState("");
@@ -181,12 +147,18 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
       ? sejour.lienPaiementCICValDeMarne
       : sejour.lienPaiementCIC;
 
-  // 💶 Montant total à régler (base + assurance - réduction + frais bancaires carte)
+  // 💶 Montant de base : tarif choisi si le séjour en propose plusieurs, sinon le prix
+  // du séjour (avec la réduction Val-de-Marne éventuelle).
+  const montantBase =
+    tarifsListe.length > 0
+      ? (tarifChoisiIdx != null ? tarifsListe[tarifChoisiIdx].montant : sejour.prix)
+      : sejour.prix - (tarifSelectionne === "val_de_marne" ? 100 : 0);
+
+  // 💶 Montant total à régler (base + assurance + frais bancaires carte)
   const montantTotal = Math.max(
     0,
-    sejour.prix +
-      (assuranceSouscrite ? montantAssurance : 0) -
-      (tarifSelectionne === "val_de_marne" ? 100 : 0) +
+    montantBase +
+      (assuranceSouscrite ? montantAssurance : 0) +
       (paiementParCarteBleue ? 5 : 0)
   );
 
@@ -200,46 +172,27 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     setIsSubmitting(true);
 
     try {
-      let enfantData;
-      let contactInfo;
+      if (!selectedEnfantId && !showNewEnfantForm) {
+        setError("Veuillez sélectionner ou créer un enfant");
+        setIsSubmitting(false);
+        return;
+      }
 
-      if (estSenior) {
-        if (!mesInfos.prenom.trim() || !mesInfos.nom.trim()) {
-          setError("Merci de renseigner votre nom et prénom");
+      const enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
+
+      if (!showNewEnfantForm) {
+        const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
+        if (!selectedEnfant) {
+          setError("Enfant sélectionné introuvable");
           setIsSubmitting(false);
           return;
         }
-        enfantData = {
-          prenom: mesInfos.prenom.trim(),
-          nom: mesInfos.nom.trim(),
-          dateNaissance: mesInfos.dateNaissance || null,
-          informationsComplementaires: mesInfos.telephone2.trim()
-            ? `Contact en cas de besoin : ${mesInfos.telephone2.trim()}`
-            : null,
-        };
-        contactInfo = {
-          prenom: mesInfos.prenom.trim(),
-          nom: mesInfos.nom.trim(),
-          email: mesInfos.email.trim() || undefined,
-          telephone: mesInfos.telephone.trim() || undefined,
-        };
-      } else {
-        if (!selectedEnfantId && !showNewEnfantForm) {
-          setError("Veuillez sélectionner ou créer un enfant");
-          setIsSubmitting(false);
-          return;
-        }
+      }
 
-        enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
-
-        if (!showNewEnfantForm) {
-          const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
-          if (!selectedEnfant) {
-            setError("Enfant sélectionné introuvable");
-            setIsSubmitting(false);
-            return;
-          }
-        }
+      if (tarifsListe.length > 0 && tarifChoisiIdx == null) {
+        setError("Veuillez sélectionner un tarif");
+        setIsSubmitting(false);
+        return;
       }
 
       const result = await creerInscription(
@@ -250,8 +203,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
           moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
           lienPaiement: lienPaiementActif,
           montantTotal,
-        },
-        contactInfo
+        }
       );
 
       if (result.error) {
@@ -388,41 +340,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 </div>
               )}
 
-              {estSenior && (
-                <div style={styles.section}>
-                  <h3 style={styles.sectionTitle}>Mes informations</h3>
-                  <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
-                      <label style={styles.label}>Prénom *</label>
-                      <input type="text" value={mesInfos.prenom} onChange={(e) => handleMesInfosChange("prenom", e.target.value)} required style={styles.input} />
-                    </div>
-                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
-                      <label style={styles.label}>Nom *</label>
-                      <input type="text" value={mesInfos.nom} onChange={(e) => handleMesInfosChange("nom", e.target.value)} required style={styles.input} />
-                    </div>
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Date de naissance *</label>
-                    <input type="date" value={mesInfos.dateNaissance} onChange={(e) => handleMesInfosChange("dateNaissance", e.target.value)} required style={styles.input} />
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Adresse e-mail *</label>
-                    <input type="email" value={mesInfos.email} onChange={(e) => handleMesInfosChange("email", e.target.value)} required style={styles.input} />
-                  </div>
-                  <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
-                      <label style={styles.label}>Téléphone *</label>
-                      <input type="tel" value={mesInfos.telephone} onChange={(e) => handleMesInfosChange("telephone", e.target.value)} required style={styles.input} />
-                    </div>
-                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
-                      <label style={styles.label}>Téléphone / contact en cas de besoin</label>
-                      <input type="tel" value={mesInfos.telephone2} onChange={(e) => handleMesInfosChange("telephone2", e.target.value)} style={styles.input} />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {!estSenior && (
               <div style={styles.section}>
                 <h3 style={styles.sectionTitle}>Sélection de l'enfant</h3>
                 {!showNewEnfantForm ? (
@@ -565,7 +482,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                   </>
                 )}
               </div>
-              )}
 
               {champsAffiches.length > 0 && (
                 <>
@@ -671,6 +587,37 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       </div>
                     )}
 
+                    {tarifsListe.length > 0 ? (
+                      <>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", margin: "4px 0 6px" }}>
+                          {tarifsListe.map((l, i) => {
+                            const actif = tarifChoisiIdx === i;
+                            return (
+                              <div
+                                key={i}
+                                onClick={() => setTarifChoisiIdx(i)}
+                                style={{
+                                  ...styles.priceBox,
+                                  flex: "1 1 150px",
+                                  ...(actif ? styles.priceBoxActive : {}),
+                                }}
+                              >
+                                <p style={styles.priceBoxLabel}>{l.label || "Tarif"}</p>
+                                <p style={styles.priceBoxAmount}>
+                                  {(l.montant + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {tarifChoisiIdx == null && (
+                          <p style={{ fontSize: "12px", fontWeight: 700, color: C.saffron, margin: "2px 0 8px" }}>
+                            Merci de sélectionner un tarif.
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                    <>
                     <div style={styles.priceBoxesRow}>
                       <div
                         onClick={handleClicPrixBase}
@@ -707,17 +654,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         </div>
                       )}
                     </div>
-
-                    {tarifsListe.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", margin: "6px 0 14px" }}>
-                        {tarifsListe.map((l, i) => (
-                          <div key={i} style={{ background: C.arctic, border: `1px solid ${C.lightGray}`, borderRadius: "14px", padding: "12px 18px", minWidth: "150px" }}>
-                            <p style={{ fontSize: "22px", fontWeight: 900, color: C.teal, margin: 0, lineHeight: 1.1 }}>{l.montant} €</p>
-                            <p style={{ fontSize: "12px", fontWeight: 700, color: C.gray, margin: "2px 0 0" }}>{l.label || "Tarif"}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
 
                     {showCodeInput && !promoAppliquee && (
                       <div style={styles.promoBanner} onClick={(e) => e.stopPropagation()}>
@@ -778,6 +714,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       <p style={styles.promoSuccess}>
                         <CheckCircle2 size={14} /> Code appliqué : le tarif Val-de-Marne est débloqué
                       </p>
+                    )}
+                    </>
                     )}
 
                     {paiementParCarteBleue && (

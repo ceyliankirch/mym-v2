@@ -200,8 +200,7 @@ export async function creerInscription(
   sejourId,
   enfantData,
   userId,
-  paiementInfo = {},
-  contactInfo = null
+  paiementInfo = {}
 ) {
   if (!sejourId || !enfantData || !userId) {
     return { error: "Données incomplètes" };
@@ -219,26 +218,9 @@ export async function creerInscription(
       return { error: "Séjour introuvable" };
     }
 
-    let client = await getOrCreateClientForUser(userId);
+    const client = await getOrCreateClientForUser(userId);
     if (!client) {
       return { error: "Impossible de créer/retrouver le client" };
-    }
-
-    // Séjour séniors : le participant renseigne ses propres coordonnées ("Mes informations")
-    if (contactInfo && (contactInfo.email || contactInfo.telephone || contactInfo.nom)) {
-      try {
-        client = await prisma.client.update({
-          where: { id: client.id },
-          data: {
-            ...(contactInfo.nom ? { nom: contactInfo.nom } : {}),
-            ...(contactInfo.prenom ? { prenom: contactInfo.prenom } : {}),
-            ...(contactInfo.email ? { email: contactInfo.email } : {}),
-            ...(contactInfo.telephone ? { telephone: contactInfo.telephone } : {}),
-          },
-        });
-      } catch (e) {
-        console.error("Erreur mise à jour coordonnées client (séniors)", e);
-      }
     }
 
     let enfant;
