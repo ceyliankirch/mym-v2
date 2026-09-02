@@ -59,7 +59,8 @@ const FRANCE_COORDS = {
   "chapelle": { top: "52%", left: "82%" }, 
   "elancourt": { top: "32%", left: "51%" },
   "deauville": { top: "25%", left: "42%" },
-  "vieux-boucau": { top: "78%", left: "28%" }, 
+  "vieux-boucau": { top: "78%", left: "28%" },
+  "bruges": { top: "4%", left: "59%" }, // Belgique : épinglé au bord nord de la carte
   "default": { top: "50%", left: "50%" }
 };
 
