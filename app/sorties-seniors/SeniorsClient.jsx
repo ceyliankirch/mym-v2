@@ -75,11 +75,11 @@ function Btn({ children, outline }) {
   );
 }
 
-function SortieCard({ s }) {
+function SortieCard({ s, passe = false }) {
   const [hovered, setHovered] = useState(false);
-  
+
   // Création de tags dynamiques basés sur la BDD
-  const tags = [s.saison || "Toute l'année", "Convivialité"];
+  const tags = passe ? ["Sortie passée"] : [s.saison || "Toute l'année", "Convivialité"];
 
   return (
     <Link href={`/sorties-seniors/${s.id}`} style={{ textDecoration: "none" }}
@@ -91,8 +91,8 @@ function SortieCard({ s }) {
           transition: "all .3s ease", display: "flex", flexDirection: "column", height: "100%"
         }}>
         {/* Image */}
-        <div style={{ position: "relative", height: "220px", overflow: "hidden" }}>
-          <img src={s.imageUrl || "https://images.unsplash.com/photo-1549989476-69a92fa57c36?w=800"} alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease" }} />
+        <div style={{ position: "relative", height: passe ? "170px" : "220px", overflow: "hidden" }}>
+          <img src={s.imageUrl || "https://images.unsplash.com/photo-1549989476-69a92fa57c36?w=800"} alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease", filter: passe ? "grayscale(60%)" : "none" }} />
           <div style={{ position: "absolute", top: "12px", left: "12px", background: "rgba(255,255,255,0.95)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "6px 12px", display: "flex", alignItems: "center", gap: "6px" }}>
             <Calendar size={12} style={{ color: C.teal }} />
             <span style={{ fontSize: "11px", fontWeight: 800, color: C.teal }}>{formatSejourDates(s.dateDebut, s.dateFin)}</span>
@@ -120,13 +120,15 @@ function SortieCard({ s }) {
             <span style={{ fontSize: "13px", fontWeight: 600, color: "#8aaa" }}>{getDuree(s.dateDebut, s.dateFin)}</span>
           </div>
           
-          <div style={{
-            width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal,
-            fontSize: "12px", fontWeight: 800, borderRadius: "12px", padding: "12px", border: "none",
-            transition: "all .2s", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"
-          }}>
-            Découvrir le programme <ArrowRight size={13} />
-          </div>
+          {!passe && (
+            <div style={{
+              width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal,
+              fontSize: "12px", fontWeight: 800, borderRadius: "12px", padding: "12px", border: "none",
+              transition: "all .2s", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"
+            }}>
+              Découvrir le programme <ArrowRight size={13} />
+            </div>
+          )}
         </div>
       </div>
     </Link>
@@ -142,11 +144,20 @@ export default function SeniorsClient({ sejoursFromDb }) {
   }, []);
 
   // On filtre pour ne garder que les séjours Publiés ET réservés aux Séniors
-  const sortiesSeniors = sejoursFromDb?.filter(s => {
+  const toutesSorties = sejoursFromDb?.filter(s => {
     if (s.statut !== "Publié") return false;
     const ageStr = (s.tranchesAge || "").toLowerCase();
     return ageStr.includes("senior") || ageStr.includes("sénior");
   }) || [];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const estPassee = (s) => {
+    const ref = s.dateFin || s.dateDebut;
+    return ref && new Date(ref) < today;
+  };
+  const prochaines = toutesSorties.filter(s => !estPassee(s));
+  const passees = toutesSorties.filter(estPassee).reverse(); // les plus récentes d'abord
 
   return (
     <div style={{ fontFamily: "'Montserrat',sans-serif", background: C.arctic, color: C.teal, overflowX: "hidden" }}>
@@ -218,8 +229,8 @@ export default function SeniorsClient({ sejoursFromDb }) {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
-            {sortiesSeniors.length > 0 ? (
-              sortiesSeniors.map((s) => (
+            {prochaines.length > 0 ? (
+              prochaines.map((s) => (
                 <SortieCard key={s.id} s={s} />
               ))
             ) : (
@@ -229,6 +240,17 @@ export default function SeniorsClient({ sejoursFromDb }) {
               </div>
             )}
           </div>
+
+          {passees.length > 0 && (
+            <div style={{ marginTop: "72px" }}>
+              <h2 style={{ fontWeight: 900, fontSize: "clamp(1.5rem, 2.5vw, 2rem)", color: C.teal, letterSpacing: "-1px", marginBottom: "32px" }}>Sorties passées</h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
+                {passees.map((s) => (
+                  <SortieCard key={s.id} s={s} passe />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

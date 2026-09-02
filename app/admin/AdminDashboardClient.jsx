@@ -1357,8 +1357,10 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                     <button onClick={() => onToggleEnAvant(s.id, !isEnAvant)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", opacity: 1 }} title={isEnAvant ? "Retirer" : "Mettre à l'affiche"}><Star size={18} color={isEnAvant ? C.yellow : C.gray} fill={isEnAvant ? C.yellow : "transparent"} /></button>
                   </div>
                 </td>
-                <td style={{ padding: "16px", fontSize: "13px", fontWeight: 800, color: C.teal, filter: isPublie ? "none" : "grayscale(100%)" }}>
-                  {s.titre}
+                <td style={{ padding: "16px", fontSize: "13px", fontWeight: 800, filter: isPublie ? "none" : "grayscale(100%)" }}>
+                  <a href={`/sejours-enfants-ados/${s.id}`} target="_blank" rel="noreferrer" title="Ouvrir la page du séjour (même en brouillon)" style={{ color: C.teal, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }} onMouseOver={e => e.currentTarget.style.textDecoration = "underline"} onMouseOut={e => e.currentTarget.style.textDecoration = "none"}>
+                    {s.titre} <ExternalLink size={11} style={{ opacity: 0.5, flexShrink: 0 }} />
+                  </a>
                   <div style={{ fontSize: "11px", fontWeight: 600, color: C.gray, marginTop: "4px" }}>{s.saison}</div>
                 </td>
                 <td style={{ padding: "16px", fontSize: "13px", color: C.gray, fontWeight: 600 }}>{formatAge(s.tranchesAge)}</td>
@@ -1417,8 +1419,12 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             
             <div style={{ padding: "16px", flex: 1, filter: isPublie ? "none" : "grayscale(100%)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: 800, color: C.teal, lineHeight: 1.3 }}>{s.titre}</h3>
-                <span style={{ background: C.arctic, padding: "4px 8px", borderRadius: "6px", fontSize: "10px", fontWeight: 800, color: C.teal, textTransform: "uppercase" }}>{s.saison}</span>
+                <h3 style={{ fontSize: "16px", fontWeight: 800, lineHeight: 1.3 }}>
+                  <a href={`/sejours-enfants-ados/${s.id}`} target="_blank" rel="noreferrer" title="Ouvrir la page du séjour (même en brouillon)" style={{ color: C.teal, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }} onMouseOver={e => e.currentTarget.style.textDecoration = "underline"} onMouseOut={e => e.currentTarget.style.textDecoration = "none"}>
+                    {s.titre} <ExternalLink size={11} style={{ opacity: 0.5, flexShrink: 0 }} />
+                  </a>
+                </h3>
+                <span style={{ background: C.arctic, padding: "4px 8px", borderRadius: "6px", fontSize: "10px", fontWeight: 800, color: C.teal, textTransform: "uppercase", flexShrink: 0 }}>{s.saison}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "12px", color: C.gray, fontWeight: 600 }}><CalendarDays size={16} color={C.saffron} /> {formatSejourDates(s.dateDebut, s.dateFin)}</div>
