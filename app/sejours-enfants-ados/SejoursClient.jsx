@@ -170,21 +170,30 @@ function SejourCard({ s, idx }) {
             <h3 style={{fontSize:"14px",fontWeight:800,color:C.teal,lineHeight:1.3,margin:0}}>{s.titre}</h3>
             <span style={{fontSize:"20px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
           </div>
-          {!s.isPast && s.prix > 0 && (
+          {!s.isPast && s.prix > 0 && !/senior|sénior/i.test(s.tranchesAge || "") && (
             <div style={{position:"relative",alignSelf:"flex-end",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 16px",marginTop:"8px",textAlign:"center"}}>
               <ReductionTooltip />
               <p style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1.1}}>{Math.max(0, s.prix - 100)}€</p>
               <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
             </div>
           )}
-          {(s.prixLabel || (Array.isArray(s.tarifs) && s.tarifs.length > 0)) && (
-            <div style={{display:"flex",flexDirection:"column",gap:"2px",alignItems:"flex-end",marginTop:"6px"}}>
-              {s.prixLabel && <span style={{fontSize:"10px",fontWeight:700,color:"#8aa"}}>{s.prix}€ — {s.prixLabel}</span>}
-              {(Array.isArray(s.tarifs) ? s.tarifs : []).map((t, i) => (
-                <span key={i} style={{fontSize:"10px",fontWeight:700,color:C.teal}}>{t.montant}€ — {t.label}</span>
-              ))}
-            </div>
-          )}
+          {(() => {
+            const arr = (Array.isArray(s.tarifs) ? s.tarifs : []).filter(t => t && t.montant != null && t.label);
+            const principalLabel = s.prixLabel || arr.find(t => Number(t.montant) === Number(s.prix))?.label || "";
+            const autres = arr.filter(t => Number(t.montant) !== Number(s.prix));
+            const lignes = [{ montant: s.prix, label: principalLabel }, ...autres];
+            if (!(lignes.length > 1 && lignes.some(l => l.label))) return null;
+            return (
+              <div style={{display:"flex",flexWrap:"wrap",gap:"6px",marginTop:"8px",justifyContent:"flex-end"}}>
+                {lignes.map((l,i) => (
+                  <div key={i} style={{background:"#f1f6f4",border:`1px solid ${C.arctic || "#e2e8f0"}`,borderRadius:"10px",padding:"5px 10px",textAlign:"center"}}>
+                    <span style={{fontSize:"13px",fontWeight:900,color:C.teal}}>{l.montant}€</span>
+                    <span style={{fontSize:"9px",fontWeight:700,color:"#8aa",display:"block",marginTop:"1px"}}>{l.label || "Tarif"}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
 
           <div style={{display:"flex", flexDirection:"column", gap:"6px", marginTop:"6px", marginBottom:"16px", flex: 1}}>
              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>

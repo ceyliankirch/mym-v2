@@ -170,24 +170,46 @@ function StickySidebar({ sejour }) {
     <div style={{position:"sticky",top:"90px",background:C.white,borderRadius:"24px",padding:"28px",boxShadow:"0 8px 40px rgba(17,76,90,0.12)"}}>
       <div style={{marginBottom:"20px",paddingBottom:"20px",borderBottom:`1px solid ${C.arctic}`}}>
         <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"1px"}}>Prix par personne</p>
-        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"16px",flexWrap:"wrap"}}>
-          <span style={{fontSize:"2.8rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px"}}>{sejour.prix || 0}€</span>
-          {sejour.prix > 0 && (
-            <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
-              <ReductionTooltip />
-              <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
-              <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
-            </div>
-          )}
-        </div>
-        {(sejour.prixLabel || (Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0)) && (
-          <div style={{marginTop:"10px",display:"flex",flexDirection:"column",gap:"3px",alignItems:"center"}}>
-            {sejour.prixLabel && <p style={{fontSize:"12px",fontWeight:700,color:C.teal,margin:0}}><span style={{fontWeight:900}}>{sejour.prix}€</span> — {sejour.prixLabel}</p>}
-            {(Array.isArray(sejour.tarifs) ? sejour.tarifs : []).map((t, i) => (
-              <p key={i} style={{fontSize:"12px",fontWeight:700,color:C.teal,margin:0}}><span style={{fontWeight:900}}>{t.montant}€</span> — {t.label}</p>
-            ))}
-          </div>
-        )}
+        {(() => {
+          const estSenior = /senior|sénior/i.test(sejour.tranchesAge || "");
+          const arr = (Array.isArray(sejour.tarifs) ? sejour.tarifs : []).filter(t => t && t.montant != null && t.label);
+          const principalLabel = sejour.prixLabel || arr.find(t => Number(t.montant) === Number(sejour.prix))?.label || "";
+          const autres = arr.filter(t => Number(t.montant) !== Number(sejour.prix));
+          const lignes = [{ montant: sejour.prix, label: principalLabel }, ...autres];
+          const modeBoxes = lignes.length > 1 && lignes.some(l => l.label);
+          return (
+            <>
+              {modeBoxes ? (
+                <div style={{display:"flex",flexWrap:"wrap",gap:"10px",justifyContent:"center"}}>
+                  {lignes.map((l,i) => (
+                    <div key={i} style={{background:"#f1f6f4",border:`1px solid ${C.arctic}`,borderRadius:"14px",padding:"10px 18px",textAlign:"center"}}>
+                      <p style={{fontSize:"1.9rem",fontWeight:900,color:C.teal,lineHeight:1,margin:0}}>{l.montant}€</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#8aa",margin:"3px 0 0"}}>{l.label || "Tarif"}</p>
+                    </div>
+                  ))}
+                  {!estSenior && sejour.prix > 0 && (
+                    <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"14px",padding:"10px 18px",textAlign:"center"}}>
+                      <ReductionTooltip />
+                      <p style={{fontSize:"1.9rem",fontWeight:900,color:"#059669",lineHeight:1,margin:0}}>{Math.max(0, sejour.prix - 100)}€</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",margin:"3px 0 0"}}>Habitant du Val-de-Marne</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"16px",flexWrap:"wrap"}}>
+                  <span style={{fontSize:"2.8rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px"}}>{sejour.prix || 0}€</span>
+                  {!estSenior && sejour.prix > 0 && (
+                    <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
+                      <ReductionTooltip />
+                      <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          );
+        })()}
         <p style={{fontSize:"11px",color:"#8aa",marginTop:"8px"}}>Paiement jusqu'à 8× sans frais possible</p>
       </div>
 

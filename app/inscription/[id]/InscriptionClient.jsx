@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -45,6 +45,23 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     console.error("Erreur de lecture du formulaire", e);
   }
 
+  // Sur un séjour séniors, on retire la section "Informations du représentant légal"
+  // (et ses champs) : le participant renseigne directement "Mes informations".
+  const champsAffiches = (() => {
+    if (!/senior|sénior/i.test(sejour.tranchesAge || "")) return formFields;
+    const out = [];
+    let dansRL = false;
+    for (const f of formFields) {
+      if (f.type === "section") {
+        dansRL = /repr[ée]sentant l[ée]gal/i.test(f.label || "");
+        if (!dansRL) out.push(f);
+        continue;
+      }
+      if (!dansRL) out.push(f);
+    }
+    return out;
+  })();
+
   const [formData, setFormData] = useState({});
   const [newEnfantData, setNewEnfantData] = useState({
     prenom: "",
@@ -58,21 +75,54 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     informationsComplementaires: "",
   });
 
+  // 👵 Séjour séniors : le participant s'inscrit pour lui-même ("Mes informations")
+  const estSenior = /senior|sénior/i.test(sejour.tranchesAge || "");
+  const [mesInfos, setMesInfos] = useState({
+    prenom: session?.user?.prenom || "",
+    nom: session?.user?.nom || "",
+    dateNaissance: "",
+    email: session?.user?.email || "",
+    telephone: session?.user?.telephone || "",
+    telephone2: "",
+  });
+  const handleMesInfosChange = (key, value) => setMesInfos((prev) => ({ ...prev, [key]: value }));
+
+  useEffect(() => {
+    if (!estSenior || !session?.user) return;
+    setMesInfos((prev) => ({
+      ...prev,
+      prenom: prev.prenom || session.user.prenom || "",
+      nom: prev.nom || session.user.nom || "",
+      email: prev.email || session.user.email || "",
+      telephone: prev.telephone || session.user.telephone || "",
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, estSenior]);
+
   const handleChange = (fieldId, value) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
   };
 
+  // 🏷️ Tarifs libellés (chambre double / simple…) : principal + suppléments
+  const tarifsListe = (() => {
+    const arr = (Array.isArray(sejour.tarifs) ? sejour.tarifs : []).filter((t) => t && t.montant != null && t.label);
+    const principalLabel = sejour.prixLabel || arr.find((t) => Number(t.montant) === Number(sejour.prix))?.label || "";
+    const autres = arr.filter((t) => Number(t.montant) !== Number(sejour.prix));
+    const lignes = [{ montant: sejour.prix, label: principalLabel }, ...autres];
+    return lignes.some((l) => l.label) && lignes.length > 1 ? lignes : [];
+  })();
+
   // 💶 Détecte si la famille a souscrit à l'assurance annulation (champ "select"
   // dont le libellé évoque l'assurance) pour ajouter son montant au prix affiché.
   const montantAssurance = sejour.montantAssurance ?? 30;
-  const champAssurance = formFields.find(
+  const champAssurance = champsAffiches.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("assurance")
   );
   const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
 
   // 💳 Détecte si la famille a choisi de régler par carte bleue (champ "select"
   // dont le libellé évoque le moyen de règlement) pour ajouter les frais bancaires.
-  const champPaiement = formFields.find(
+  const champPaiement = champsAffiches.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("régler")
   );
   const paiementParCarteBleue = champPaiement && formData[champPaiement.label] === "Carte bleue";
@@ -150,22 +200,45 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     setIsSubmitting(true);
 
     try {
-      if (!selectedEnfantId && !showNewEnfantForm) {
-        setError("Veuillez sélectionner ou créer un enfant");
-        setIsSubmitting(false);
-        return;
-      }
+      let enfantData;
+      let contactInfo;
 
-      const enfantData = showNewEnfantForm
-        ? newEnfantData
-        : { id: selectedEnfantId };
-
-      if (!showNewEnfantForm) {
-        const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
-        if (!selectedEnfant) {
-          setError("Enfant sélectionné introuvable");
+      if (estSenior) {
+        if (!mesInfos.prenom.trim() || !mesInfos.nom.trim()) {
+          setError("Merci de renseigner votre nom et prénom");
           setIsSubmitting(false);
           return;
+        }
+        enfantData = {
+          prenom: mesInfos.prenom.trim(),
+          nom: mesInfos.nom.trim(),
+          dateNaissance: mesInfos.dateNaissance || null,
+          informationsComplementaires: mesInfos.telephone2.trim()
+            ? `Contact en cas de besoin : ${mesInfos.telephone2.trim()}`
+            : null,
+        };
+        contactInfo = {
+          prenom: mesInfos.prenom.trim(),
+          nom: mesInfos.nom.trim(),
+          email: mesInfos.email.trim() || undefined,
+          telephone: mesInfos.telephone.trim() || undefined,
+        };
+      } else {
+        if (!selectedEnfantId && !showNewEnfantForm) {
+          setError("Veuillez sélectionner ou créer un enfant");
+          setIsSubmitting(false);
+          return;
+        }
+
+        enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
+
+        if (!showNewEnfantForm) {
+          const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
+          if (!selectedEnfant) {
+            setError("Enfant sélectionné introuvable");
+            setIsSubmitting(false);
+            return;
+          }
         }
       }
 
@@ -177,7 +250,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
           moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
           lienPaiement: lienPaiementActif,
           montantTotal,
-        }
+        },
+        contactInfo
       );
 
       if (result.error) {
@@ -314,6 +388,41 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 </div>
               )}
 
+              {estSenior && (
+                <div style={styles.section}>
+                  <h3 style={styles.sectionTitle}>Mes informations</h3>
+                  <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
+                      <label style={styles.label}>Prénom *</label>
+                      <input type="text" value={mesInfos.prenom} onChange={(e) => handleMesInfosChange("prenom", e.target.value)} required style={styles.input} />
+                    </div>
+                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
+                      <label style={styles.label}>Nom *</label>
+                      <input type="text" value={mesInfos.nom} onChange={(e) => handleMesInfosChange("nom", e.target.value)} required style={styles.input} />
+                    </div>
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Date de naissance *</label>
+                    <input type="date" value={mesInfos.dateNaissance} onChange={(e) => handleMesInfosChange("dateNaissance", e.target.value)} required style={styles.input} />
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Adresse e-mail *</label>
+                    <input type="email" value={mesInfos.email} onChange={(e) => handleMesInfosChange("email", e.target.value)} required style={styles.input} />
+                  </div>
+                  <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
+                      <label style={styles.label}>Téléphone *</label>
+                      <input type="tel" value={mesInfos.telephone} onChange={(e) => handleMesInfosChange("telephone", e.target.value)} required style={styles.input} />
+                    </div>
+                    <div style={{ ...styles.inputGroup, flex: "1 1 160px" }}>
+                      <label style={styles.label}>Téléphone / contact en cas de besoin</label>
+                      <input type="tel" value={mesInfos.telephone2} onChange={(e) => handleMesInfosChange("telephone2", e.target.value)} style={styles.input} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!estSenior && (
               <div style={styles.section}>
                 <h3 style={styles.sectionTitle}>Sélection de l'enfant</h3>
                 {!showNewEnfantForm ? (
@@ -456,12 +565,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                   </>
                 )}
               </div>
+              )}
 
-              {formFields.length > 0 && (
+              {champsAffiches.length > 0 && (
                 <>
                   <div style={styles.divider} />
                   <div style={styles.section}>
-                    {formFields.map((field) => {
+                    {champsAffiches.map((field) => {
                       if (field.type === "section") {
                         return (
                           <h3 key={field.id} style={styles.sectionTitle}>
@@ -574,39 +684,37 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                           {(sejour.prix + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
                         </p>
                       </div>
-                      <div
-                        onClick={handleClicValDeMarne}
-                        style={{
-                          ...styles.priceBox,
-                          ...(tarifSelectionne === "val_de_marne"
-                            ? styles.priceBoxActive
-                            : !promoAppliquee
-                            ? styles.priceBoxDisabled
-                            : {}),
-                        }}
-                      >
-                        <p style={styles.priceBoxLabel}>
-                          <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
-                          Habitant du Val-de-Marne
-                        </p>
-                        <p style={styles.priceBoxAmount}>
-                          {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - 100).toFixed(2)} €
-                        </p>
-                        {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
-                      </div>
+                      {!estSenior && (
+                        <div
+                          onClick={handleClicValDeMarne}
+                          style={{
+                            ...styles.priceBox,
+                            ...(tarifSelectionne === "val_de_marne"
+                              ? styles.priceBoxActive
+                              : !promoAppliquee
+                              ? styles.priceBoxDisabled
+                              : {}),
+                          }}
+                        >
+                          <p style={styles.priceBoxLabel}>
+                            <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
+                            Habitant du Val-de-Marne
+                          </p>
+                          <p style={styles.priceBoxAmount}>
+                            {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - 100).toFixed(2)} €
+                          </p>
+                          {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
+                        </div>
+                      )}
                     </div>
 
-                    {(sejour.prixLabel || (Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0)) && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px", margin: "4px 0 12px" }}>
-                        {sejour.prixLabel && (
-                          <p style={{ fontSize: "13px", color: C.gray }}>
-                            <strong style={{ color: C.teal }}>{sejour.prix} €</strong> — {sejour.prixLabel}
-                          </p>
-                        )}
-                        {(Array.isArray(sejour.tarifs) ? sejour.tarifs : []).map((t, i) => (
-                          <p key={i} style={{ fontSize: "13px", color: C.gray }}>
-                            <strong style={{ color: C.teal }}>{t.montant} €</strong> — {t.label}
-                          </p>
+                    {tarifsListe.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", margin: "6px 0 14px" }}>
+                        {tarifsListe.map((l, i) => (
+                          <div key={i} style={{ background: C.arctic, border: `1px solid ${C.lightGray}`, borderRadius: "14px", padding: "12px 18px", minWidth: "150px" }}>
+                            <p style={{ fontSize: "22px", fontWeight: 900, color: C.teal, margin: 0, lineHeight: 1.1 }}>{l.montant} €</p>
+                            <p style={{ fontSize: "12px", fontWeight: 700, color: C.gray, margin: "2px 0 0" }}>{l.label || "Tarif"}</p>
+                          </div>
                         ))}
                       </div>
                     )}

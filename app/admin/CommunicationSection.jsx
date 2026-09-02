@@ -79,29 +79,46 @@ function InfoItem({ icon: Icon, label, value }) {
 }
 
 function PrixBloc({ sejour, compact }) {
+  const estSenior = /senior|sénior/i.test(sejour.tranchesAge || "");
+  const tarifsArr = (Array.isArray(sejour.tarifs) ? sejour.tarifs : []).filter((t) => t && t.montant != null && t.label);
+  const principalLabel = sejour.prixLabel || tarifsArr.find((t) => Number(t.montant) === Number(sejour.prix))?.label || "";
+  const autres = tarifsArr.filter((t) => Number(t.montant) !== Number(sejour.prix));
+  const lignes = [{ montant: sejour.prix, label: principalLabel }, ...autres];
+  const modeBoxes = lignes.length > 1 && lignes.some((l) => l.label);
+
   return (
     <div>
       <div style={{ fontSize: 19, fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: 1 }}>Prix par personne</div>
-      <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 8, flexWrap: "wrap" }}>
-        <div style={{ fontSize: compact ? 74 : 84, fontWeight: 900, color: C.teal, lineHeight: 1 }}>{sejour.prix || 0}€</div>
-        {sejour.prix > 100 && (
-          <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: "12px 26px" }}>
-            <div style={{ fontSize: compact ? 52 : 60, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
-            <div style={{ position: "absolute", top: -16, right: -16, width: 38, height: 38, borderRadius: "50%", background: "#fff", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 21, fontWeight: 800, color: C.gray }}>?</div>
-          </div>
-        )}
-      </div>
-      {Array.isArray(sejour.tarifs) && sejour.tarifs.length > 0 && (
-        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
-          {sejour.tarifs.map((t, i) => (
-            <div key={i} style={{ fontSize: 21, fontWeight: 800, color: C.teal }}>
-              {t.montant}€ <span style={{ fontSize: 18, fontWeight: 700, color: C.gray }}>— {t.label}</span>
+
+      {modeBoxes ? (
+        <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
+          {lignes.map((l, i) => (
+            <div key={i} style={{ background: "#F1F6F4", border: `2px solid ${C.teal}22`, borderRadius: 22, padding: compact ? "14px 22px" : "16px 28px", minWidth: 200 }}>
+              <div style={{ fontSize: compact ? 50 : 58, fontWeight: 900, color: C.teal, lineHeight: 1 }}>{l.montant}€</div>
+              <div style={{ fontSize: 19, fontWeight: 800, color: C.gray, marginTop: 4 }}>{l.label || "Tarif"}</div>
             </div>
           ))}
+          {!estSenior && sejour.prix > 100 && (
+            <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: compact ? "14px 22px" : "16px 28px", minWidth: 200 }}>
+              <div style={{ fontSize: compact ? 50 : 58, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
+              <div style={{ fontSize: 19, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 8, flexWrap: "wrap" }}>
+          <div style={{ fontSize: compact ? 74 : 84, fontWeight: 900, color: C.teal, lineHeight: 1 }}>{sejour.prix || 0}€</div>
+          {!estSenior && sejour.prix > 100 && (
+            <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: "12px 26px" }}>
+              <div style={{ fontSize: compact ? 52 : 60, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
+              <div style={{ position: "absolute", top: -16, right: -16, width: 38, height: 38, borderRadius: "50%", background: "#fff", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 21, fontWeight: 800, color: C.gray }}>?</div>
+            </div>
+          )}
         </div>
       )}
-      <div style={{ fontSize: 19, color: C.gray, marginTop: 10 }}>Paiement jusqu'à 8× sans frais possible</div>
+
+      <div style={{ fontSize: 19, color: C.gray, marginTop: 12 }}>Paiement jusqu'à 8× sans frais possible</div>
     </div>
   );
 }

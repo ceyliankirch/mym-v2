@@ -22,6 +22,9 @@ const FRANCE_COORDS = {
   "elancourt": geoToPercent(48.7860, 1.9486),
   "deauville": geoToPercent(49.3592, 0.0752),
   "vieux-boucau": geoToPercent(43.7886, -1.3986),
+  // Bruges est en Belgique, au-dessus du cadre de la carte (france.svg) :
+  // on épingle le point sur le bord nord, à la longitude de Bruges (~3.22°E).
+  "bruges": { top: "1%", left: "55.8%" },
   "default": { top: "50%", left: "50%" }
 };
 
