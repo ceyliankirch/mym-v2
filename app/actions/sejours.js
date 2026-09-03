@@ -52,7 +52,7 @@ export async function creerSejour(formData) {
     imageUrl = blob.url;
   }
 
-  // ⚡ Gestion de la Galerie (Multiples images)
+  // ⚡ Gestion de la Galerie (Multiples images) — l'ordre vient de "galerieOrdre"
   const galerieFiles = formData.getAll("galerie");
   const galerieUrls = [];
   for (const file of galerieFiles) {
@@ -60,6 +60,17 @@ export async function creerSejour(formData) {
       const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
       galerieUrls.push(blob.url);
     }
+  }
+  let galerieFinale = galerieUrls;
+  try {
+    const ordre = JSON.parse(formData.get("galerieOrdre") || "[]");
+    if (Array.isArray(ordre) && ordre.length) {
+      galerieFinale = ordre
+        .map((x) => (typeof x === "string" && x.startsWith("__new__") ? galerieUrls[parseInt(x.slice(7), 10)] : x))
+        .filter(Boolean);
+    }
+  } catch (e) {
+    console.error("Erreur parsing galerieOrdre", e);
   }
 
   // ⚡ Gestion des documents requis
@@ -95,7 +106,7 @@ export async function creerSejour(formData) {
       adresseComplete,
       formSchema,
       documentsRequis,
-      galerie: galerieUrls,
+      galerie: galerieFinale,
       lienPaiementCIC,
       lienPaiementCICValDeMarne,
     },
@@ -157,17 +168,10 @@ export async function modifierSejour(id, formData) {
     imageUrl = blob.url;
   }
 
-  // ⚡ Gestion de la Galerie lors d'une modification
+  // ⚡ Gestion de la Galerie lors d'une modification — l'ordre (et les images
+  // conservées / retirées) vient de "galerieOrdre".
   const galerieFiles = formData.getAll("galerie"); // Les NOUVELLES images uploadées
-  const anciennesUrls = formData.getAll("anciennesGalerie"); // Les anciennes images CONSERVÉES
 
-  // 🧹 Nettoyage Vercel : On supprime les images que l'utilisateur a retirées de la galerie
-  const removedUrls = (sejourActuel.galerie || []).filter(url => !anciennesUrls.includes(url));
-  for (const url of removedUrls) {
-     try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
-  }
-
-  // Upload des nouvelles images
   const nouvellesUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
@@ -176,8 +180,22 @@ export async function modifierSejour(id, formData) {
     }
   }
 
-  // On fusionne les anciennes qu'on a gardées + les nouvelles
-  const finalGalerie = [...anciennesUrls, ...nouvellesUrls];
+  let finalGalerie;
+  try {
+    const ordre = JSON.parse(formData.get("galerieOrdre") || "[]");
+    finalGalerie = (Array.isArray(ordre) ? ordre : [])
+      .map((x) => (typeof x === "string" && x.startsWith("__new__") ? nouvellesUrls[parseInt(x.slice(7), 10)] : x))
+      .filter(Boolean);
+  } catch (e) {
+    console.error("Erreur parsing galerieOrdre", e);
+    finalGalerie = [...(sejourActuel.galerie || []), ...nouvellesUrls];
+  }
+
+  // 🧹 Nettoyage Vercel : on supprime du blob store les images retirées de la galerie
+  const removedUrls = (sejourActuel.galerie || []).filter((url) => !finalGalerie.includes(url));
+  for (const url of removedUrls) {
+     try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+  }
 
   // ⚡ Gestion des documents requis
   let documentsRequis = sejourActuel.documentsRequis;

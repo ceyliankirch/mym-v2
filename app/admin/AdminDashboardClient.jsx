@@ -234,55 +234,80 @@ function ImageUpload({ defaultValue, onImageCompressed }) {
 }
 
 function GalleryUpload({ defaultValues = [], onImagesCompressed }) {
-  const [previews, setPreviews] = useState(defaultValues);
-  const [files, setFiles] = useState([]);
+  const [items, setItems] = useState(
+    (defaultValues || []).map((src, i) => ({ key: `old-${i}`, preview: src, file: null }))
+  );
   const [isCompressing, setIsCompressing] = useState(false);
+  const [dragOver, setDragOver] = useState(null);
   const fileInputRef = useRef(null);
+  const dragIndex = useRef(null);
+
+  const syncFiles = (list) => onImagesCompressed(list.filter((it) => it.file).map((it) => it.file));
 
   const handleImagesChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (!selectedFiles.length) return;
-    if (previews.length + selectedFiles.length > 10) return alert("10 photos maximum.");
+    if (items.length + selectedFiles.length > 10) return alert("10 photos maximum.");
     setIsCompressing(true);
-    const newPreviews = [...previews];
-    const newFiles = [...files];
+    const added = [];
     for (const file of selectedFiles) {
       try {
-        const { file: webpFile, preview: webpPreview } = await compressToWebP(file, 1000);
-        newPreviews.push(webpPreview);
-        newFiles.push(webpFile);
+        const { file: webpFile, preview } = await compressToWebP(file, 1000);
+        added.push({ key: `new-${Date.now()}-${Math.random().toString(36).slice(2)}`, preview, file: webpFile });
       } catch (err) { console.error(err); }
     }
-    setPreviews(newPreviews); setFiles(newFiles); onImagesCompressed(newFiles);
+    const next = [...items, ...added];
+    setItems(next); syncFiles(next);
     setIsCompressing(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const removeImage = (index) => {
-    const newPreviews = previews.filter((_, i) => i !== index);
-    const newFiles = files.filter((_, i) => i !== (index - (previews.length - files.length)));
-    setPreviews(newPreviews); setFiles(newFiles); onImagesCompressed(newFiles);
+    const next = items.filter((_, i) => i !== index);
+    setItems(next); syncFiles(next);
   };
+
+  const handleDrop = (toIndex) => {
+    const from = dragIndex.current;
+    dragIndex.current = null;
+    setDragOver(null);
+    if (from == null || from === toIndex) return;
+    const next = [...items];
+    const [moved] = next.splice(from, 1);
+    next.splice(toIndex, 0, moved);
+    setItems(next); syncFiles(next);
+  };
+
+  // Ordre transmis au serveur : URL pour les anciennes, __new__N pour les nouvelles
+  let newIdx = 0;
+  const ordre = items.map((it) => (it.file ? `__new__${newIdx++}` : it.preview));
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Galerie Photos ({previews.length}/10)</label>
-      
-      {/* ⚡ ASTUCE : On génère les champs cachés ici pour les ANCIENNES images que l'on conserve */}
-      {previews.map((src, i) => {
-        if (src.startsWith('http')) {
-          return <input key={`old-${i}`} type="hidden" name="anciennesGalerie" value={src} />;
-        }
-        return null;
-      })}
+      <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Galerie Photos ({items.length}/10) — glissez-déposez pour réordonner</label>
+
+      <input type="hidden" name="galerieOrdre" value={JSON.stringify(ordre)} />
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-        {previews.map((src, i) => (
-          <div key={i} style={{ width: "80px", height: "80px", borderRadius: "12px", overflow: "hidden", position: "relative", border: `1px solid ${C.lightGray}` }}>
-            <img src={src} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="galerie" />
+        {items.map((it, i) => (
+          <div
+            key={it.key}
+            draggable
+            onDragStart={() => { dragIndex.current = i; }}
+            onDragEnd={() => { dragIndex.current = null; setDragOver(null); }}
+            onDragOver={(e) => { e.preventDefault(); if (dragOver !== i) setDragOver(i); }}
+            onDrop={(e) => { e.preventDefault(); handleDrop(i); }}
+            style={{
+              width: "80px", height: "80px", borderRadius: "12px", overflow: "hidden", position: "relative",
+              border: `2px solid ${dragOver === i ? C.yellow : C.lightGray}`, cursor: "grab",
+            }}
+          >
+            <img src={it.preview} draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} alt="galerie" />
+            <span style={{ position: "absolute", bottom: "3px", left: "3px", background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: "10px", fontWeight: 800, borderRadius: "6px", padding: "0 5px" }}>{i + 1}</span>
             <button type="button" onClick={() => removeImage(i)} style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "white" }}><X size={12} /></button>
           </div>
         ))}
-        {previews.length < 10 && (
+        {items.length < 10 && (
           <div onClick={() => fileInputRef.current?.click()} style={{ width: "80px", height: "80px", borderRadius: "12px", border: `2px dashed ${C.gray}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: C.arctic }}>
             <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImagesChange} style={{ display: "none" }} />
             {isCompressing ? <Clock size={20} color={C.saffron} className="animate-spin" /> : <UploadCloud size={20} color={C.gray} />}
