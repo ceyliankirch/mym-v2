@@ -222,6 +222,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         setError(result.error);
       } else {
         setSuccess(true);
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
         if (paiementParCarteBleue && lienPaiementActif) {
           setTimeout(() => {
             window.location.href = lienPaiementActif;

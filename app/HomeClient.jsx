@@ -247,16 +247,48 @@ function SejourCard({ s, idx }) {
             <Users size={12} /> {formatAge(s.tranchesAge)}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "10px" }}>
-            <span style={{ fontSize: "34px", fontWeight: 900, color: C.saffron, lineHeight: 1 }}>{s.prix}€</span>
-            {!s.isPast && s.prix > 0 && (
-              <div style={{ position: "relative", marginTop: "12px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "4px 12px", textAlign: "center" }}>
-                <ReductionTooltip />
-                <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{Math.max(0, s.prix - 100)}€</p>
-                <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Habitant du Val-de-Marne</p>
+          {(() => {
+            const estSenior = /senior|sénior/i.test(s.tranchesAge || "");
+            const arr = (Array.isArray(s.tarifs) ? s.tarifs : []).filter(t => t && t.montant != null && t.label);
+            const principalLabel = s.prixLabel || arr.find(t => Number(t.montant) === Number(s.prix))?.label || "";
+            const autres = arr.filter(t => Number(t.montant) !== Number(s.prix));
+            const lignes = [{ montant: s.prix, label: principalLabel }, ...autres];
+            const modeBoxes = lignes.length > 1 && lignes.some(l => l.label);
+            const vdm = !estSenior && !s.isPast && s.prix > 0;
+
+            if (modeBoxes) {
+              return (
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px", marginBottom: "10px" }}>
+                  {lignes.map((l, i) => (
+                    <div key={i} style={{ background: "#f1f6f4", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "6px 12px", textAlign: "center" }}>
+                      <p style={{ fontSize: "22px", fontWeight: 900, color: C.teal, lineHeight: 1, margin: 0 }}>{l.montant}€</p>
+                      <p style={{ fontSize: "9px", fontWeight: 700, color: "#888", margin: "2px 0 0" }}>{l.label || "Tarif"}</p>
+                    </div>
+                  ))}
+                  {vdm && (
+                    <div style={{ position: "relative", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "6px 12px", textAlign: "center" }}>
+                      <ReductionTooltip />
+                      <p style={{ fontSize: "22px", fontWeight: 900, color: "#059669", lineHeight: 1, margin: 0 }}>{Math.max(0, s.prix - 100)}€</p>
+                      <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", margin: "2px 0 0" }}>Habitant du Val-de-Marne</p>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "10px" }}>
+                <span style={{ fontSize: "34px", fontWeight: 900, color: C.saffron, lineHeight: 1 }}>{s.prix}€</span>
+                {vdm && (
+                  <div style={{ position: "relative", marginTop: "12px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "4px 12px", textAlign: "center" }}>
+                    <ReductionTooltip />
+                    <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{Math.max(0, s.prix - 100)}€</p>
+                    <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Habitant du Val-de-Marne</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
 
           <div style={{ width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "10px", textAlign: "center", transition: "all 0.2s" }}>
             Voir le séjour

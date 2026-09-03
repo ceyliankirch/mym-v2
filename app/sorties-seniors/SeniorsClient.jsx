@@ -82,7 +82,7 @@ function SortieCard({ s, passe = false }) {
   const tags = passe ? ["Sortie passée"] : [s.saison || "Toute l'année", "Convivialité"];
 
   return (
-    <Link href={`/sorties-seniors/${s.id}`} style={{ textDecoration: "none" }}
+    <Link href={`/sejours-enfants-ados/${s.id}`} style={{ textDecoration: "none" }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <div style={{
           background: C.white, borderRadius: "24px", overflow: "hidden", cursor: "pointer",
@@ -108,27 +108,52 @@ function SortieCard({ s, passe = false }) {
               </span>
             ))}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "8px" }}>
+          <div style={{ marginBottom: "8px" }}>
             <h3 style={{ fontSize: "16px", fontWeight: 900, color: C.teal, lineHeight: 1.2, margin: 0 }}>{s.titre}</h3>
-            <span style={{ fontSize: "20px", fontWeight: 900, color: C.teal, whiteSpace: "nowrap" }}>{s.prix || 0}€</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "24px", flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
             <MapPin size={13} style={{ color: C.saffron, flexShrink: 0 }} />
             <span style={{ fontSize: "13px", fontWeight: 600, color: "#8aaa" }}>{s.lieu || "À définir"}</span>
             <span style={{ color: "#ccc", margin: "0 4px" }}>•</span>
             <Clock size={13} style={{ color: C.saffron, flexShrink: 0 }} />
             <span style={{ fontSize: "13px", fontWeight: 600, color: "#8aaa" }}>{getDuree(s.dateDebut, s.dateFin)}</span>
           </div>
-          
+
+          <div style={{ marginTop: "auto" }}>
+          {(() => {
+            const arr = (Array.isArray(s.tarifs) ? s.tarifs : []).filter(t => t && t.montant != null && t.label);
+            const principalLabel = s.prixLabel || arr.find(t => Number(t.montant) === Number(s.prix))?.label || "";
+            const autres = arr.filter(t => Number(t.montant) !== Number(s.prix));
+            const lignes = [{ montant: s.prix, label: principalLabel }, ...autres];
+            const modeBoxes = lignes.length > 1 && lignes.some(l => l.label);
+
+            if (modeBoxes) {
+              return (
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px", marginBottom: "10px" }}>
+                  {lignes.map((l, i) => (
+                    <div key={i} style={{ background: "#f1f6f4", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "6px 12px", textAlign: "center" }}>
+                      <p style={{ fontSize: "22px", fontWeight: 900, color: C.teal, lineHeight: 1, margin: 0 }}>{l.montant}€</p>
+                      <p style={{ fontSize: "9px", fontWeight: 700, color: "#888", margin: "2px 0 0" }}>{l.label || "Tarif"}</p>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            return (
+              <p style={{ fontSize: "24px", fontWeight: 900, color: C.teal, margin: "0 0 16px" }}>{s.prix || 0}€</p>
+            );
+          })()}
+
           {!passe && (
             <div style={{
               width: "100%", background: hovered ? C.yellow : C.arctic, color: C.teal,
               fontSize: "12px", fontWeight: 800, borderRadius: "12px", padding: "12px", border: "none",
               transition: "all .2s", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"
             }}>
-              Découvrir le programme <ArrowRight size={13} />
+              Voir le séjour <ArrowRight size={13} />
             </div>
           )}
+          </div>
         </div>
       </div>
     </Link>
