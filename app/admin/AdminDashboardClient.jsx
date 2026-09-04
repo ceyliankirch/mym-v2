@@ -59,6 +59,16 @@ const STATUT_INSCRIPTION_COLORS = {
   "Annulée": { bg: "#fee2e2", color: "#991b1b" },
 };
 
+// Style commun des <select> de statut : flèche personnalisée, bien détachée du bord droit
+const SELECT_STATUT_STYLE = {
+  padding: "6px 32px 6px 12px",
+  borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+  appearance: "none", WebkitAppearance: "none", MozAppearance: "none",
+  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23114C5A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 12px center",
+};
+
 // Palette pour colorer chaque séjour (assignée dans l'ordre des séjours)
 const SEJOUR_PALETTE = [
   "#114C5A", "#FF9932", "#7C3AED", "#0EA5E9", "#10B981",
@@ -1073,9 +1083,9 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                         value={ins.statut}
                         onChange={(e) => onChangerStatut(ins.id, e.target.value)}
                         style={{
-                          background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                          ...SELECT_STATUT_STYLE,
+                          backgroundColor: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                           color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                          padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                         }}
                       >
                         {STATUTS_INSCRIPTION.map((s) => (
@@ -1568,10 +1578,10 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
                       value={b.statut}
                       onChange={(e) => onChangerStatut(b.id, e.target.value)}
                       style={{
-                        background: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                        color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-                      }}
+                          ...SELECT_STATUT_STYLE,
+                          backgroundColor: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                          color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                        }}
                     >
                       {STATUTS_INSCRIPTION.map((s) => (
                         <option key={s} value={s}>{s}</option>
@@ -2126,10 +2136,10 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                             value={ins.statut}
                             onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
                             style={{
-                              background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                              color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                              padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-                            }}
+                          ...SELECT_STATUT_STYLE,
+                          backgroundColor: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
+                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
+                        }}
                           >
                             {STATUTS_INSCRIPTION.map((s) => (
                               <option key={s} value={s}>{s}</option>
