@@ -89,9 +89,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const champPaiement = champsAffiches.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("régler")
   );
-  // En liste d'attente d'un binôme pour la chambre double, le tarif final n'est pas encore
-  // certain : pas de paiement en ligne ni de lien de paiement dans ce cas.
-  const paiementParCarteBleue = !listeAttenteChambre && champPaiement && formData[champPaiement.label] === "Carte bleue";
 
   // 🏷️ Tarif sélectionné : "standard" ou "val_de_marne" (-100€, débloqué par un code)
   const [tarifSelectionne, setTarifSelectionne] = useState("standard");
@@ -103,6 +100,11 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const [listeAttenteChambre, setListeAttenteChambre] = useState(false);
   const tarifChoisi = tarifChoisiIdx != null ? tarifsListe[tarifChoisiIdx] : null;
   const tarifDoubleSelectionne = /double|twin/i.test(tarifChoisi?.label || "");
+
+  // En liste d'attente d'un binôme pour la chambre double, le tarif final n'est pas encore
+  // certain : pas de paiement en ligne ni de lien de paiement dans ce cas.
+  const paiementParCarteBleue = !listeAttenteChambre && champPaiement && formData[champPaiement.label] === "Carte bleue";
+
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
   const [promoErreur, setPromoErreur] = useState("");
