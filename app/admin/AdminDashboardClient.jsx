@@ -11,7 +11,7 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight, QrCode, Megaphone
+  Baby, Cake, Ruler, Footprints, Weight, QrCode, Megaphone, User
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -27,7 +27,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
@@ -965,9 +965,8 @@ function DocumentValidationRow({ doc }) {
 }
 
 /* ── MODALE : LISTE DES INSCRITS D'UN SÉJOUR ── */
-function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete }) {
+function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete, onFicheEnfant }) {
   const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
-  const [enfantOuvertId, setEnfantOuvertId] = useState(null);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
@@ -987,11 +986,11 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
             {inscrits.map((ins) => {
               const docsManquants = (ins.enfant?.documents || []).filter((d) => d.statut === "MANQUANT").length;
               const dotColor = ins.enfant?.sexe === "M" ? "#3b82f6" : ins.enfant?.sexe === "F" ? "#ec4899" : C.gray;
-              const estOuvert = enfantOuvertId === ins.id;
               return (
                 <div key={ins.id} style={{ background: C.arctic, borderRadius: "16px", overflow: "hidden" }}>
                   <div
-                    onClick={() => setEnfantOuvertId(estOuvert ? null : ins.id)}
+                    onClick={() => ins.enfant?.id && onFicheEnfant?.(ins.enfant.id)}
+                    title="Voir la fiche complète"
                     style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap", cursor: "pointer" }}
                   >
                     <div>
@@ -1030,44 +1029,15 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                       >
                         <Trash2 size={14} />
                       </button>
-                      <div style={{ color: C.gray, transform: estOuvert ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s", display: "flex" }}>
-                        <ChevronDown size={16} />
-                      </div>
+                      <button
+                        onClick={() => ins.enfant?.id && onFicheEnfant?.(ins.enfant.id)}
+                        title="Voir la fiche complète"
+                        style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal }}
+                      >
+                        <Eye size={15} />
+                      </button>
                     </div>
                   </div>
-
-                  {estOuvert && (
-                    <div style={{ padding: "0 20px 20px" }}>
-                      <div style={{ borderTop: `1px solid ${C.lightGray}`, paddingTop: "16px" }}>
-                        {/* Fiche enfant complète */}
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "10px", marginBottom: "16px" }}>
-                          {ins.enfant?.dateNaissance && (
-                            <InfoPill label="Né(e) le" value={new Date(ins.enfant.dateNaissance).toLocaleDateString("fr-FR")} />
-                          )}
-                          {ins.enfant?.taille && <InfoPill label="Taille" value={`${ins.enfant.taille} cm`} />}
-                          {ins.enfant?.poids && <InfoPill label="Poids" value={`${ins.enfant.poids} kg`} />}
-                          {ins.enfant?.pointure && <InfoPill label="Pointure" value={ins.enfant.pointure} />}
-                        </div>
-                        {ins.enfant?.informationsComplementaires && (
-                          <div style={{ background: C.white, borderRadius: "10px", padding: "10px 12px", marginBottom: "16px" }}>
-                            <p style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", marginBottom: "2px" }}>Informations complémentaires</p>
-                            <p style={{ fontSize: "13px", color: C.teal }}>{ins.enfant.informationsComplementaires}</p>
-                          </div>
-                        )}
-
-                        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Documents</p>
-                        {(!ins.enfant?.documents || ins.enfant.documents.length === 0) ? (
-                          <p style={{ fontSize: "13px", color: C.gray }}>Aucun document déposé.</p>
-                        ) : (
-                          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                            {ins.enfant.documents.map((doc) => (
-                              <DocumentValidationRow key={doc.id} doc={doc} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -1078,11 +1048,131 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
   );
 }
 
-function InfoPill({ label, value }) {
+/* ── MODALE : ÉDITER LES INFOS D'UNE PERSONNE (admin) ── */
+function ModalEditerInfosEnfant({ enfant, estSenior, onClose }) {
+  const [f, setF] = useState({
+    prenom: enfant.prenom || "",
+    nom: enfant.nom || "",
+    dateNaissance: enfant.dateNaissance ? new Date(enfant.dateNaissance).toISOString().split("T")[0] : "",
+    sexe: enfant.sexe || "",
+    taille: enfant.taille ?? "",
+    poids: enfant.poids ?? "",
+    pointure: enfant.pointure ?? "",
+    allergies: enfant.allergies || "",
+    informationsComplementaires: enfant.informationsComplementaires || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const champ = { padding: "10px 12px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "13px", width: "100%", fontFamily: "inherit" };
+  const lab = { fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "4px" };
+
+  const save = async () => {
+    setSaving(true); setErr("");
+    const res = await modifierEnfant(enfant.id, enfant.client?.id, { ...f, taille: String(f.taille), poids: String(f.poids), pointure: String(f.pointure) });
+    setSaving(false);
+    if (res?.error) setErr(res.error);
+    else window.location.reload();
+  };
+
   return (
-    <div style={{ background: C.white, borderRadius: "10px", padding: "8px 12px" }}>
-      <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>{label}</p>
-      <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>{value}</p>
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
+      <form onClick={(e) => { e.stopPropagation(); }} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+        <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "16px" }}>Modifier {estSenior ? "le participant" : "l'enfant"}</h3>
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ flex: 1 }}><label style={lab}>Prénom</label><input style={champ} value={f.prenom} onChange={(e) => set("prenom", e.target.value)} required /></div>
+            <div style={{ flex: 1 }}><label style={lab}>Nom</label><input style={champ} value={f.nom} onChange={(e) => set("nom", e.target.value)} required /></div>
+          </div>
+          <div><label style={lab}>Date de naissance</label><input type="date" style={champ} value={f.dateNaissance} onChange={(e) => set("dateNaissance", e.target.value)} /></div>
+          {!estSenior && (
+            <>
+              <div><label style={lab}>Sexe</label>
+                <select style={champ} value={f.sexe} onChange={(e) => set("sexe", e.target.value)}>
+                  <option value="">—</option><option value="M">Garçon</option><option value="F">Fille</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div style={{ flex: 1 }}><label style={lab}>Taille (cm)</label><input type="number" min="0" style={champ} value={f.taille} onChange={(e) => set("taille", e.target.value)} /></div>
+                <div style={{ flex: 1 }}><label style={lab}>Poids (kg)</label><input type="number" min="0" style={champ} value={f.poids} onChange={(e) => set("poids", e.target.value)} /></div>
+                <div style={{ flex: 1 }}><label style={lab}>Pointure</label><input type="number" min="0" style={champ} value={f.pointure} onChange={(e) => set("pointure", e.target.value)} /></div>
+              </div>
+            </>
+          )}
+          <div><label style={lab}>Allergies</label><textarea rows={2} style={champ} value={f.allergies} onChange={(e) => set("allergies", e.target.value)} /></div>
+          <div><label style={lab}>Informations complémentaires</label><textarea rows={2} style={champ} value={f.informationsComplementaires} onChange={(e) => set("informationsComplementaires", e.target.value)} /></div>
+        </div>
+        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "18px" }}>
+          <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: C.gray, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+          <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 22px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>{saving ? "Enregistrement..." : "Enregistrer"}</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* ── MODALE : ÉDITER LES RÉPONSES AU FORMULAIRE D'UNE INSCRIPTION (admin) ── */
+function ModalEditerReponses({ ins, onClose }) {
+  let champs = [];
+  try { champs = ins.sejour?.formSchema ? JSON.parse(ins.sejour.formSchema) : []; } catch (e) { champs = []; }
+  const [rep, setRep] = useState(() => ({ ...(ins.reponsesFormulaire || {}) }));
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+  const set = (label, v) => setRep((p) => ({ ...p, [label]: v }));
+  const champ = { padding: "10px 12px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "13px", width: "100%", fontFamily: "inherit" };
+
+  const save = async () => {
+    setSaving(true); setErr("");
+    const res = await modifierReponsesInscription(ins.id, ins.clientId || ins.client?.id, rep);
+    setSaving(false);
+    if (res?.error) setErr(res.error);
+    else window.location.reload();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "560px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+        <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Modifier les réponses au formulaire</h3>
+        <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px" }}>{ins.sejour?.titre}</p>
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+        {champs.length === 0 ? (
+          <p style={{ fontSize: "13px", color: C.gray }}>Ce séjour n'a pas de formulaire configuré.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {champs.map((field) => {
+              if (field.type === "section") return <p key={field.id} style={{ fontSize: "14px", fontWeight: 900, color: C.teal, marginTop: "8px" }}>{field.label}</p>;
+              if (field.type === "info") return null;
+              if (field.type === "checkbox") return (
+                <label key={field.id} style={{ display: "flex", gap: "8px", alignItems: "flex-start", fontSize: "13px", color: C.teal, fontWeight: 600, cursor: "pointer" }}>
+                  <input type="checkbox" checked={!!rep[field.label]} onChange={(e) => set(field.label, e.target.checked)} style={{ marginTop: "3px" }} />
+                  <span>{field.label}</span>
+                </label>
+              );
+              const v = rep[field.label] ?? "";
+              return (
+                <div key={field.id}>
+                  <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "4px" }}>{field.label}</label>
+                  {field.type === "textarea" ? (
+                    <textarea rows={3} style={champ} value={v} onChange={(e) => set(field.label, e.target.value)} />
+                  ) : field.type === "select" ? (
+                    <select style={champ} value={v} onChange={(e) => set(field.label, e.target.value)}>
+                      <option value="">Sélectionnez une option</option>
+                      {(field.options || "").split(",").map((o, i) => <option key={i} value={o.trim()}>{o.trim()}</option>)}
+                    </select>
+                  ) : (
+                    <input type={field.type} style={champ} value={v} onChange={(e) => set(field.label, e.target.value)} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "18px" }}>
+          <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: C.gray, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+          <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 22px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>{saving ? "Enregistrement..." : "Enregistrer"}</button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -1090,6 +1180,8 @@ function InfoPill({ label, value }) {
 /* ── MODALE : FICHE COMPLÈTE D'UN ENFANT ── */
 function ModalFicheEnfant({ enfant, onClose, onDelete }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editInfos, setEditInfos] = useState(false);
+  const [editInscription, setEditInscription] = useState(null);
 
   if (!enfant) return null;
 
@@ -1101,6 +1193,10 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
   const docsEnCours = documents.filter((d) => d.statut === "EN_COURS").length;
   const docsManquants = documents.filter((d) => d.statut === "MANQUANT").length;
   const inscriptions = enfant.inscriptions || [];
+
+  const estSenior = inscriptions.some((ins) => /senior|sénior/i.test(ins.sejour?.tranchesAge || ""));
+  const IconPerso = estSenior ? User : Baby;
+  const motPersonne = estSenior ? "participant" : "enfant";
 
   const aCaracteristiques = !!(enfant.dateNaissance || enfant.taille || enfant.poids || enfant.pointure || enfant.sexe);
   const aSante = !!(enfant.allergies || enfant.informationsComplementaires);
@@ -1122,12 +1218,15 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
         {/* En-tête */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
           <div style={{ width: "56px", height: "56px", borderRadius: "18px", background: accent + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Baby size={28} style={{ color: accent }} />
+            <IconPerso size={28} style={{ color: accent }} />
           </div>
-          <div>
-            <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal }}>{enfant.prenom} {enfant.nom}</h2>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal }}>{enfant.prenom} {enfant.nom}</h2>
+              <button onClick={() => setEditInfos(true)} title="Modifier les infos" style={{ background: C.arctic, border: "none", borderRadius: "8px", padding: "5px 10px", fontSize: "11px", fontWeight: 700, color: C.teal, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "5px" }}><Edit size={12} /> Modifier</button>
+            </div>
             <p style={{ fontSize: "13px", color: C.gray, marginTop: "2px" }}>
-              {sexeLabel}{age != null ? ` · ${age} ans` : ""}
+              {estSenior ? "Participant" : `${sexeLabel}${age != null ? ` · ${age} ans` : ""}`}
             </p>
           </div>
         </div>
@@ -1182,7 +1281,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
           {docsManquants > 0 && <span style={{ background: "#fee2e2", color: "#991b1b", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{docsManquants} manquant{docsManquants > 1 ? "s" : ""}</span>}
         </div>
         {documents.length === 0 ? (
-          <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Aucun document rattaché à cet enfant.</p>
+          <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Aucun document rattaché à ce {motPersonne}.</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
             {documents.map((doc) => (
@@ -1207,7 +1306,12 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
                       <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{ins.sejour?.titre || "Séjour supprimé"}</p>
                       <p style={{ fontSize: "11px", color: C.gray, marginTop: "2px" }}>Inscrit le {new Date(ins.createdAt).toLocaleDateString("fr-FR")}</p>
                     </div>
-                    <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {ins.sejour?.formSchema && (
+                        <button onClick={() => setEditInscription(ins)} title="Modifier les réponses" style={{ background: C.white, border: `1px solid ${C.lightGray}`, borderRadius: "8px", padding: "5px 10px", fontSize: "11px", fontWeight: 700, color: C.teal, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "5px" }}><Edit size={12} /> Modifier</button>
+                      )}
+                      <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
+                    </div>
                   </div>
                   {rendu.length > 0 && (
                     <div style={{ marginTop: "10px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -1232,7 +1336,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
         )}
 
         {/* Parent */}
-        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Représentant légal</p>
+        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>{estSenior ? "Titulaire du compte" : "Représentant légal"}</p>
         <div style={{ background: C.arctic, borderRadius: "12px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "6px" }}>
           <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>{enfant.client?.prenom} {enfant.client?.nom}</p>
           <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: C.gray }}><Mail size={14} /> {enfant.client?.email || "Non renseigné"}</span>
@@ -1243,7 +1347,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
         <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: `1px solid ${C.arctic}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <p style={{ fontSize: "12px", color: C.gray, flex: 1, minWidth: "200px" }}>
             {inscriptions.length > 0
-              ? "Cet enfant a des inscriptions : supprimez-les d'abord pour pouvoir le supprimer."
+              ? `Ce ${motPersonne} a des inscriptions : supprimez-les d'abord pour pouvoir le supprimer.`
               : "La suppression est définitive et retire aussi ses documents."}
           </p>
           <button
@@ -1262,10 +1366,13 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
             disabled={isDeleting || inscriptions.length > 0}
             style={{ display: "flex", alignItems: "center", gap: "8px", background: inscriptions.length > 0 ? C.arctic : "#fee2e2", color: inscriptions.length > 0 ? C.gray : "#991b1b", border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: isDeleting || inscriptions.length > 0 ? "not-allowed" : "pointer", flexShrink: 0 }}
           >
-            <Trash2 size={15} /> {isDeleting ? "Suppression..." : "Supprimer l'enfant"}
+            <Trash2 size={15} /> {isDeleting ? "Suppression..." : (estSenior ? "Supprimer le participant" : "Supprimer l'enfant")}
           </button>
         </div>
       </div>
+
+      {editInfos && <ModalEditerInfosEnfant enfant={enfant} estSenior={estSenior} onClose={() => setEditInfos(false)} />}
+      {editInscription && <ModalEditerReponses ins={editInscription} onClose={() => setEditInscription(null)} />}
     </div>
   );
 }
@@ -2107,7 +2214,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
-      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} />}
+      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
