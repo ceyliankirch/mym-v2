@@ -48,6 +48,15 @@ model NewsletterCampagne {
   updatedAt          DateTime  @updatedAt
 }
 
+// ⚙️ Réglages généraux de l'association (une seule ligne, id fixe "main")
+model Parametres {
+  id            String   @id @default("main")
+  ibanAsso      String?
+  bicAsso       String?
+  titulaireIban String?
+  updatedAt     DateTime @updatedAt
+}
+
 model Sejour {
   id           String    @id @default(cuid())
   titre        String

@@ -290,6 +290,20 @@ export async function creerInscription(
       console.error("Erreur génération PDF inscription", e);
     }
 
+    // 🏦 Si la famille règle par virement, on récupère l'IBAN de l'association (configuré
+    // depuis Admin → Paramètres) pour l'ajouter dans l'email de confirmation.
+    let virementInfo = null;
+    if (moyenPaiement === "Virement bancaire") {
+      const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
+      if (parametres?.ibanAsso) {
+        virementInfo = {
+          iban: parametres.ibanAsso,
+          bic: parametres.bicAsso,
+          titulaire: parametres.titulaireIban,
+        };
+      }
+    }
+
     if (client.email) {
       if (paiementParCarte) {
         await sendPreInscriptionEmail({
@@ -311,6 +325,7 @@ export async function creerInscription(
           dateFin: sejour.dateFin,
           documentsRequis: documentsManquants,
           montantARegler: montantTotal,
+          virement: virementInfo,
         });
       }
     }

@@ -59,6 +59,11 @@ export default async function AdminPage() {
       }),
     ]);
 
+    // ⚡ NOUVEAU : Réglages de l'association (IBAN pour le paiement par virement)
+    // .catch(() => null) : tant que la migration Prisma n'est pas appliquée en prod,
+    // la table peut ne pas exister — on ne veut pas faire planter tout le dashboard pour ça.
+    const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
+
     // Calcul des statistiques (KPIs)
     // ⚡ Le CA se base sur le prix du séjour des inscriptions dont le paiement est validé
     // (montantPaye n'est jamais renseigné nulle part dans l'app, donc toujours à 0)
@@ -84,6 +89,7 @@ export default async function AdminPage() {
       <AdminDashboardClient
         stats={stats}
         adminPrenom={adminPrenom}
+        parametres={parametres}
         sejours={sejours}
         inscriptions={inscriptions}
         clients={clients} // ⚡ NOUVEAU : On passe les familles au client

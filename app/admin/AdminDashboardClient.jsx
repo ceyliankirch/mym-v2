@@ -28,6 +28,8 @@ import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
 import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
+// ⚡ IMPORTS PARAMÈTRES (IBAN de l'association pour le paiement par virement)
+import { modifierParametres } from "../actions/parametres";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
 
@@ -1815,7 +1817,73 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, adminPrenom, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
+/* Carte "Paiement par virement" (onglet Paramètres) : configure l'IBAN de l'association.
+   Une fois renseigné, il est ajouté automatiquement dans l'email de confirmation d'une
+   famille qui choisit "Virement bancaire" comme moyen de paiement dans le formulaire. */
+function ParametresVirementCard({ parametres }) {
+  const [form, setForm] = useState({
+    titulaireIban: parametres?.titulaireIban || "",
+    ibanAsso: parametres?.ibanAsso || "",
+    bicAsso: parametres?.bicAsso || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const majChamp = (champ, valeur) => setForm((f) => ({ ...f, [champ]: valeur }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setSaved(false);
+    const fd = new FormData();
+    fd.set("titulaireIban", form.titulaireIban);
+    fd.set("ibanAsso", form.ibanAsso);
+    fd.set("bicAsso", form.bicAsso);
+    try {
+      await modifierParametres(fd);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const champStyle = { width: "100%", padding: "12px 14px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "14px", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { display: "block", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: C.gray, marginBottom: "6px" };
+
+  return (
+    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+      <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>💳 Paiement par virement</h2>
+      <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
+        Renseignez l'IBAN de l'association. Quand une famille choisit « Virement bancaire » comme moyen de paiement dans le formulaire d'inscription, ces informations sont ajoutées automatiquement dans son email de confirmation, sous forme d'un bloc avec les instructions de paiement.
+      </p>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", maxWidth: "820px" }}>
+        <div>
+          <label style={labelStyle}>Titulaire du compte</label>
+          <input style={champStyle} value={form.titulaireIban} onChange={(e) => majChamp("titulaireIban", e.target.value)} placeholder="Make Your Moment" />
+        </div>
+        <div>
+          <label style={labelStyle}>IBAN</label>
+          <input style={champStyle} value={form.ibanAsso} onChange={(e) => majChamp("ibanAsso", e.target.value)} placeholder="FR76 1027 8060 3600 0209 3910 120" />
+        </div>
+        <div>
+          <label style={labelStyle}>BIC</label>
+          <input style={champStyle} value={form.bicAsso} onChange={(e) => majChamp("bicAsso", e.target.value)} placeholder="CMCIFR2A" />
+        </div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "12px" }}>
+          <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 800, cursor: saving ? "wait" : "pointer", whiteSpace: "nowrap" }}>
+            {saving ? "Enregistrement..." : "Enregistrer"}
+          </button>
+          {saved && <span style={{ color: "#10b981", fontWeight: 700, fontSize: "13px" }}>✓ Enregistré</span>}
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default function AdminDashboardClient({ stats, adminPrenom, parametres, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -2261,6 +2329,8 @@ export default function AdminDashboardClient({ stats, adminPrenom, inscriptions,
 
           {activeTab === "settings" && (
             <div>
+              <ParametresVirementCard parametres={parametres} />
+
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
                 <div>
                   <h2 style={{ fontSize: "24px", fontWeight: 900, color: C.teal, marginBottom: "8px" }}>L'équipe d'encadrants</h2>
