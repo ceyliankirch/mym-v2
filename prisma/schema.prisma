@@ -71,6 +71,7 @@ model Sejour {
   tarifs       Json?     // tarifs supplémentaires : [{ label: String, montant: Float }]
   montantAssurance Float @default(30) // montant de l'assurance annulation en option (€)
   gestionChambres  Boolean @default(false) // active la vue d'ensemble des chambres (simple/double) côté admin
+  ficheSanitaireActive Boolean @default(true) // joint la fiche sanitaire de liaison dans l'email "Inscription validée"
   statut       String    @default("Brouillon")
   enAvant      Boolean   @default(false)
   tranchesAge  String?   // Pour stocker "6-12 ans" par exemple

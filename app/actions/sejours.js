@@ -32,6 +32,7 @@ export async function creerSejour(formData) {
     ? parseFloat(formData.get("montantAssurance"))
     : 30;
   const gestionChambres = formData.get("gestionChambres") === "on";
+  const ficheSanitaireActive = formData.get("ficheSanitaireActive") === "on";
 
   // Tarifs supplémentaires (libellé + montant), injectés en JSON par le formulaire admin
   let tarifs = [];
@@ -100,6 +101,7 @@ export async function creerSejour(formData) {
       tarifs,
       montantAssurance: Number.isNaN(montantAssurance) ? 30 : montantAssurance,
       gestionChambres,
+      ficheSanitaireActive,
       imageUrl,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
@@ -147,6 +149,7 @@ export async function modifierSejour(id, formData) {
     ? parseFloat(formData.get("montantAssurance"))
     : 30;
   const gestionChambres = formData.get("gestionChambres") === "on";
+  const ficheSanitaireActive = formData.get("ficheSanitaireActive") === "on";
 
   // Tarifs supplémentaires (libellé + montant), injectés en JSON par le formulaire admin
   let tarifs = [];
@@ -227,6 +230,7 @@ export async function modifierSejour(id, formData) {
       tarifs,
       montantAssurance: Number.isNaN(montantAssurance) ? 30 : montantAssurance,
       gestionChambres,
+      ficheSanitaireActive,
       imageUrl,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
@@ -313,6 +317,7 @@ export async function dupliquerSejour(id) {
       tarifs: source.tarifs ?? undefined,
       montantAssurance: source.montantAssurance ?? 30,
       gestionChambres: source.gestionChambres ?? false,
+      ficheSanitaireActive: source.ficheSanitaireActive ?? true,
       statut: "Brouillon", // ⚡ Toujours en brouillon le temps de vérifier la copie
       enAvant: false,
       tranchesAge: source.tranchesAge,

@@ -326,6 +326,7 @@ export async function creerInscription(
           documentsRequis: documentsManquants,
           montantARegler: montantTotal,
           virement: virementInfo,
+          inclureFicheSanitaire: sejour.ficheSanitaireActive !== false,
         });
       }
     }
@@ -391,6 +392,7 @@ export async function changerStatutInscription(id, statut) {
           dateFin: inscription.sejour?.dateFin,
           lienPaiementCIC: inscription.sejour?.lienPaiementCIC,
           documentsRequis: inscription.sejour?.documentsRequis,
+          inclureFicheSanitaire: inscription.sejour?.ficheSanitaireActive !== false,
         });
         await sendNewInscriptionNotificationEmail({
           prenomEnfant,
@@ -447,6 +449,7 @@ export async function renvoyerEmailInscription(id) {
         dateFin: inscription.sejour?.dateFin,
         lienPaiementCIC,
         documentsRequis: inscription.sejour?.documentsRequis,
+        inclureFicheSanitaire: inscription.sejour?.ficheSanitaireActive !== false,
       });
     } else if (inscription.statut === "Annulée") {
       result = await sendInscriptionCancelledEmail({ to, prenomEnfant, sejourTitre });

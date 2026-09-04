@@ -859,6 +859,14 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               </span>
             </label>
 
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
+              <input type="checkbox" name="ficheSanitaireActive" defaultChecked={isEditing ? sejourData.ficheSanitaireActive !== false : true} style={{ width: "16px", height: "16px", marginTop: "2px", cursor: "pointer" }} />
+              <span>
+                <span style={{ display: "block", fontSize: "13px", fontWeight: 800, color: C.teal }}>🩺 Joindre la fiche sanitaire de liaison</span>
+                <span style={{ display: "block", fontSize: "11px", color: C.gray, marginTop: "2px" }}>Ajoute le PDF de la fiche sanitaire en pièce jointe (et la mention associée) dans l'email « Inscription validée ». À décocher pour les séjours qui n'en ont pas besoin (ex : séniors).</span>
+              </span>
+            </label>
+
             <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxWidth: "260px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Montant assurance annulation (€)</label>
               <input type="number" min="0" name="montantAssurance" defaultValue={isEditing ? (sejourData.montantAssurance ?? 30) : 30} style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />

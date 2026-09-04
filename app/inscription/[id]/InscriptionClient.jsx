@@ -225,16 +225,19 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         reponsesFormulaire["Liste d'attente chambre double"] = "Oui";
       }
 
+      // En liste d'attente d'un binôme, seul le paiement en ligne par carte bleue est bloqué
+      // (le tarif n'est pas définitif) : les autres moyens de paiement (virement, chèque…)
+      // doivent rester renseignés pour que les bonnes instructions partent dans l'email.
+      const moyenPaiementChoisi = champPaiement ? formData[champPaiement.label] : undefined;
+      const moyenPaiementEnvoye = listeAttenteChambre && moyenPaiementChoisi === "Carte bleue" ? undefined : moyenPaiementChoisi;
+
       const result = await creerInscription(
         sejour.id,
         enfantData,
         session.user.id,
         {
-          // En liste d'attente : le tarif n'est pas définitif, donc pas de paiement en ligne
-          // ni de lien de paiement envoyé (le règlement se fera plus tard, une fois le
-          // binôme confirmé ou le tarif chambre simple appliqué).
-          moyenPaiement: listeAttenteChambre ? undefined : (champPaiement ? formData[champPaiement.label] : undefined),
-          lienPaiement: listeAttenteChambre ? undefined : lienPaiementActif,
+          moyenPaiement: moyenPaiementEnvoye,
+          lienPaiement: lienPaiementActif,
           montantTotal,
         },
         reponsesFormulaire
