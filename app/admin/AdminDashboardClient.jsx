@@ -1063,6 +1063,9 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
   const docsManquants = documents.filter((d) => d.statut === "MANQUANT").length;
   const inscriptions = enfant.inscriptions || [];
 
+  const aCaracteristiques = !!(enfant.dateNaissance || enfant.taille || enfant.poids || enfant.pointure || enfant.sexe);
+  const aSante = !!(enfant.allergies || enfant.informationsComplementaires);
+
   const physique = [
     { label: "Date de naissance", value: enfant.dateNaissance ? new Date(enfant.dateNaissance).toLocaleDateString("fr-FR") : null, icon: Cake },
     { label: "Âge", value: age != null ? `${age} ans` : null, icon: Cake },
@@ -1091,34 +1094,46 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
         </div>
 
         {/* Caractéristiques physiques */}
-        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Caractéristiques</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px", marginBottom: "24px" }}>
-          {physique.map((p) => (
-            <div key={p.label} style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
-              <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}><p.icon size={12} /> {p.label}</p>
-              <p style={{ fontSize: "14px", fontWeight: 800, color: p.value ? C.teal : C.gray, marginTop: "4px" }}>{p.value || "—"}</p>
+        {aCaracteristiques && (
+          <>
+            <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Caractéristiques</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px", marginBottom: "24px" }}>
+              {physique.map((p) => (
+                <div key={p.label} style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+                  <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}><p.icon size={12} /> {p.label}</p>
+                  <p style={{ fontSize: "14px", fontWeight: 800, color: p.value ? C.teal : C.gray, marginTop: "4px" }}>{p.value || "—"}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
 
         {/* Allergies & médical */}
-        <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Santé</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
-          <div style={{ background: enfant.allergies ? "#fef3c7" : C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
-            <p style={{ fontSize: "10px", fontWeight: 700, color: enfant.allergies ? "#b45309" : C.gray, textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}>
-              {enfant.allergies && <AlertTriangle size={12} />} Allergies
-            </p>
-            <p style={{ fontSize: "13px", fontWeight: enfant.allergies ? 700 : 400, color: enfant.allergies ? "#92400e" : C.gray, marginTop: "4px", whiteSpace: "pre-wrap" }}>
-              {enfant.allergies || "Aucune allergie signalée"}
-            </p>
-          </div>
-          <div style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
-            <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Informations complémentaires</p>
-            <p style={{ fontSize: "13px", color: enfant.informationsComplementaires ? C.teal : C.gray, marginTop: "4px", whiteSpace: "pre-wrap" }}>
-              {enfant.informationsComplementaires || "—"}
-            </p>
-          </div>
-        </div>
+        {aSante && (
+          <>
+            <p style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>Santé</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
+              {enfant.allergies && (
+                <div style={{ background: "#fef3c7", borderRadius: "12px", padding: "12px 14px" }}>
+                  <p style={{ fontSize: "10px", fontWeight: 700, color: "#b45309", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <AlertTriangle size={12} /> Allergies
+                  </p>
+                  <p style={{ fontSize: "13px", fontWeight: 700, color: "#92400e", marginTop: "4px", whiteSpace: "pre-wrap" }}>
+                    {enfant.allergies}
+                  </p>
+                </div>
+              )}
+              {enfant.informationsComplementaires && (
+                <div style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+                  <p style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Informations complémentaires</p>
+                  <p style={{ fontSize: "13px", color: C.teal, marginTop: "4px", whiteSpace: "pre-wrap" }}>
+                    {enfant.informationsComplementaires}
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Documents */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", flexWrap: "wrap" }}>
