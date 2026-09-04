@@ -45,6 +45,8 @@ const C = {
 function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId, onDeleteInscription, isDeleting }) {
   const enfantRecord = enfants.find((e) => e.id === sejour.enfantId);
   const documentsRequis = sejour.documentsRequis || [];
+  const [nomAutreDoc, setNomAutreDoc] = useState("");
+  const autresDocs = (enfantRecord?.documents || []).filter((d) => !documentsRequis.includes(d.type));
 
   const statusConfig = {
     VALIDE: { bg: "bg-green-50", border: "border-green-200", text: "text-green-700", label: "Déjà en base — validé", icon: CheckCircle2 },
@@ -119,6 +121,53 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
                 </div>
               );
             })
+          )}
+
+          {/* Documents déjà importés hors liste requise */}
+          {autresDocs.map((d) => {
+            const cfg = statusConfig[d.statut] || statusConfig.EN_COURS;
+            const Icon = cfg.icon;
+            return (
+              <div key={d.id} className={`${cfg.bg} border ${cfg.border} rounded-xl p-4 flex items-center gap-3`}>
+                <Icon className={cfg.text} size={20} />
+                <div>
+                  <p className={`font-bold ${cfg.text}`}>{d.type}</p>
+                  <p className={`text-xs ${cfg.text} opacity-75`}>{cfg.label}</p>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Ajouter un autre document (type libre) */}
+          {enfantRecord && (
+            <div className="border border-dashed border-slate-300 rounded-xl p-4">
+              <p className="text-sm font-bold text-slate-700 mb-2">Ajouter un autre document</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={nomAutreDoc}
+                  onChange={(e) => setNomAutreDoc(e.target.value)}
+                  placeholder="Type du document (ex : Passeport, Ordonnance...)"
+                  className="flex-1 p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm"
+                />
+                <label className={`shrink-0 ${nomAutreDoc.trim() ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}>
+                  <input
+                    type="file"
+                    className="hidden"
+                    disabled={!nomAutreDoc.trim() || uploadingDocId === nomAutreDoc.trim()}
+                    onChange={(e) => {
+                      if (!nomAutreDoc.trim()) return;
+                      onUpload(enfantRecord.id, nomAutreDoc.trim(), e);
+                      setNomAutreDoc("");
+                    }}
+                  />
+                  <div className="flex items-center justify-center gap-2 bg-white text-teal px-3 py-2.5 rounded-lg font-bold text-sm border border-slate-200">
+                    {uploadingDocId === nomAutreDoc.trim() ? <Loader size={16} className="animate-spin" /> : <UploadCloud size={16} />}
+                    Importer
+                  </div>
+                </label>
+              </div>
+            </div>
           )}
         </div>
 
