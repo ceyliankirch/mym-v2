@@ -99,7 +99,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   // simple, avec un complément à régler plus tard, si aucun binôme n'est trouvé).
   const [listeAttenteChambre, setListeAttenteChambre] = useState(false);
   const tarifChoisi = tarifChoisiIdx != null ? tarifsListe[tarifChoisiIdx] : null;
-  const tarifDoubleSelectionne = /double|twin/i.test(tarifChoisi?.label || "");
 
   // En liste d'attente d'un binôme pour la chambre double, le tarif final n'est pas encore
   // certain : pas de paiement en ligne ni de lien de paiement dans ce cas.
@@ -406,25 +405,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       Merci de sélectionner un tarif.
                     </p>
                   )}
-
-                  {tarifDoubleSelectionne && (
-                    <div style={{ marginTop: "4px" }}>
-                      <label style={styles.checkboxRow}>
-                        <input
-                          type="checkbox"
-                          checked={listeAttenteChambre}
-                          onChange={(e) => setListeAttenteChambre(e.target.checked)}
-                          style={styles.checkboxInput}
-                        />
-                        <span>Je n'ai personne avec qui partager ma chambre : me mettre en liste d'attente</span>
-                      </label>
-                      {listeAttenteChambre && (
-                        <p style={{ ...styles.infoText, marginTop: "10px", background: "#fff7ed", color: "#9a3412" }}>
-                          Ce tarif « {tarifChoisi?.label} » n'est valable que si nous trouvons quelqu'un avec qui partager la chambre. Si ce n'est pas le cas d'ici le départ, vous serez basculé(e) sur le tarif chambre simple, avec un complément à régler plus tard.
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -615,6 +595,10 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         );
                       }
 
+                      // 🛌 Séjours séniors : sous le champ "avec qui partager la chambre",
+                      // on propose de se mettre en liste d'attente faute de binôme.
+                      const estChampBinome = estSenior && /partager/i.test(field.label || "");
+
                       return (
                         <div key={field.id} style={styles.inputGroup}>
                           <label style={styles.label}>
@@ -657,6 +641,25 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                               }
                               style={styles.input}
                             />
+                          )}
+
+                          {estChampBinome && (
+                            <div style={{ marginTop: "4px" }}>
+                              <label style={styles.checkboxRow}>
+                                <input
+                                  type="checkbox"
+                                  checked={listeAttenteChambre}
+                                  onChange={(e) => setListeAttenteChambre(e.target.checked)}
+                                  style={styles.checkboxInput}
+                                />
+                                <span>Je n'ai personne avec qui partager ma chambre : me mettre en liste d'attente</span>
+                              </label>
+                              {listeAttenteChambre && (
+                                <p style={{ ...styles.infoText, marginTop: "10px", background: "#fff7ed", color: "#9a3412" }}>
+                                  Ce tarif « {tarifChoisi?.label || "chambre double"} » n'est valable que si nous trouvons quelqu'un avec qui partager la chambre. Si ce n'est pas le cas d'ici le départ, vous serez basculé(e) sur le tarif chambre simple, avec un complément à régler plus tard.
+                                </p>
+                              )}
+                            </div>
                           )}
                         </div>
                       );
