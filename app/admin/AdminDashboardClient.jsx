@@ -11,13 +11,12 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight, QrCode, Megaphone, User
+  Baby, Cake, Ruler, Footprints, Weight, QrCode, User
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
 import StatistiquesSection from "./StatistiquesSection";
-import CommunicationSection from "./CommunicationSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -46,12 +45,10 @@ const C = {
 
 const MENU = [
   { id: "dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { id: "sejours", label: "Gestion des Séjours", icon: Map },
-  { id: "inscriptions", label: "Inscriptions & Enfants", icon: FileText },
+  { id: "sejours", label: "Séjours", icon: Map },
+  { id: "inscriptions", label: "Inscriptions", icon: FileText },
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
-  { id: "clients", label: "Clients & Familles", icon: Users },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail },
-  { id: "communication", label: "Communication", icon: Megaphone },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
@@ -1690,7 +1687,7 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, inscriptions, sejours, clients, enfants, animateurs, albums, prochainsDeparts }) {
+export default function AdminDashboardClient({ stats, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -1852,12 +1849,10 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
           <div style={{ marginBottom: "40px" }}>
             <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal }}>
               {activeTab === "dashboard" && "Bonjour, l'équipe 👋"}
-              {activeTab === "sejours" && "Gestion des Séjours 🏕️"}
+              {activeTab === "sejours" && "Séjours 🏕️"}
               {activeTab === "galerie" && "Galerie Photos 📸"}
-              {activeTab === "clients" && "Répertoire Clients 👥"}
-              {activeTab === "inscriptions" && "Inscriptions & Enfants 🧒"}
+              {activeTab === "inscriptions" && "Inscriptions 🧒"}
               {activeTab === "newsletter" && "Liste de diffusion 📧"}
-              {activeTab === "communication" && "Communication 📣"}
               {activeTab === "statistiques" && "Statistiques 📊"}
               {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
             </h1>
@@ -2124,47 +2119,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
             </>
           )}
 
-          {activeTab === "clients" && (
-            <>
-              <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray, marginBottom: "20px" }}>{clients?.length || 0} famille(s)</div>
-              {(!clients || clients.length === 0) ? (
-                <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
-                  <Users size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
-                  <p>Aucune famille enregistrée pour le moment.</p>
-                </div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
-                  {clients.map(c => (
-                    <div key={c.id} style={{ background: C.white, padding: "24px", borderRadius: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                        <h3 style={{ color: C.teal, fontWeight: 800 }}>{c.nom} {c.prenom}</h3>
-                        <span style={{ background: C.arctic, color: C.teal, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, flexShrink: 0 }}>{c._count?.inscriptions || 0} inscription{(c._count?.inscriptions || 0) > 1 ? "s" : ""}</span>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px", color: C.gray, marginBottom: "12px" }}>
-                         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Mail size={14}/> {c.email || "Non renseigné"}</span>
-                         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><Phone size={14}/> {c.telephone || "Non renseigné"}</span>
-                      </div>
-                      {c.enfants?.length > 0 && (
-                        <div style={{ borderTop: `1px solid ${C.arctic}`, paddingTop: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          {c.enfants.map(e => {
-                            const bg = e.sexe === "M" ? "#dbeafe" : e.sexe === "F" ? "#fce7f3" : C.lilac;
-                            const fg = e.sexe === "M" ? "#1d4ed8" : e.sexe === "F" ? "#be185d" : C.teal;
-                            return (
-                              <button key={e.id} onClick={() => setFicheEnfantId(e.id)} title="Voir la fiche complète" style={{ fontSize: "12px", fontWeight: 600, color: fg, background: bg, padding: "4px 10px", borderRadius: "999px", border: "none", cursor: "pointer" }}>{e.prenom} {e.nom}</button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
           {activeTab === "newsletter" && <NewsletterSection />}
-
-          {activeTab === "communication" && <CommunicationSection sejours={sejours} />}
 
           {activeTab === "statistiques" && <StatistiquesSection />}
 
