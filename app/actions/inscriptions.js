@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendInscriptionReceivedEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail, sendPreInscriptionEmail, sendDemandeReinfoEmail } from "@/lib/email";
+import { sendInscriptionReceivedEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail, sendPreInscriptionEmail, sendDemandeReinfoEmail, sendInfosMisesAJourEmail } from "@/lib/email";
 import { generateInscriptionPdf } from "@/lib/inscriptionPdf";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
@@ -361,7 +361,10 @@ export async function changerStatutInscription(id, statut) {
       const prenomEnfant = inscription.enfant?.prenom;
       const sejourTitre = inscription.sejour?.titre;
 
-      if (statut === "Inscription envoyée") {
+      // On ne renvoie "Inscription bien reçue" que si le statut précédent était vierge
+      // (jamais lors d'un retour arrière depuis un statut plus avancé, pour éviter le spam).
+      const statutPrecedentVierge = !inscriptionActuelle?.statut || inscriptionActuelle.statut === "En attente";
+      if (statut === "Inscription envoyée" && statutPrecedentVierge) {
         await sendInscriptionReceivedEmail({ to, prenomEnfant, sejourTitre, lienPaiementCIC: inscription.sejour?.lienPaiementCIC });
       } else if (statut === "Paiement validé") {
         await sendInscriptionConfirmationEmail({
@@ -523,7 +526,10 @@ export async function modifierReponsesInscription(inscriptionId, clientId, repon
   if (!inscriptionId || !clientId) return { error: "Données incomplètes" };
 
   try {
-    const inscription = await prisma.inscription.findUnique({ where: { id: inscriptionId } });
+    const inscription = await prisma.inscription.findUnique({
+      where: { id: inscriptionId },
+      include: { client: true, enfant: true, sejour: true },
+    });
     if (!inscription || inscription.clientId !== clientId) {
       return { error: "Inscription introuvable" };
     }
@@ -538,6 +544,20 @@ export async function modifierReponsesInscription(inscriptionId, clientId, repon
       where: { id: inscriptionId },
       data: { reponsesFormulaire: clean },
     });
+
+    // 📧 Confirmation "informations mises à jour" (+ récapitulatif) — remplace tout renvoi d'e-mail d'inscription
+    if (inscription.client?.email) {
+      try {
+        await sendInfosMisesAJourEmail({
+          to: inscription.client.email,
+          prenomEnfant: inscription.enfant?.prenom,
+          sejourTitre: inscription.sejour?.titre,
+          reponses: clean,
+        });
+      } catch (e) {
+        console.error("Erreur envoi email informations mises à jour", e);
+      }
+    }
 
     revalidatePath("/espace-famille");
     revalidatePath("/admin");
