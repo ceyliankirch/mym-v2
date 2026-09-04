@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { 
   LayoutDashboard, Map, Users, FileText, Settings, 
   Menu, Tent, Euro, CheckCircle2, Clock, X, ChevronDown, 
-  UploadCloud, Image as ImageIcon, Mail, Phone, Calendar, Search,
+  UploadCloud, Image as ImageIcon, Mail, Phone, Calendar, Search, Download,
   LayoutGrid, List, CalendarDays,
   ClipboardList, ExternalLink, Edit, Trash2,
   MapPin, Filter, Link as LinkIcon,
@@ -82,6 +82,62 @@ const calculerAge = (dateNaissance) => {
   if (m < 0 || (m === 0 && now.getDate() < naissance.getDate())) age--;
   return age;
 };
+
+// 📄 Export CSV des inscrits d'un séjour (pour les directeurs — ouvrable sur téléphone)
+function exporterInscritsCSV(sejour, inscrits) {
+  const slug = (sejour.titre || "sejour").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "sejour";
+  // Colonnes dynamiques : tous les libellés de réponses présents chez les inscrits
+  const repLabels = [...new Set(
+    inscrits.flatMap((i) => (i.reponsesFormulaire && typeof i.reponsesFormulaire === "object" ? Object.keys(i.reponsesFormulaire) : []))
+  )];
+
+  const headers = [
+    "Prénom", "Nom", "Date de naissance", "Âge", "Sexe", "Taille (cm)", "Poids (kg)", "Pointure",
+    "Allergies", "Infos complémentaires", "Statut", "Inscrit le",
+    "Responsable / titulaire", "Email", "Téléphone", "Documents manquants",
+    ...repLabels,
+  ];
+
+  const rows = inscrits.map((ins) => {
+    const e = ins.enfant || {};
+    const c = ins.client || {};
+    const age = e.dateNaissance ? calculerAge(e.dateNaissance) : null;
+    const docsManq = (e.documents || []).filter((d) => d.statut === "MANQUANT").map((d) => d.type).join(" ; ");
+    const rep = ins.reponsesFormulaire && typeof ins.reponsesFormulaire === "object" ? ins.reponsesFormulaire : {};
+    return [
+      e.prenom || "", e.nom || "",
+      e.dateNaissance ? new Date(e.dateNaissance).toLocaleDateString("fr-FR") : "",
+      age == null ? "" : age,
+      e.sexe === "M" ? "Garçon" : e.sexe === "F" ? "Fille" : "",
+      e.taille ?? "", e.poids ?? "", e.pointure ?? "",
+      e.allergies || "", e.informationsComplementaires || "",
+      ins.statut || "",
+      ins.createdAt ? new Date(ins.createdAt).toLocaleDateString("fr-FR") : "",
+      `${c.prenom || ""} ${c.nom || ""}`.trim(), c.email || "", c.telephone || "",
+      docsManq,
+      ...repLabels.map((l) => {
+        const v = rep[l];
+        return v === true ? "Oui" : v === false ? "Non" : (v ?? "");
+      }),
+    ];
+  });
+
+  const esc = (v) => {
+    const s = String(v ?? "").replace(/\r?\n/g, " ");
+    return /[";]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = "\uFEFF" + [headers, ...rows].map((r) => r.map(esc).join(";")).join("\r\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `inscrits-${slug}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 // Réponses au formulaire d'inscription, réordonnées et regroupées par section
 // d'après le formSchema du séjour (le stockage n'est qu'un objet { libellé: valeur }).
@@ -971,7 +1027,14 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
         <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>{sejour.titre}</h2>
-        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>{inscrits.length} inscrit{inscrits.length > 1 ? "s" : ""} · {sejour.places || 0} place{(sejour.places || 0) > 1 ? "s" : ""} au total</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "24px" }}>
+          <p style={{ fontSize: "13px", color: C.gray, margin: 0 }}>{inscrits.length} inscrit{inscrits.length > 1 ? "s" : ""} · {sejour.places || 0} place{(sejour.places || 0) > 1 ? "s" : ""} au total</p>
+          {inscrits.length > 0 && (
+            <button onClick={() => exporterInscritsCSV(sejour, inscrits)} style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: C.teal, color: C.white, border: "none", padding: "9px 16px", borderRadius: "10px", fontSize: "12px", fontWeight: 800, cursor: "pointer" }}>
+              <Download size={14} /> Exporter (CSV)
+            </button>
+          )}
+        </div>
 
         {inscrits.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px 0", color: C.gray }}>
