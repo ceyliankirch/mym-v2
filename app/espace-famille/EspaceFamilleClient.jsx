@@ -24,9 +24,10 @@ import {
   MapPin,
   Plus,
   UserCog,
+  ClipboardList,
 } from "lucide-react";
 import { uploaderDocument } from "@/app/actions/documents";
-import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant, creerEnfant, modifierClient } from "@/app/actions/inscriptions";
+import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant, creerEnfant, modifierClient, modifierReponsesInscription } from "@/app/actions/inscriptions";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 const C = {
@@ -542,6 +543,82 @@ function ModifierClientModal({ client, onClose }) {
   );
 }
 
+/* ─── MODALE : COMPLÉTER / MODIFIER LES INFOS D'UNE INSCRIPTION ──────── */
+function ReponsesInscriptionModal({ sejour, onClose }) {
+  let champs = [];
+  try { champs = sejour.formSchema ? JSON.parse(sejour.formSchema) : []; } catch (e) { champs = []; }
+
+  const [reponses, setReponses] = useState(() => ({ ...(sejour.reponsesFormulaire || {}) }));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const setVal = (label, value) => setReponses((p) => ({ ...p, [label]: value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true); setError("");
+    const res = await modifierReponsesInscription(sejour.id, sejour.clientId, reponses);
+    setSaving(false);
+    if (res.error) setError(res.error);
+    else window.location.reload();
+  };
+
+  return (
+    <div onClick={onClose} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 pt-24">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-y-auto p-6 md:p-8">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Mes informations d'inscription</h2>
+            <p className="text-sm text-slate-500">{sejour.titre} — {sejour.enfant}</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 shrink-0"><X size={18} /></button>
+        </div>
+
+        {error && <div className="bg-red-50 text-red-700 text-sm font-semibold rounded-xl p-3 mb-4">{error}</div>}
+
+        {champs.length === 0 ? (
+          <p className="text-slate-500 text-sm">Aucun formulaire à compléter pour ce séjour.</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {champs.map((field) => {
+              if (field.type === "section")
+                return <h3 key={field.id} className="text-base font-black text-slate-900 border-b-2 border-slate-100 pb-2 mt-3">{field.label}</h3>;
+              if (field.type === "info")
+                return <p key={field.id} className="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 whitespace-pre-line">{field.label}</p>;
+              if (field.type === "checkbox")
+                return (
+                  <label key={field.id} className="flex items-start gap-2.5 text-sm text-slate-700 font-medium cursor-pointer">
+                    <input type="checkbox" checked={!!reponses[field.label]} onChange={(e) => setVal(field.label, e.target.checked)} className="mt-0.5" />
+                    <span>{field.label}{field.required && <span className="text-red-500"> *</span>}</span>
+                  </label>
+                );
+              const val = reponses[field.label] ?? "";
+              return (
+                <div key={field.id} className="flex flex-col gap-2">
+                  <label className="text-[13px] font-bold text-slate-700">{field.label}{field.required && <span className="text-red-500">*</span>}</label>
+                  {field.type === "textarea" ? (
+                    <textarea value={val} onChange={(e) => setVal(field.label, e.target.value)} rows={3} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-sm" />
+                  ) : field.type === "select" ? (
+                    <select value={val} onChange={(e) => setVal(field.label, e.target.value)} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-sm">
+                      <option value="">Sélectionnez une option</option>
+                      {(field.options || "").split(",").map((o, i) => <option key={i} value={o.trim()}>{o.trim()}</option>)}
+                    </select>
+                  ) : (
+                    <input type={field.type} value={val} onChange={(e) => setVal(field.label, e.target.value)} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-sm" />
+                  )}
+                </div>
+              );
+            })}
+            <button type="submit" disabled={saving} className="mt-2 w-full bg-[#FFC801] text-[#114C5A] font-black rounded-2xl py-4 disabled:opacity-60">
+              {saving ? "Enregistrement..." : "Enregistrer mes informations"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function EspaceFamilleClient({
   userName = "Parent",
   client = null,
@@ -557,6 +634,7 @@ export default function EspaceFamilleClient({
   const [showAjouterEnfant, setShowAjouterEnfant] = useState(false);
   const [showModifierClient, setShowModifierClient] = useState(false);
   const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
+  const [reponsesEnEdition, setReponsesEnEdition] = useState(null);
   const [enfantEnConsultation, setEnfantEnConsultation] = useState(null);
   const [isDeletingInscription, setIsDeletingInscription] = useState(false);
 
@@ -742,7 +820,7 @@ export default function EspaceFamilleClient({
                           <span>{sejour.dates}</span>
                         </p>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center gap-2 flex-wrap">
                         <span
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${
                             sejour.isValide
@@ -757,6 +835,15 @@ export default function EspaceFamilleClient({
                           )}{" "}
                           {sejour.statut}
                         </span>
+                        {sejour.formSchema && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setReponsesEnEdition(sejour); }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                          >
+                            <ClipboardList size={14} /> Compléter / modifier mes infos
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1105,6 +1192,13 @@ export default function EspaceFamilleClient({
           uploadingDocId={uploadingDocId}
           onDeleteInscription={handleDeleteInscription}
           isDeleting={isDeletingInscription}
+        />
+      )}
+
+      {reponsesEnEdition && (
+        <ReponsesInscriptionModal
+          sejour={reponsesEnEdition}
+          onClose={() => setReponsesEnEdition(null)}
         />
       )}
 

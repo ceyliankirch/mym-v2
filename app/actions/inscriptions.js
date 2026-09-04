@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendInscriptionReceivedEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail, sendPreInscriptionEmail } from "@/lib/email";
+import { sendInscriptionReceivedEmail, sendInscriptionConfirmationEmail, sendInscriptionCancelledEmail, sendNewInscriptionNotificationEmail, sendNewInscriptionSubmittedEmail, sendPreInscriptionEmail, sendDemandeReinfoEmail } from "@/lib/email";
 import { generateInscriptionPdf } from "@/lib/inscriptionPdf";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
@@ -515,5 +515,60 @@ export async function supprimerInscriptionFamille(id, clientId) {
   } catch (error) {
     console.error("Error deleting inscription (famille):", error);
     return { error: "Erreur lors de la suppression de l'inscription" };
+  }
+}
+
+// ✏️ MODIFIER LES RÉPONSES AU FORMULAIRE D'UNE INSCRIPTION (espace famille)
+export async function modifierReponsesInscription(inscriptionId, clientId, reponses) {
+  if (!inscriptionId || !clientId) return { error: "Données incomplètes" };
+
+  try {
+    const inscription = await prisma.inscription.findUnique({ where: { id: inscriptionId } });
+    if (!inscription || inscription.clientId !== clientId) {
+      return { error: "Inscription introuvable" };
+    }
+
+    let clean = null;
+    if (reponses && typeof reponses === "object") {
+      const entries = Object.entries(reponses).filter(([, v]) => v !== "" && v !== null && v !== undefined);
+      if (entries.length) clean = Object.fromEntries(entries);
+    }
+
+    await prisma.inscription.update({
+      where: { id: inscriptionId },
+      data: { reponsesFormulaire: clean },
+    });
+
+    revalidatePath("/espace-famille");
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating inscription responses:", error);
+    return { error: "Erreur lors de l'enregistrement" };
+  }
+}
+
+// 📧 DEMANDER À LA FAMILLE DE RE-REMPLIR LE FORMULAIRE (admin) — prétexte : incident technique
+export async function demanderReinfoInscription(id) {
+  try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id },
+      include: { client: true, enfant: true, sejour: true },
+    });
+    if (!inscription) return { error: "Inscription introuvable" };
+    if (!inscription.client?.email) return { error: "Cette famille n'a pas d'adresse email renseignée." };
+
+    const res = await sendDemandeReinfoEmail({
+      to: inscription.client.email,
+      prenomEnfant: inscription.enfant?.prenom,
+      sejourTitre: inscription.sejour?.titre,
+    });
+    if (res && res.success === false) {
+      return { error: res.error || "L'envoi de l'email a échoué." };
+    }
+    return { success: true, email: inscription.client.email };
+  } catch (error) {
+    console.error("Error requesting inscription re-info:", error);
+    return { error: "Erreur lors de l'envoi de l'email" };
   }
 }

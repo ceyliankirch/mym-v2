@@ -44,6 +44,8 @@ export default async function EspaceFamillePage() {
       statut: ins.statut,
       isValide: ins.statut === "Paiement validé",
       documentsRequis: ins.sejour.documentsRequis || [],
+      formSchema: ins.sejour.formSchema || null,
+      reponsesFormulaire: ins.reponsesFormulaire || null,
     }))
   );
 

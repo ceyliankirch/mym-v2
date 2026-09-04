@@ -27,7 +27,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
@@ -1637,6 +1637,16 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
     alert(res?.error ? `Échec : ${res.error}` : `Email renvoyé à ${res.email}.`);
   };
 
+  const handleDemanderReinfo = async (ins) => {
+    const email = ins.client?.email;
+    if (!email) return alert("Cette famille n'a pas d'adresse email renseignée.");
+    if (!window.confirm(`Envoyer à ${email} une demande de re-remplissage du formulaire (prétexte : incident technique) ? Une copie part sur contact@make-your-moment.com.`)) return;
+    setRenvoiEnCours(ins.id);
+    const res = await demanderReinfoInscription(ins.id);
+    setRenvoiEnCours(null);
+    alert(res?.error ? `Échec : ${res.error}` : `Demande envoyée à ${res.email}.`);
+  };
+
   const handleDeleteEnfant = async (id) => {
     const res = await supprimerEnfantAdmin(id);
     if (res?.success) setFicheEnfantId(null);
@@ -1908,6 +1918,14 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, cli
                             style={{ background: C.arctic, border: "none", width: "30px", height: "30px", borderRadius: "8px", cursor: renvoiEnCours === ins.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal, opacity: renvoiEnCours === ins.id ? 0.5 : 1 }}
                           >
                             <Mail size={13} />
+                          </button>
+                          <button
+                            onClick={() => handleDemanderReinfo(ins)}
+                            disabled={renvoiEnCours === ins.id}
+                            title="Demander à la famille de re-remplir le formulaire (incident technique)"
+                            style={{ background: C.arctic, border: "none", width: "30px", height: "30px", borderRadius: "8px", cursor: renvoiEnCours === ins.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.saffron, opacity: renvoiEnCours === ins.id ? 0.5 : 1 }}
+                          >
+                            <ClipboardList size={13} />
                           </button>
                           <button
                             onClick={() => handleDeleteInscription(ins)}
