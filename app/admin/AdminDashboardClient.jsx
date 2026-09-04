@@ -86,6 +86,45 @@ const calculerAge = (dateNaissance) => {
   return age;
 };
 
+// Réponses au formulaire d'inscription, réordonnées et regroupées par section
+// d'après le formSchema du séjour (le stockage n'est qu'un objet { libellé: valeur }).
+function construireReponsesFiche(ins) {
+  const rep = ins?.reponsesFormulaire;
+  if (!rep || typeof rep !== "object" || Object.keys(rep).length === 0) return [];
+
+  let schema = [];
+  try { schema = ins?.sejour?.formSchema ? JSON.parse(ins.sejour.formSchema) : []; } catch (e) { schema = []; }
+
+  const utilises = new Set();
+  const items = [];
+  schema.forEach((f) => {
+    if (f.type === "section") { items.push({ type: "section", id: f.id, label: f.label }); return; }
+    if (f.type === "info") return;
+    const v = rep[f.label];
+    if (v === undefined || v === null || v === "") return;
+    utilises.add(f.label);
+    items.push({ type: "field", id: f.id, label: f.label, value: v });
+  });
+  // Réponses hors schéma (ex: "Tarif choisi", ou champ retiré depuis)
+  Object.entries(rep).forEach(([k, v]) => {
+    if (utilises.has(k) || v === "" || v === null || v === undefined) return;
+    items.push({ type: "field", id: `x-${k}`, label: k, value: v });
+  });
+
+  // On retire les titres de section qui n'ont aucune réponse en dessous
+  const nettoye = items.filter((item, i) => {
+    if (item.type !== "field") {
+      const suite = items.slice(i + 1);
+      const finSection = suite.findIndex((x) => x.type === "section");
+      const entre = finSection === -1 ? suite : suite.slice(0, finSection);
+      return entre.some((x) => x.type === "field");
+    }
+    return true;
+  });
+
+  return nettoye.some((x) => x.type === "field") ? nettoye : [];
+}
+
 const formatAge = (ageString) => {
   if (!ageString) return "Âges à définir";
   const str = ageString.toLowerCase();
@@ -1160,9 +1199,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
             {inscriptions.map((ins) => {
               const colors = STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
-              const reponses = ins.reponsesFormulaire && typeof ins.reponsesFormulaire === "object"
-                ? Object.entries(ins.reponsesFormulaire)
-                : [];
+              const rendu = construireReponsesFiche(ins);
               return (
                 <div key={ins.id} style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
@@ -1172,16 +1209,20 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
                     </div>
                     <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
                   </div>
-                  {reponses.length > 0 && (
-                    <div style={{ marginTop: "10px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "10px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "6px 16px" }}>
-                      {reponses.map(([k, v]) => (
-                        <div key={k}>
-                          <span style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block" }}>{k}</span>
-                          <span style={{ fontSize: "12px", fontWeight: 600, color: C.teal, wordBreak: "break-word" }}>
-                            {v === true ? "Oui" : v === false ? "Non" : String(v)}
-                          </span>
-                        </div>
-                      ))}
+                  {rendu.length > 0 && (
+                    <div style={{ marginTop: "10px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                      {rendu.map((item) =>
+                        item.type === "section" ? (
+                          <p key={item.id} style={{ fontSize: "15px", fontWeight: 900, color: C.teal, margin: "6px 0 0" }}>{item.label}</p>
+                        ) : (
+                          <div key={item.id}>
+                            <span style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block" }}>{item.label}</span>
+                            <span style={{ fontSize: "13px", fontWeight: 600, color: C.teal, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                              {item.value === true ? "Oui" : item.value === false ? "Non" : String(item.value)}
+                            </span>
+                          </div>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
