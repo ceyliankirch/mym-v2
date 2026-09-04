@@ -1012,7 +1012,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                         style={{
                           background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                           color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                          padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                          padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                         }}
                       >
                         {STATUTS_INSCRIPTION.map((s) => (
@@ -1507,7 +1507,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
                       style={{
                         background: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                         color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                        padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                       }}
                     >
                       {STATUTS_INSCRIPTION.map((s) => (
@@ -2065,7 +2065,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                             style={{
                               background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                               color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                              padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                              padding: "6px 34px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                             }}
                           >
                             {STATUTS_INSCRIPTION.map((s) => (
