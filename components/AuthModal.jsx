@@ -62,8 +62,9 @@ export default function AuthModal({ isOpen, onClose }) {
       }
 
       // Si l'inscription réussit, on connecte directement l'utilisateur dans la foulée !
+      // (identifiant = email si renseigné, sinon le numéro de téléphone)
       const signInRes = await signIn("credentials", {
-        email,
+        email: email || formData.get("telephone"),
         password,
         redirect: false,
       });
@@ -84,7 +85,7 @@ export default function AuthModal({ isOpen, onClose }) {
       });
 
       if (res?.error) {
-        setErrorMsg("Email ou mot de passe incorrect.");
+        setErrorMsg("Identifiant ou mot de passe incorrect.");
       } else {
         router.refresh(); // Mise à jour de la page
         onClose(); // Fermeture de la modale
@@ -209,8 +210,14 @@ export default function AuthModal({ isOpen, onClose }) {
             )}
 
             <div style={{ position: "relative" }}>
-              <Mail size={18} color={C.gray} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} />
-              <input type="email" name="email" required placeholder="Adresse email" style={{ width: "100%", padding: "14px 14px 14px 44px", borderRadius: "16px", border: `1px solid ${C.lightGray}`, background: C.arctic, color: C.teal, fontWeight: 600, outline: "none" }} />
+              {mode === "register" ? <Mail size={18} color={C.gray} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} /> : <User size={18} color={C.gray} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)" }} />}
+              <input
+                type={mode === "register" ? "email" : "text"}
+                name="email"
+                required={mode !== "register"}
+                placeholder={mode === "register" ? "Adresse email (facultatif si vous avez un numéro)" : "Email ou numéro de téléphone"}
+                style={{ width: "100%", padding: "14px 14px 14px 44px", borderRadius: "16px", border: `1px solid ${C.lightGray}`, background: C.arctic, color: C.teal, fontWeight: 600, outline: "none" }}
+              />
             </div>
 
             <div style={{ position: "relative" }}>

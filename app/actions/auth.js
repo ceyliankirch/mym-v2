@@ -9,22 +9,30 @@ import { sendWelcomeEmail, sendPasswordResetEmail } from "@/lib/email";
 export async function registerUser(formData) {
   const prenom = formData.get("prenom");
   const nom = formData.get("nom");
-  const telephone = formData.get("telephone");
-  const email = formData.get("email");
+  const telephone = (formData.get("telephone") || "").toString().trim() || null;
+  const email = (formData.get("email") || "").toString().trim() || null;
   const password = formData.get("password");
 
-  if (!email || !password || !prenom || !nom) {
-    return { error: "Tous les champs obligatoires doivent être remplis." };
+  // ☎️ Email OU téléphone (au moins l'un des deux), pour les personnes qui n'ont pas d'adresse mail.
+  if (!password || !prenom || !nom || (!email && !telephone)) {
+    return { error: "Merci de renseigner votre email ou votre numéro de téléphone." };
   }
 
   try {
-    // 1. Vérifier si l'email existe déjà
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    // 1. Vérifier qu'il n'existe pas déjà un compte avec cet email ou ce téléphone
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          ...(email ? [{ email }] : []),
+          ...(telephone ? [{ telephone }] : []),
+        ],
+      },
     });
 
     if (existingUser) {
-      return { error: "Cet email est déjà utilisé par un autre compte." };
+      return { error: email && existingUser.email === email
+        ? "Cet email est déjà utilisé par un autre compte."
+        : "Ce numéro de téléphone est déjà utilisé par un autre compte." };
     }
 
     // 2. Crypter le mot de passe
@@ -42,11 +50,14 @@ export async function registerUser(formData) {
       }
     });
 
-    // 4. Email de bienvenue (non bloquant : on ne fait pas échouer l'inscription si l'email échoue)
-    try {
-      await sendWelcomeEmail({ to: email, prenom });
-    } catch (e) {
-      console.error("Erreur envoi email de bienvenue", e);
+    // 4. Email de bienvenue — seulement si un email a été renseigné. Pour une inscription
+    // par numéro de téléphone, on ne renvoie aucun message de confirmation (pas d'envoi de SMS).
+    if (email) {
+      try {
+        await sendWelcomeEmail({ to: email, prenom });
+      } catch (e) {
+        console.error("Erreur envoi email de bienvenue", e);
+      }
     }
 
     return { success: true };

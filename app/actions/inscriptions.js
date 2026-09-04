@@ -40,10 +40,28 @@ export async function getOrCreateClientForUser(userId) {
 
   if (!user) return null;
 
-  client = await prisma.client.upsert({
-    where: { email: user.email || "" },
-    update: { userId },
-    create: {
+  // 🔗 On essaie de rattacher un client existant (ex : créé manuellement par un admin
+  // avant que la personne n'ait de compte) via son email ou son téléphone. On ne fait
+  // JAMAIS l'upsert sur un email vide : avec des comptes sans email (inscription par
+  // téléphone), ça collisionnerait tous ces comptes sur la même clé "" et réattribuerait
+  // le même client à des personnes différentes.
+  if (user.email || user.telephone) {
+    const existant = await prisma.client.findFirst({
+      where: {
+        userId: null,
+        OR: [
+          ...(user.email ? [{ email: user.email }] : []),
+          ...(user.telephone ? [{ telephone: user.telephone }] : []),
+        ],
+      },
+    });
+    if (existant) {
+      return prisma.client.update({ where: { id: existant.id }, data: { userId } });
+    }
+  }
+
+  client = await prisma.client.create({
+    data: {
       userId,
       nom: user.nom || "",
       prenom: user.prenom,

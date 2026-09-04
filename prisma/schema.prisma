@@ -204,7 +204,7 @@ model User {
   prenom        String?
   email         String?   @unique
   emailVerified DateTime?
-  telephone     String?
+  telephone     String?   @unique
   password      String?   // Mot de passe crypté
   image         String?
   role          String    @default("PARENT")
