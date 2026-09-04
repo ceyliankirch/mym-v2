@@ -1012,7 +1012,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                         style={{
                           background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                           color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                          padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                          padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                         }}
                       >
                         {STATUTS_INSCRIPTION.map((s) => (
@@ -1507,7 +1507,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
                       style={{
                         background: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                         color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        padding: "6px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                        padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                       }}
                     >
                       {STATUTS_INSCRIPTION.map((s) => (
@@ -1760,14 +1760,27 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
     URL.revokeObjectURL(url);
   };
 
+  // ⚡ MàJ optimiste : l'UI change tout de suite, la revalidation serveur suit en arrière-plan
+  const [statutsOptimistes, setStatutsOptimistes] = useState({});
+  const [inscriptionsSupprimees, setInscriptionsSupprimees] = useState(() => new Set());
+
   const handleChangerStatutInscription = async (id, statut) => {
-    await changerStatutInscription(id, statut);
+    setStatutsOptimistes((o) => ({ ...o, [id]: statut }));
+    try {
+      await changerStatutInscription(id, statut);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleDeleteInscription = async (ins) => {
     const nom = ins.enfant ? `${ins.enfant.prenom} ${ins.enfant.nom}` : "cet inscrit";
-    if (window.confirm(`Supprimer définitivement l'inscription de ${nom} ?`)) {
+    if (!window.confirm(`Supprimer définitivement l'inscription de ${nom} ?`)) return;
+    setInscriptionsSupprimees((s) => new Set(s).add(ins.id));
+    try {
       await supprimerInscription(ins.id);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -1813,6 +1826,11 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
   // ── Inscriptions & fiches enfants ──
   const ficheEnfant = (enfants || []).find((e) => e.id === ficheEnfantId) || null;
 
+  // Vue des inscriptions avec les MàJ optimistes (statut / suppression) appliquées
+  const inscriptionsVue = (inscriptions || [])
+    .filter((ins) => !inscriptionsSupprimees.has(ins.id))
+    .map((ins) => (statutsOptimistes[ins.id] ? { ...ins, statut: statutsOptimistes[ins.id] } : ins));
+
   // Couleur stable par séjour (assignée dans l'ordre de la liste des séjours)
   const sejourColorMap = {};
   (sejours || []).forEach((s, i) => { sejourColorMap[s.id] = SEJOUR_PALETTE[i % SEJOUR_PALETTE.length]; });
@@ -1820,10 +1838,10 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
 
   // Séjours qui ont au moins une inscription (pour la barre de filtres)
   const sejoursAvecInscrits = (sejours || []).filter((s) =>
-    (inscriptions || []).some((ins) => ins.sejourId === s.id)
+    inscriptionsVue.some((ins) => ins.sejourId === s.id)
   );
 
-  const inscriptionsFiltrees = (inscriptions || []).filter((ins) => {
+  const inscriptionsFiltrees = inscriptionsVue.filter((ins) => {
     if (filtreSejourId && ins.sejourId !== filtreSejourId) return false;
     const q = rechercheEnfant.trim().toLowerCase();
     if (!q) return true;
@@ -1891,7 +1909,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                   )}
                 </div>
 
-                <TableInscriptions data={inscriptions} onFicheEnfant={setFicheEnfantId} onChangerStatut={handleChangerStatutInscription} />
+                <TableInscriptions data={inscriptionsVue} onFicheEnfant={setFicheEnfantId} onChangerStatut={handleChangerStatutInscription} />
               </div>
             </>
           )}
@@ -1960,12 +1978,12 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                         onClick={() => setFiltreSejourId("")}
                         style={{ fontSize: "12px", fontWeight: 800, padding: "8px 16px", borderRadius: "999px", cursor: "pointer", border: `1px solid ${filtreSejourId === "" ? C.teal : C.lightGray}`, background: filtreSejourId === "" ? C.teal : C.white, color: filtreSejourId === "" ? C.white : C.teal }}
                       >
-                        Tous ({inscriptions.length})
+                        Tous ({inscriptionsVue.length})
                       </button>
                       {sejoursAvecInscrits.map((s) => {
                         const col = couleurSejour(s.id);
                         const actif = filtreSejourId === s.id;
-                        const n = inscriptions.filter((ins) => ins.sejourId === s.id).length;
+                        const n = inscriptionsVue.filter((ins) => ins.sejourId === s.id).length;
                         return (
                           <button
                             key={s.id}
@@ -1995,7 +2013,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                 </div>
               </div>
 
-              {(!inscriptions || inscriptions.length === 0) ? (
+              {inscriptionsVue.length === 0 ? (
                 <div style={{ background: C.white, padding: "40px", borderRadius: "20px", textAlign: "center", color: C.gray }}>
                   <FileText size={40} style={{ opacity: 0.2, margin: "0 auto 16px" }} />
                   <p>Aucune inscription pour le moment.</p>
@@ -2047,7 +2065,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                             style={{
                               background: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
                               color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                              padding: "6px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
+                              padding: "6px 26px 6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
                             }}
                           >
                             {STATUTS_INSCRIPTION.map((s) => (
@@ -2169,7 +2187,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
-      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptions} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
+      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptionsVue} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
