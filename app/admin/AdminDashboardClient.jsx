@@ -11,7 +11,7 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight, QrCode, User
+  Baby, Cake, Ruler, Footprints, Weight, QrCode, User, BedDouble, BedSingle
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -267,6 +267,110 @@ function construireReponsesFiche(ins) {
   });
 
   return nettoye.some((x) => x.type === "field") ? nettoye : [];
+}
+
+// 🛏️ Déduit le type de chambre (simple/double), le binôme déclaré et le statut "liste
+// d'attente" d'une inscription, à partir des réponses au formulaire d'inscription.
+function deriveChambreInfo(ins) {
+  const rep = ins?.reponsesFormulaire || {};
+  const tarifChoisi = String(rep["Tarif choisi"] || "").toLowerCase();
+  let type = null;
+  if (tarifChoisi.includes("double") || tarifChoisi.includes("twin")) type = "double";
+  else if (tarifChoisi.includes("simple")) type = "simple";
+
+  const cleBinome = Object.keys(rep).find((k) => /partager/i.test(k));
+  const binome = cleBinome ? rep[cleBinome] : "";
+  const listeAttente = rep["Liste d'attente chambre double"] === "Oui";
+
+  return { type, binome, listeAttente };
+}
+
+// 🛏️ Vue d'ensemble des chambres d'un séjour (simple / double), activable séjour par séjour
+// depuis ses paramètres. Répartit les inscrits d'après le tarif choisi et signale les
+// personnes en liste d'attente d'un binôme pour la chambre double.
+function ModalChambres({ sejour, inscriptions, onClose }) {
+  const inscrits = (inscriptions || []).filter(
+    (ins) => (ins.sejourId === sejour.id || ins.sejour?.id === sejour.id) && ins.statut !== "Annulée"
+  );
+
+  const simples = [];
+  const doubles = [];
+  const nonPrecise = [];
+
+  inscrits.forEach((ins) => {
+    const { type, binome, listeAttente } = deriveChambreInfo(ins);
+    const nom = `${ins.enfant?.prenom || ""} ${ins.enfant?.nom || ""}`.trim() || "—";
+    if (type === "simple") simples.push({ nom, ins });
+    else if (type === "double") doubles.push({ nom, binome, listeAttente, ins });
+    else nonPrecise.push({ nom, ins });
+  });
+
+  const carte = (children, key) => (
+    <div key={key} style={{ background: C.arctic, borderRadius: "10px", padding: "10px 14px" }}>
+      {children}
+    </div>
+  );
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "780px", maxHeight: "85vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
+
+        <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>🛏️ Chambres — {sejour.titre}</h2>
+        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Répartition des inscrits par type de chambre, déduite du tarif choisi et des réponses au formulaire.</p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
+          <div>
+            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <BedSingle size={15} /> Chambre simple ({simples.length})
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {simples.map(({ nom, ins }) => carte(
+                <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>,
+                ins.id
+              ))}
+              {simples.length === 0 && <p style={{ fontSize: "12px", color: C.gray }}>Aucun inscrit sur ce tarif.</p>}
+            </div>
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <BedDouble size={15} /> Chambre double ({doubles.length})
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {doubles.map(({ nom, binome, listeAttente, ins }) => (
+                <div key={ins.id} style={{ background: listeAttente ? "#fff7ed" : C.arctic, border: listeAttente ? `1px solid ${C.saffron}50` : "1px solid transparent", borderRadius: "10px", padding: "10px 14px" }}>
+                  <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>
+                  {listeAttente ? (
+                    <p style={{ fontSize: "11px", fontWeight: 700, color: C.saffron, margin: "4px 0 0" }}>⏳ En liste d'attente — pas encore de binôme</p>
+                  ) : binome ? (
+                    <p style={{ fontSize: "11px", color: C.gray, margin: "4px 0 0" }}>Avec : {binome}</p>
+                  ) : (
+                    <p style={{ fontSize: "11px", color: C.gray, margin: "4px 0 0" }}>Binôme non renseigné</p>
+                  )}
+                </div>
+              ))}
+              {doubles.length === 0 && <p style={{ fontSize: "12px", color: C.gray }}>Aucun inscrit sur ce tarif.</p>}
+            </div>
+          </div>
+        </div>
+
+        {nonPrecise.length > 0 && (
+          <div style={{ marginTop: "24px" }}>
+            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
+              Type de chambre non précisé ({nonPrecise.length})
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {nonPrecise.map(({ nom, ins }) => carte(
+                <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>,
+                ins.id
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 const formatAge = (ageString) => {
@@ -746,6 +850,14 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <button type="button" onClick={addTarif} style={{ alignSelf: "flex-start", background: "none", border: `1px dashed ${C.gray}`, color: C.gray, padding: "10px 16px", borderRadius: "12px", fontSize: "12px", cursor: "pointer" }}>+ Ajouter un tarif</button>
               <p style={{ fontSize: "11px", color: C.gray }}>Le 1er tarif est le prix principal affiché. Les suivants apparaissent en dessous avec leur libellé (comme le tarif Val-de-Marne).</p>
             </div>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
+              <input type="checkbox" name="gestionChambres" defaultChecked={isEditing ? !!sejourData.gestionChambres : false} style={{ width: "16px", height: "16px", marginTop: "2px", cursor: "pointer" }} />
+              <span>
+                <span style={{ display: "block", fontSize: "13px", fontWeight: 800, color: C.teal }}>🛏️ Activer la vue d'ensemble des chambres</span>
+                <span style={{ display: "block", fontSize: "11px", color: C.gray, marginTop: "2px" }}>Ajoute un bouton « Chambres » sur ce séjour dans le dashboard, avec la répartition chambre simple / chambre double des inscrits (utile pour les séjours séniors).</span>
+              </span>
+            </label>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxWidth: "260px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Montant assurance annulation (€)</label>
@@ -1655,7 +1767,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   );
 }
 
-function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr }) {
+function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr, onShowChambres }) {
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
@@ -1709,6 +1821,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
                 <td style={{ padding: "16px", display: "flex", gap: "6px", justifyContent: "flex-end", alignItems: "center" }}>
                   <div className="extra-actions" style={{ display: "flex", gap: "6px" }}>
                     <button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={15} /></button>
+                    {s.gestionChambres && <button title="Vue d'ensemble des chambres" onClick={() => onShowChambres(s)} style={{...actionBtnStyle, opacity: 1}}><BedDouble size={15} /></button>}
                     <button title="Télécharger le formulaire Totemia (PDF)" onClick={() => onFormulaireTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={15} /></button>
                     <button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={15} /></button>
                   </div>
@@ -1725,7 +1838,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   );
 }
 
-function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr }) {
+function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, onDuplicate, onViewInscrits, onFormulaireTotemia, onShowQr, onShowChambres }) {
   const actionBtnStyle = { background: "transparent", border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.gray };
 
   return (
@@ -1770,7 +1883,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
             </div>
 
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.lightGray}`, display: "flex", justifyContent: "space-between", background: C.arctic + "40" }}>
-              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button><button title="Télécharger le formulaire Totemia (PDF)" onClick={() => onFormulaireTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button><button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={16} /></button></div>
+              <div className="extra-actions" style={{ display: "flex", gap: "4px" }}><button title="Voir les inscrits" onClick={() => onViewInscrits(s)} style={{...actionBtnStyle, opacity: 1}}><Users size={16} /></button>{s.gestionChambres && <button title="Vue d'ensemble des chambres" onClick={() => onShowChambres(s)} style={{...actionBtnStyle, opacity: 1}}><BedDouble size={16} /></button>}<button title="Télécharger le formulaire Totemia (PDF)" onClick={() => onFormulaireTotemia(s)} style={{...actionBtnStyle, opacity: 1}}><ClipboardList size={16} /></button><button title="QR code du séjour" onClick={() => onShowQr(s)} style={{...actionBtnStyle, opacity: 1}}><QrCode size={16} /></button></div>
               <div style={{ display: "flex", gap: "4px" }}><button title="Dupliquer" onClick={() => onDuplicate(s.id)} style={{...actionBtnStyle, opacity: 1}}><Copy size={16} /></button><button title="Éditer" onClick={() => onEdit(s)} style={{...actionBtnStyle, opacity: 1}}><Edit size={16} /></button><button title="Supprimer" onClick={() => onDelete(s.id)} style={{...actionBtnStyle, color: "#f63656", opacity: 1}}><Trash2 size={16} /></button></div>
             </div>
           </div>
@@ -1892,6 +2005,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
   const [albumEnEdition, setAlbumEnEdition] = useState(null);
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
   const [qrSejour, setQrSejour] = useState(null);
+  const [chambresSejour, setChambresSejour] = useState(null);
   const [ficheEnfantId, setFicheEnfantId] = useState(null);
   const [rechercheEnfant, setRechercheEnfant] = useState("");
   const [filtreSejourId, setFiltreSejourId] = useState("");
@@ -2155,8 +2269,8 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
               </div>
               
               {viewMode === "table" ? 
-                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} /> :
-                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} />}
+                <TableSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} onShowChambres={setChambresSejour} /> :
+                <GridSejours data={sejoursFiltres} onEdit={setSejourEnEdition} onDelete={handleDelete} onToggleStatut={handleToggleStatut} onToggleEnAvant={handleToggleEnAvant} onDuplicate={handleDuplicate} onViewInscrits={setSejourInscritsEnView} onFormulaireTotemia={handleFormulaireTotemia} onShowQr={setQrSejour} onShowChambres={setChambresSejour} />}
             </>
           )}
 
@@ -2377,6 +2491,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptionsVue} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
+      {chambresSejour && <ModalChambres sejour={chambresSejour} inscriptions={inscriptionsVue} onClose={() => setChambresSejour(null)} />}
       {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
   );

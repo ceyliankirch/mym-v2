@@ -70,6 +70,7 @@ model Sejour {
   prixLabel    String?   // libellé du tarif principal (ex: "Chambre double ou twin")
   tarifs       Json?     // tarifs supplémentaires : [{ label: String, montant: Float }]
   montantAssurance Float @default(30) // montant de l'assurance annulation en option (€)
+  gestionChambres  Boolean @default(false) // active la vue d'ensemble des chambres (simple/double) côté admin
   statut       String    @default("Brouillon")
   enAvant      Boolean   @default(false)
   tranchesAge  String?   // Pour stocker "6-12 ans" par exemple

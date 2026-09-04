@@ -89,12 +89,20 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const champPaiement = champsAffiches.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("régler")
   );
-  const paiementParCarteBleue = champPaiement && formData[champPaiement.label] === "Carte bleue";
+  // En liste d'attente d'un binôme pour la chambre double, le tarif final n'est pas encore
+  // certain : pas de paiement en ligne ni de lien de paiement dans ce cas.
+  const paiementParCarteBleue = !listeAttenteChambre && champPaiement && formData[champPaiement.label] === "Carte bleue";
 
   // 🏷️ Tarif sélectionné : "standard" ou "val_de_marne" (-100€, débloqué par un code)
   const [tarifSelectionne, setTarifSelectionne] = useState("standard");
   // 🛏️ Quand le séjour propose plusieurs tarifs libellés, la famille en choisit un
   const [tarifChoisiIdx, setTarifChoisiIdx] = useState(tarifsListe.length === 1 ? 0 : null);
+  // 🛌 Séjours séniors uniquement : la personne n'a personne avec qui partager sa chambre
+  // double et se met en liste d'attente d'un binôme (elle basculera sur le tarif chambre
+  // simple, avec un complément à régler plus tard, si aucun binôme n'est trouvé).
+  const [listeAttenteChambre, setListeAttenteChambre] = useState(false);
+  const tarifChoisi = tarifChoisiIdx != null ? tarifsListe[tarifChoisiIdx] : null;
+  const tarifDoubleSelectionne = /double|twin/i.test(tarifChoisi?.label || "");
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
   const [promoErreur, setPromoErreur] = useState("");
@@ -212,14 +220,20 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         const t = tarifsListe[tarifChoisiIdx];
         reponsesFormulaire["Tarif choisi"] = `${t.label || "Tarif"} — ${t.montant} €`;
       }
+      if (listeAttenteChambre) {
+        reponsesFormulaire["Liste d'attente chambre double"] = "Oui";
+      }
 
       const result = await creerInscription(
         sejour.id,
         enfantData,
         session.user.id,
         {
-          moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
-          lienPaiement: lienPaiementActif,
+          // En liste d'attente : le tarif n'est pas définitif, donc pas de paiement en ligne
+          // ni de lien de paiement envoyé (le règlement se fera plus tard, une fois le
+          // binôme confirmé ou le tarif chambre simple appliqué).
+          moyenPaiement: listeAttenteChambre ? undefined : (champPaiement ? formData[champPaiement.label] : undefined),
+          lienPaiement: listeAttenteChambre ? undefined : lienPaiementActif,
           montantTotal,
         },
         reponsesFormulaire
@@ -357,6 +371,58 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 <div style={styles.errorAlert}>
                   <AlertCircle size={20} />
                   <p>{error}</p>
+                </div>
+              )}
+
+              {estSenior && tarifsListe.length > 0 && (
+                <div style={styles.section}>
+                  <h3 style={styles.sectionTitle}>Choisissez votre tarif</h3>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", margin: "4px 0 6px" }}>
+                    {tarifsListe.map((l, i) => {
+                      const actif = tarifChoisiIdx === i;
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            setTarifChoisiIdx(i);
+                            if (!/double|twin/i.test(l.label || "")) setListeAttenteChambre(false);
+                          }}
+                          style={{
+                            ...styles.priceBox,
+                            flex: "1 1 150px",
+                            ...(actif ? styles.priceBoxActive : {}),
+                          }}
+                        >
+                          <p style={styles.priceBoxLabel}>{l.label || "Tarif"}</p>
+                          <p style={styles.priceBoxAmount}>{l.montant.toFixed(2)} €</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {tarifChoisiIdx == null && (
+                    <p style={{ fontSize: "12px", fontWeight: 700, color: C.saffron, margin: "2px 0 8px" }}>
+                      Merci de sélectionner un tarif.
+                    </p>
+                  )}
+
+                  {tarifDoubleSelectionne && (
+                    <div style={{ marginTop: "4px" }}>
+                      <label style={styles.checkboxRow}>
+                        <input
+                          type="checkbox"
+                          checked={listeAttenteChambre}
+                          onChange={(e) => setListeAttenteChambre(e.target.checked)}
+                          style={styles.checkboxInput}
+                        />
+                        <span>Je n'ai personne avec qui partager ma chambre : me mettre en liste d'attente</span>
+                      </label>
+                      {listeAttenteChambre && (
+                        <p style={{ ...styles.infoText, marginTop: "10px", background: "#fff7ed", color: "#9a3412" }}>
+                          Ce tarif « {tarifChoisi?.label} » n'est valable que si nous trouvons quelqu'un avec qui partager la chambre. Si ce n'est pas le cas d'ici le départ, vous serez basculé(e) sur le tarif chambre simple, avec un complément à régler plus tard.
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -600,7 +666,9 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
               <div style={styles.buttonContainer}>
                 {sejour.prix > 0 && (
                   <div style={styles.priceSummary}>
-                    <p style={styles.priceSummaryLabel}>Choisissez votre tarif</p>
+                    <p style={styles.priceSummaryLabel}>
+                      {estSenior && tarifsListe.length > 0 ? "Récapitulatif" : "Choisissez votre tarif"}
+                    </p>
 
                     {assuranceSouscrite && (
                       <div style={styles.priceRow}>
@@ -610,6 +678,20 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                     )}
 
                     {tarifsListe.length > 0 ? (
+                      estSenior ? (
+                        // Le choix du tarif se fait tout en haut du formulaire pour les séniors :
+                        // ici on ne fait que rappeler le tarif retenu.
+                        tarifChoisiIdx != null ? (
+                          <div style={styles.priceRow}>
+                            <span>{tarifChoisi?.label || "Tarif"}</span>
+                            <span>{tarifChoisi?.montant.toFixed(2)} €</span>
+                          </div>
+                        ) : (
+                          <p style={{ fontSize: "12px", fontWeight: 700, color: C.saffron, margin: "2px 0 8px" }}>
+                            Merci de sélectionner un tarif ci-dessus.
+                          </p>
+                        )
+                      ) : (
                       <>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", margin: "4px 0 6px" }}>
                           {tarifsListe.map((l, i) => {
@@ -638,6 +720,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                           </p>
                         )}
                       </>
+                      )
                     ) : (
                     <>
                     <div style={styles.priceBoxesRow}>
