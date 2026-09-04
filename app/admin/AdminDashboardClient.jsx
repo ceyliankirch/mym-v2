@@ -1145,13 +1145,30 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
             {inscriptions.map((ins) => {
               const colors = STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
+              const reponses = ins.reponsesFormulaire && typeof ins.reponsesFormulaire === "object"
+                ? Object.entries(ins.reponsesFormulaire)
+                : [];
               return (
-                <div key={ins.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", background: C.arctic, borderRadius: "12px", padding: "12px 14px", flexWrap: "wrap" }}>
-                  <div>
-                    <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{ins.sejour?.titre || "Séjour supprimé"}</p>
-                    <p style={{ fontSize: "11px", color: C.gray, marginTop: "2px" }}>Inscrit le {new Date(ins.createdAt).toLocaleDateString("fr-FR")}</p>
+                <div key={ins.id} style={{ background: C.arctic, borderRadius: "12px", padding: "12px 14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                    <div>
+                      <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>{ins.sejour?.titre || "Séjour supprimé"}</p>
+                      <p style={{ fontSize: "11px", color: C.gray, marginTop: "2px" }}>Inscrit le {new Date(ins.createdAt).toLocaleDateString("fr-FR")}</p>
+                    </div>
+                    <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
                   </div>
-                  <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
+                  {reponses.length > 0 && (
+                    <div style={{ marginTop: "10px", borderTop: `1px solid ${C.lightGray}`, paddingTop: "10px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "6px 16px" }}>
+                      {reponses.map(([k, v]) => (
+                        <div key={k}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block" }}>{k}</span>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: C.teal, wordBreak: "break-word" }}>
+                            {v === true ? "Oui" : v === false ? "Non" : String(v)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}

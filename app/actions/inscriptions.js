@@ -200,10 +200,20 @@ export async function creerInscription(
   sejourId,
   enfantData,
   userId,
-  paiementInfo = {}
+  paiementInfo = {},
+  reponsesFormulaire = null
 ) {
   if (!sejourId || !enfantData || !userId) {
     return { error: "Données incomplètes" };
+  }
+
+  // On ne garde que les réponses non vides, dans un objet { libellé: valeur }
+  let reponses = null;
+  if (reponsesFormulaire && typeof reponsesFormulaire === "object") {
+    const entries = Object.entries(reponsesFormulaire).filter(
+      ([, v]) => v !== "" && v !== null && v !== undefined
+    );
+    if (entries.length) reponses = Object.fromEntries(entries);
   }
 
   const { moyenPaiement, lienPaiement, montantTotal } = paiementInfo;
@@ -240,6 +250,7 @@ export async function creerInscription(
         enfantId: enfant.id,
         sejourId,
         statut: "Inscription envoyée",
+        ...(reponses ? { reponsesFormulaire: reponses } : {}),
       },
     });
 

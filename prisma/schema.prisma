@@ -115,6 +115,7 @@ model Inscription {
   id          String   @id @default(cuid())
   montantPaye Float    @default(0)
   statut      String   @default("En attente")
+  reponsesFormulaire Json? // réponses aux champs du formulaire d'inscription du séjour
   createdAt   DateTime @default(now())
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id])

@@ -207,6 +207,12 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         return;
       }
 
+      const reponsesFormulaire = { ...formData };
+      if (tarifsListe.length > 0 && tarifChoisiIdx != null) {
+        const t = tarifsListe[tarifChoisiIdx];
+        reponsesFormulaire["Tarif choisi"] = `${t.label || "Tarif"} — ${t.montant} €`;
+      }
+
       const result = await creerInscription(
         sejour.id,
         enfantData,
@@ -215,7 +221,8 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
           moyenPaiement: champPaiement ? formData[champPaiement.label] : undefined,
           lienPaiement: lienPaiementActif,
           montantTotal,
-        }
+        },
+        reponsesFormulaire
       );
 
       if (result.error) {
