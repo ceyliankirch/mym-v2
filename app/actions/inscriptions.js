@@ -237,7 +237,7 @@ export async function creerInscription(
   }
 
   const { moyenPaiement, lienPaiement, montantTotal } = paiementInfo;
-  const paiementParCarte = moyenPaiement === "Carte bleue";
+  const paiementParCarte = moyenPaiement === "Carte bancaire";
 
   try {
     const sejour = await prisma.sejour.findUnique({
@@ -297,7 +297,7 @@ export async function creerInscription(
     }
 
     // 📧 Un email part toujours à la soumission, avec un récapitulatif PDF en pièce jointe :
-    // - Carte bleue : email de "pré-inscription" avec bouton de paiement (bon lien selon le
+    // - Carte bancaire : email de "pré-inscription" avec bouton de paiement (bon lien selon le
     //   tarif choisi) ; l'email "Inscription validée" (avec la fiche sanitaire) part plus tard,
     //   quand l'admin constate le paiement reçu.
     // - Autre moyen de paiement : email "Inscription validée" envoyé directement, avec un

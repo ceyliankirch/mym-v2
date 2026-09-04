@@ -84,7 +84,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   );
   const assuranceSouscrite = champAssurance && formData[champAssurance.label] === "Oui";
 
-  // 💳 Détecte si la famille a choisi de régler par carte bleue (champ "select"
+  // 💳 Détecte si la famille a choisi de régler par carte bancaire (champ "select"
   // dont le libellé évoque le moyen de règlement) pour ajouter les frais bancaires.
   const champPaiement = champsAffiches.find(
     (f) => f.type === "select" && f.label?.toLowerCase().includes("régler")
@@ -102,7 +102,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
   // En liste d'attente d'un binôme pour la chambre double, le tarif final n'est pas encore
   // certain : pas de paiement en ligne ni de lien de paiement dans ce cas.
-  const paiementParCarteBleue = !listeAttenteChambre && champPaiement && formData[champPaiement.label] === "Carte bleue";
+  const paiementParCarteBleue = !listeAttenteChambre && champPaiement && formData[champPaiement.label] === "Carte bancaire";
 
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
@@ -225,11 +225,11 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
         reponsesFormulaire["Liste d'attente chambre double"] = "Oui";
       }
 
-      // En liste d'attente d'un binôme, seul le paiement en ligne par carte bleue est bloqué
+      // En liste d'attente d'un binôme, seul le paiement en ligne par carte bancaire est bloqué
       // (le tarif n'est pas définitif) : les autres moyens de paiement (virement, chèque…)
       // doivent rester renseignés pour que les bonnes instructions partent dans l'email.
       const moyenPaiementChoisi = champPaiement ? formData[champPaiement.label] : undefined;
-      const moyenPaiementEnvoye = listeAttenteChambre && moyenPaiementChoisi === "Carte bleue" ? undefined : moyenPaiementChoisi;
+      const moyenPaiementEnvoye = listeAttenteChambre && moyenPaiementChoisi === "Carte bancaire" ? undefined : moyenPaiementChoisi;
 
       const result = await creerInscription(
         sejour.id,
@@ -835,7 +835,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       <div style={styles.bankFeeRow}>
                         <span style={styles.bankFeeLabel}>
                           <CreditCard size={15} style={{ marginRight: "6px", verticalAlign: "-3px" }} />
-                          Frais bancaires (carte bleue)
+                          Frais bancaires (carte bancaire)
                         </span>
                         <span style={styles.bankFeeAmount}>+ 5,00 €</span>
                       </div>

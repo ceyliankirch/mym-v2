@@ -737,8 +737,8 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
     { id: "23", type: "select", label: "Souscrire à cette assurance ?", required: true, options: "Oui, Non" },
 
     { id: "24", type: "section", label: "Paiement", required: false },
-    { id: "25", type: "info", label: "Chèque : à l'ordre de \"Make Your Moment\", à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie. Paiement en 3 fois autorisé.\nCarte bleue : paiement en ligne via une plateforme du Crédit Mutuel (5€ de frais). Un lien vous sera envoyé.\nVirement : IBAN FR76 1027 8060 3600 0209 3910 120, libellé au nom et prénom du participant.\nChèques ANCV : à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie.\nEspèces : nous contacter.", required: false },
-    { id: "26", type: "select", label: "Comment souhaitez-vous régler ?", required: true, options: "Chèque, Carte bleue, Virement bancaire, Chèques ANCV, Espèces" },
+    { id: "25", type: "info", label: "Chèque : à l'ordre de \"Make Your Moment\", à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie. Paiement en 3 fois autorisé.\nCarte bancaire : paiement en ligne via une plateforme du Crédit Mutuel (5€ de frais). Un lien vous sera envoyé.\nVirement : IBAN FR76 1027 8060 3600 0209 3910 120, libellé au nom et prénom du participant.\nChèques ANCV : à envoyer à Make Your Moment - 16 avenue du Rond-Point, 94370 Sucy-en-Brie.\nEspèces : nous contacter.", required: false },
+    { id: "26", type: "select", label: "Comment souhaitez-vous régler ?", required: true, options: "Chèque, Carte bancaire, Virement bancaire, Chèques ANCV, Espèces" },
     { id: "27", type: "checkbox", label: "J'accepte, après en avoir pris connaissance, les modalités de paiement et d'annulation.", required: true },
   ];
   
