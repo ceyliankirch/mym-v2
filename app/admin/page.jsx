@@ -1,5 +1,6 @@
 // app/admin/page.jsx
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 // Force le rendu dynamique pour avoir les données fraîches de la DB
@@ -9,6 +10,9 @@ export const metadata = { title: "Admin" };
 export default async function AdminPage() {
   try {
     console.log("📡 Admin : Récupération des données depuis Neon...");
+
+    const session = await auth();
+    const adminPrenom = session?.user?.prenom || (session?.user?.name || "").split(" ")[0] || "";
 
     // On récupère tout en une seule fois (parallèle) pour plus de rapidité
     const [sejours, inscriptions, clients, animateurs, albums, documentsManquants, enfants] = await Promise.all([
@@ -79,6 +83,7 @@ export default async function AdminPage() {
     return (
       <AdminDashboardClient
         stats={stats}
+        adminPrenom={adminPrenom}
         sejours={sejours}
         inscriptions={inscriptions}
         clients={clients} // ⚡ NOUVEAU : On passe les familles au client

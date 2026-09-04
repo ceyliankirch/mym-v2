@@ -59,15 +59,94 @@ const STATUT_INSCRIPTION_COLORS = {
   "Annulée": { bg: "#fee2e2", color: "#991b1b" },
 };
 
-// Style commun des <select> de statut : flèche personnalisée, bien détachée du bord droit
-const SELECT_STATUT_STYLE = {
-  padding: "6px 32px 6px 12px",
-  borderRadius: "8px", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", outline: "none",
-  appearance: "none", WebkitAppearance: "none", MozAppearance: "none",
-  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23114C5A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "right 12px center",
-};
+/* Menu déroulant personnalisé pour changer le statut d'une inscription.
+   S'ouvre juste sous le bouton (position fixe → jamais rogné par un overflow parent). */
+function StatutDropdown({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState(null);
+  const btnRef = useRef(null);
+  const cfg = STATUT_INSCRIPTION_COLORS[value] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"];
+
+  useEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const r = btnRef.current?.getBoundingClientRect();
+      if (r) setCoords({ top: r.bottom + 6, left: r.left, width: r.width });
+    };
+    place();
+    const fermer = () => setOpen(false);
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("scroll", fermer, true);
+    window.addEventListener("resize", fermer);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("scroll", fermer, true);
+      window.removeEventListener("resize", fermer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "6px",
+          background: cfg.bg, color: cfg.color,
+          padding: "6px 10px 6px 12px", borderRadius: "8px",
+          fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer",
+          outline: "none", whiteSpace: "nowrap",
+        }}
+      >
+        {value}
+        <ChevronDown size={13} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+      </button>
+      {open && coords && (
+        <>
+          <div
+            onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+            style={{ position: "fixed", inset: 0, zIndex: 10090 }}
+          />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "fixed", top: coords.top, left: coords.left, minWidth: Math.max(coords.width, 190),
+              zIndex: 10091, background: C.white, borderRadius: "12px", padding: "5px",
+              boxShadow: "0 14px 40px rgba(17,76,90,0.20)", border: `1px solid ${C.lightGray}`,
+            }}
+          >
+            {STATUTS_INSCRIPTION.map((opt) => {
+              const oc = STATUT_INSCRIPTION_COLORS[opt] || {};
+              const actif = opt === value;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setOpen(false); if (opt !== value) onChange(opt); }}
+                  onMouseEnter={(e) => { if (!actif) e.currentTarget.style.background = C.arctic; }}
+                  onMouseLeave={(e) => { if (!actif) e.currentTarget.style.background = "transparent"; }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "8px", width: "100%",
+                    padding: "9px 10px", borderRadius: "8px", border: "none", textAlign: "left",
+                    cursor: "pointer", fontSize: "13px", fontWeight: 700,
+                    background: actif ? (oc.bg || C.arctic) : "transparent",
+                    color: oc.color || C.teal,
+                  }}
+                >
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: oc.color || C.gray, flexShrink: 0 }} />
+                  <span style={{ flex: 1 }}>{opt}</span>
+                  {actif && <CheckCircle2 size={14} />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 // Palette pour colorer chaque séjour (assignée dans l'ordre des séjours)
 const SEJOUR_PALETTE = [
@@ -1079,19 +1158,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                       )}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={ins.statut}
-                        onChange={(e) => onChangerStatut(ins.id, e.target.value)}
-                        style={{
-                          ...SELECT_STATUT_STYLE,
-                          backgroundColor: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        }}
-                      >
-                        {STATUTS_INSCRIPTION.map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                      <StatutDropdown value={ins.statut} onChange={(v) => onChangerStatut(ins.id, v)} />
                       <button
                         onClick={() => onDelete(ins)}
                         title="Supprimer l'inscription"
@@ -1574,19 +1641,7 @@ function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
                   <td style={{ padding: "16px", fontSize: "13px" }}>{b.sejour?.titre}</td>
                   <td style={{ padding: "16px", fontSize: "13px", color: C.gray }}>{new Date(b.createdAt).toLocaleDateString("fr-FR")}</td>
                   <td style={{ padding: "16px" }}>
-                    <select
-                      value={b.statut}
-                      onChange={(e) => onChangerStatut(b.id, e.target.value)}
-                      style={{
-                          ...SELECT_STATUT_STYLE,
-                          backgroundColor: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                          color: (STATUT_INSCRIPTION_COLORS[b.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        }}
-                    >
-                      {STATUTS_INSCRIPTION.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
+                    <StatutDropdown value={b.statut} onChange={(v) => onChangerStatut(b.id, v)} />
                   </td>
                 </tr>
               );
@@ -1760,7 +1815,7 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
-export default function AdminDashboardClient({ stats, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
+export default function AdminDashboardClient({ stats, adminPrenom, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -1939,7 +1994,9 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
           
           <div style={{ marginBottom: "40px" }}>
             <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal }}>
-              {activeTab === "dashboard" && "Bonjour, l'équipe 👋"}
+              {activeTab === "dashboard" && (
+                <>Salut <span style={{ color: C.saffron }}>{adminPrenom || "l'équipe"}</span> 👋🏻</>
+              )}
               {activeTab === "sejours" && "Séjours 🏕️"}
               {activeTab === "galerie" && "Galerie Photos 📸"}
               {activeTab === "inscriptions" && "Inscriptions 🧒"}
@@ -2132,19 +2189,7 @@ export default function AdminDashboardClient({ stats, inscriptions, sejours, enf
                         </div>
 
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                          <select
-                            value={ins.statut}
-                            onChange={(e) => handleChangerStatutInscription(ins.id, e.target.value)}
-                            style={{
-                          ...SELECT_STATUT_STYLE,
-                          backgroundColor: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).bg,
-                          color: (STATUT_INSCRIPTION_COLORS[ins.statut] || STATUT_INSCRIPTION_COLORS["Inscription envoyée"]).color,
-                        }}
-                          >
-                            {STATUTS_INSCRIPTION.map((s) => (
-                              <option key={s} value={s}>{s}</option>
-                            ))}
-                          </select>
+                          <StatutDropdown value={ins.statut} onChange={(v) => handleChangerStatutInscription(ins.id, v)} />
                           <button
                             onClick={() => handleRenvoyerEmail(ins)}
                             disabled={renvoiEnCours === ins.id}
