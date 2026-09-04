@@ -7,6 +7,26 @@ import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 import { revalidatePath } from "next/cache";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 
+// 🏦 Retrouve, si la famille a choisi de régler par virement, l'IBAN de l'association
+// (configuré depuis Admin → Paramètres) à ajouter dans l'email de confirmation.
+// `reponsesFormulaire` peut être passé directement (à la soumission du formulaire) ou
+// relu depuis l'inscription enregistrée (changement de statut, renvoi d'email...).
+async function recupererInfosVirement(reponsesFormulaire) {
+  const paiementParVirement = reponsesFormulaire && typeof reponsesFormulaire === "object"
+    ? Object.values(reponsesFormulaire).some((v) => String(v).trim() === "Virement bancaire")
+    : false;
+  if (!paiementParVirement) return null;
+
+  const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
+  if (!parametres?.ibanAsso) return null;
+
+  return {
+    iban: parametres.ibanAsso,
+    bic: parametres.bicAsso,
+    titulaire: parametres.titulaireIban,
+  };
+}
+
 export async function getOrCreateClientForUser(userId) {
   let client = await prisma.client.findUnique({
     where: { userId },
@@ -292,17 +312,7 @@ export async function creerInscription(
 
     // 🏦 Si la famille règle par virement, on récupère l'IBAN de l'association (configuré
     // depuis Admin → Paramètres) pour l'ajouter dans l'email de confirmation.
-    let virementInfo = null;
-    if (moyenPaiement === "Virement bancaire") {
-      const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
-      if (parametres?.ibanAsso) {
-        virementInfo = {
-          iban: parametres.ibanAsso,
-          bic: parametres.bicAsso,
-          titulaire: parametres.titulaireIban,
-        };
-      }
-    }
+    const virementInfo = await recupererInfosVirement(reponses);
 
     if (client.email) {
       if (paiementParCarte) {
@@ -326,6 +336,7 @@ export async function creerInscription(
           documentsRequis: documentsManquants,
           montantARegler: montantTotal,
           virement: virementInfo,
+          enListeAttenteChambre: reponses?.["Liste d'attente chambre double"] === "Oui",
           inclureFicheSanitaire: sejour.ficheSanitaireActive !== false,
         });
       }
@@ -393,6 +404,8 @@ export async function changerStatutInscription(id, statut) {
           lienPaiementCIC: inscription.sejour?.lienPaiementCIC,
           documentsRequis: inscription.sejour?.documentsRequis,
           inclureFicheSanitaire: inscription.sejour?.ficheSanitaireActive !== false,
+          virement: await recupererInfosVirement(inscription.reponsesFormulaire),
+          enListeAttenteChambre: inscription.reponsesFormulaire?.["Liste d'attente chambre double"] === "Oui",
         });
         await sendNewInscriptionNotificationEmail({
           prenomEnfant,
@@ -450,6 +463,8 @@ export async function renvoyerEmailInscription(id) {
         lienPaiementCIC,
         documentsRequis: inscription.sejour?.documentsRequis,
         inclureFicheSanitaire: inscription.sejour?.ficheSanitaireActive !== false,
+        virement: await recupererInfosVirement(inscription.reponsesFormulaire),
+        enListeAttenteChambre: inscription.reponsesFormulaire?.["Liste d'attente chambre double"] === "Oui",
       });
     } else if (inscription.statut === "Annulée") {
       result = await sendInscriptionCancelledEmail({ to, prenomEnfant, sejourTitre });

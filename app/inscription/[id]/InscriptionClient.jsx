@@ -659,7 +659,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                               </label>
                               {listeAttenteChambre && (
                                 <p style={{ ...styles.infoText, marginTop: "10px", background: "#fff7ed", color: "#9a3412" }}>
-                                  Ce tarif « {tarifChoisi?.label || "chambre double"} » n'est valable que si nous trouvons quelqu'un avec qui partager la chambre. Si ce n'est pas le cas d'ici le départ, vous serez basculé(e) sur le tarif chambre simple, avec un complément à régler plus tard.
+                                  Ce tarif « {tarifChoisi?.label || "chambre double"} » n'est valable que si nous trouvons quelqu'un avec qui partager la chambre. Si ce n'est pas le cas d'ici le départ, il vous sera demandé de régler le prix pour une chambre simple.
                                 </p>
                               )}
                             </div>
