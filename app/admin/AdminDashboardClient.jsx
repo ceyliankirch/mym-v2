@@ -16,6 +16,7 @@ import {
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
+import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
@@ -1882,89 +1883,6 @@ function ModalQrCode({ sejour, onClose }) {
   );
 }
 
-// 📱 Carte "QR code — Page d'accueil" (onglet Paramètres) : un QR code fixe vers l'accueil
-// du site, pour les flyers/affiches, dans le même style (pointillés teal + orange) que les
-// QR codes par séjour.
-function QrCodeAccueilCard() {
-  const containerRef = useRef(null);
-  const qrRef = useRef(null);
-  const [pret, setPret] = useState(false);
-
-  const url = typeof window !== "undefined" ? window.location.origin : "";
-
-  useEffect(() => {
-    let annule = false;
-    (async () => {
-      try {
-        const mod = await import("qr-code-styling");
-        if (annule) return;
-        const QRCodeStyling = mod.default;
-        const qr = new QRCodeStyling({
-          width: 180,
-          height: 180,
-          type: "svg",
-          data: url,
-          margin: 6,
-          qrOptions: { errorCorrectionLevel: "Q" },
-          dotsOptions: { type: "dots", color: C.teal },
-          backgroundOptions: { color: "#ffffff" },
-          cornersSquareOptions: { type: "dot", color: C.teal },
-          cornersDotOptions: { type: "dot", color: C.saffron },
-        });
-        qrRef.current = qr;
-        const node = containerRef.current;
-        if (node) {
-          while (node.firstChild) node.removeChild(node.firstChild);
-          qr.append(node);
-          setPret(true);
-        }
-      } catch (e) {
-        console.error("Erreur génération QR code accueil", e);
-      }
-    })();
-    return () => {
-      annule = true;
-      const node = containerRef.current;
-      if (node) {
-        while (node.firstChild) node.removeChild(node.firstChild);
-      }
-    };
-  }, [url]);
-
-  const telecharger = (extension) => {
-    qrRef.current?.download({ name: "qr-make-your-moment-accueil", extension });
-  };
-
-  return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px", display: "flex", gap: "28px", flexWrap: "wrap", alignItems: "center" }}>
-      <div style={{ position: "relative", width: "180px", height: "180px", flexShrink: 0 }}>
-        {!pret && (
-          <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: C.gray }}>
-            Génération...
-          </span>
-        )}
-        {/* Conteneur piloté par qr-code-styling : React ne doit jamais y rendre d'enfants */}
-        <div ref={containerRef} style={{ width: "180px", height: "180px" }} />
-      </div>
-      <div style={{ flex: 1, minWidth: "220px" }}>
-        <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>📱 QR code — Page d'accueil</h2>
-        <p style={{ color: C.gray, fontSize: "14px", marginBottom: "6px", lineHeight: 1.6 }}>
-          Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé.
-        </p>
-        <p style={{ fontSize: "11px", color: C.gray, wordBreak: "break-all", marginBottom: "16px" }}>{url}</p>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => telecharger("png")} disabled={!pret} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
-            Télécharger PNG
-          </button>
-          <button onClick={() => telecharger("svg")} disabled={!pret} style={{ background: C.arctic, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
-            SVG
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── TABLEAUX / GRILLES ── */
 function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   const recent = (data || []).slice(0, 8);
@@ -2697,7 +2615,12 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
           {activeTab === "settings" && (
             <div>
               <ParametresVirementCard parametres={parametres} />
-              <QrCodeAccueilCard />
+              <QrCodeCard
+                titre="📱 QR code — Page d'accueil"
+                description="Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé."
+                path=""
+                fileName="qr-make-your-moment-accueil"
+              />
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
                 <div>

@@ -158,6 +158,58 @@ export async function importerLotContacts(lot) {
   return { success: true, nouveaux, misAJour, invalides };
 }
 
+/* ═══════════ INSCRIPTION / DÉSINSCRIPTION PUBLIQUE (page /newsletter) ═══════════ */
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ✅ Quelqu'un s'inscrit à la newsletter depuis la page publique /newsletter
+export async function sabonnerNewsletterPublic(formData) {
+  const email = (formData.get("email") || "").toString().toLowerCase().trim();
+  const prenom = (formData.get("prenom") || "").toString().trim() || null;
+  const nom = (formData.get("nom") || "").toString().trim() || null;
+
+  if (!EMAIL_REGEX.test(email)) {
+    redirect("/newsletter?erreur=email");
+  }
+
+  try {
+    await prisma.newsletterContact.upsert({
+      where: { email },
+      update: {
+        abonne: true,
+        ...(prenom ? { prenom } : {}),
+        ...(nom ? { nom } : {}),
+      },
+      create: { email, prenom, nom, tags: [], abonne: true, source: "site" },
+    });
+    revalidatePath("/admin");
+  } catch (error) {
+    console.error("Erreur inscription newsletter publique:", error);
+    redirect("/newsletter?erreur=technique");
+  }
+
+  redirect("/newsletter?done=inscrit");
+}
+
+// 🚫 Quelqu'un se désinscrit de la newsletter depuis la page publique /newsletter
+export async function desabonnerNewsletterPublic(formData) {
+  const email = (formData.get("email") || "").toString().toLowerCase().trim();
+
+  if (!EMAIL_REGEX.test(email)) {
+    redirect("/newsletter?erreur=email");
+  }
+
+  try {
+    await prisma.newsletterContact.updateMany({ where: { email }, data: { abonne: false } });
+    revalidatePath("/admin");
+  } catch (error) {
+    console.error("Erreur désinscription newsletter publique:", error);
+    redirect("/newsletter?erreur=technique");
+  }
+
+  redirect("/newsletter?done=desinscrit");
+}
+
 // 🚫 Désabonnement en un clic depuis le lien envoyé dans les campagnes
 export async function desabonnerContact(formData) {
   const email = (formData.get("email") || "").toString().toLowerCase().trim();

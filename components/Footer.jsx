@@ -21,6 +21,7 @@ const NAV = [
   { label: "Séniors", href: "/sorties-seniors" },
   { label: "Contact", href: "/contact" },
   { label: "FAQ", href: "/faq" },
+  { label: "Newsletter", href: "/newsletter" },
 ];
 
 const LEGAL_LINKS = [

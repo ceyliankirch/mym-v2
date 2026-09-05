@@ -9,6 +9,7 @@ import {
   importerLotContacts, exporterContactsCSV, assignerListeContacts,
 } from "@/app/actions/newsletter";
 import { parserContactsCSV } from "@/lib/csvContacts";
+import QrCodeCard from "@/components/QrCodeCard";
 
 const C = {
   yellow: "#FFC801",
@@ -405,6 +406,13 @@ export default function NewsletterSection() {
         Cette section sert uniquement à tenir à jour la liste de diffusion. Les campagnes ne sont plus envoyées depuis le site :
         segmentez les contacts avec les listes, exportez le CSV, puis importez-le dans Brevo pour composer et envoyer l'emailing.
       </div>
+
+      <QrCodeCard
+        titre="📧 QR code — Inscription à la newsletter"
+        description="À imprimer sur vos supports : les gens le scannent et arrivent sur une page pour saisir leur email et s'inscrire (ou se désabonner) à la newsletter."
+        path="/newsletter"
+        fileName="qr-newsletter-make-your-moment"
+      />
 
       {loading ? (
         <div style={{ padding: "60px", textAlign: "center", color: C.gray }}>Chargement...</div>
