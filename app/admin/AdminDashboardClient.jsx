@@ -26,7 +26,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription, creerInscriptionAdmin } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS PARAMÈTRES (IBAN de l'association pour le paiement par virement)
 import { modifierParametres } from "../actions/parametres";
@@ -369,6 +369,159 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// 👤 Création manuelle d'une inscription par l'admin : pour les personnes sans email ou
+// sans accès à internet — pas de compte créé côté famille, aucun email envoyé.
+function ModalInscriptionManuelle({ clients, sejours, onClose }) {
+  const [sejourId, setSejourId] = useState("");
+  const [clientMode, setClientMode] = useState("nouveau"); // "nouveau" | "existant"
+  const [clientId, setClientId] = useState("");
+  const [clientNom, setClientNom] = useState("");
+  const [clientPrenom, setClientPrenom] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientTelephone, setClientTelephone] = useState("");
+  const [enfantMode, setEnfantMode] = useState("nouveau"); // "nouveau" | "existant"
+  const [enfantId, setEnfantId] = useState("");
+  const [enfantPrenom, setEnfantPrenom] = useState("");
+  const [enfantNom, setEnfantNom] = useState("");
+  const [enfantDateNaissance, setEnfantDateNaissance] = useState("");
+  const [statut, setStatut] = useState("Inscription envoyée");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const clientChoisi = clientMode === "existant" ? (clients || []).find((c) => c.id === clientId) : null;
+  const enfantsDuClient = clientChoisi?.enfants || [];
+  const modeEnfantEffectif = clientMode === "existant" && enfantsDuClient.length > 0 ? enfantMode : "nouveau";
+
+  const champ = { padding: "10px 12px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "13px", width: "100%", fontFamily: "inherit", boxSizing: "border-box" };
+  const lab = { fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "4px" };
+  const toggleBtn = (actif) => ({ flex: 1, padding: "9px", borderRadius: "10px", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", background: actif ? C.teal : C.arctic, color: actif ? C.white : C.teal });
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    if (!sejourId) { setErr("Merci de choisir un séjour."); return; }
+    setSaving(true);
+
+    const fd = new FormData();
+    fd.set("sejourId", sejourId);
+    fd.set("statut", statut);
+    if (clientMode === "existant" && clientId) {
+      fd.set("clientId", clientId);
+    } else {
+      fd.set("clientNom", clientNom);
+      fd.set("clientPrenom", clientPrenom);
+      fd.set("clientEmail", clientEmail);
+      fd.set("clientTelephone", clientTelephone);
+    }
+    if (modeEnfantEffectif === "existant" && enfantId) {
+      fd.set("enfantId", enfantId);
+    } else {
+      fd.set("enfantPrenom", enfantPrenom);
+      fd.set("enfantNom", enfantNom);
+      fd.set("enfantDateNaissance", enfantDateNaissance);
+    }
+
+    const res = await creerInscriptionAdmin(fd);
+    setSaving(false);
+    if (res?.error) setErr(res.error);
+    else window.location.reload();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "560px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Inscription manuelle</h3>
+        <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
+          Pour les personnes sans email ou sans accès à internet : aucun compte n'est créé côté famille et aucun email n'est envoyé, le dossier est juste enregistré directement.
+        </p>
+
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div>
+            <label style={lab}>Séjour</label>
+            <select style={champ} value={sejourId} onChange={(e) => setSejourId(e.target.value)} required>
+              <option value="">-- Choisir un séjour --</option>
+              {(sejours || []).map((s) => (
+                <option key={s.id} value={s.id}>{s.titre}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={lab}>Famille / responsable</label>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+              <button type="button" onClick={() => setClientMode("nouveau")} style={toggleBtn(clientMode === "nouveau")}>Nouvelle famille</button>
+              <button type="button" onClick={() => setClientMode("existant")} style={toggleBtn(clientMode === "existant")}>Famille existante</button>
+            </div>
+            {clientMode === "existant" ? (
+              <select style={champ} value={clientId} onChange={(e) => { setClientId(e.target.value); setEnfantId(""); }} required>
+                <option value="">-- Sélectionner une famille --</option>
+                {(clients || []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.prenom} {c.nom}{c.telephone ? ` — ${c.telephone}` : ""}{c.email ? ` — ${c.email}` : ""}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <input style={champ} placeholder="Prénom" value={clientPrenom} onChange={(e) => setClientPrenom(e.target.value)} required />
+                  <input style={champ} placeholder="Nom" value={clientNom} onChange={(e) => setClientNom(e.target.value)} required />
+                </div>
+                <input style={champ} placeholder="Téléphone" value={clientTelephone} onChange={(e) => setClientTelephone(e.target.value)} />
+                <input style={champ} placeholder="Email (facultatif)" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label style={lab}>Participant</label>
+            {clientMode === "existant" && enfantsDuClient.length > 0 && (
+              <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                <button type="button" onClick={() => setEnfantMode("nouveau")} style={toggleBtn(modeEnfantEffectif === "nouveau")}>Nouveau</button>
+                <button type="button" onClick={() => setEnfantMode("existant")} style={toggleBtn(modeEnfantEffectif === "existant")}>Déjà connu</button>
+              </div>
+            )}
+            {modeEnfantEffectif === "existant" ? (
+              <select style={champ} value={enfantId} onChange={(e) => setEnfantId(e.target.value)} required>
+                <option value="">-- Sélectionner --</option>
+                {enfantsDuClient.map((e2) => (
+                  <option key={e2.id} value={e2.id}>{e2.prenom} {e2.nom}</option>
+                ))}
+              </select>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <input style={champ} placeholder="Prénom" value={enfantPrenom} onChange={(e) => setEnfantPrenom(e.target.value)} required />
+                  <input style={champ} placeholder="Nom" value={enfantNom} onChange={(e) => setEnfantNom(e.target.value)} required />
+                </div>
+                <input type="date" style={champ} value={enfantDateNaissance} onChange={(e) => setEnfantDateNaissance(e.target.value)} />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label style={lab}>Statut</label>
+            <select style={champ} value={statut} onChange={(e) => setStatut(e.target.value)}>
+              {STATUTS_INSCRIPTION.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+          <button type="button" onClick={onClose} style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, color: C.teal, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+          <button type="submit" disabled={saving} style={{ flex: 2, padding: "12px", borderRadius: "12px", border: "none", background: C.yellow, color: C.teal, fontWeight: 800, cursor: saving ? "wait" : "pointer" }}>
+            {saving ? "Création..." : "Créer l'inscription"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -1729,6 +1882,89 @@ function ModalQrCode({ sejour, onClose }) {
   );
 }
 
+// 📱 Carte "QR code — Page d'accueil" (onglet Paramètres) : un QR code fixe vers l'accueil
+// du site, pour les flyers/affiches, dans le même style (pointillés teal + orange) que les
+// QR codes par séjour.
+function QrCodeAccueilCard() {
+  const containerRef = useRef(null);
+  const qrRef = useRef(null);
+  const [pret, setPret] = useState(false);
+
+  const url = typeof window !== "undefined" ? window.location.origin : "";
+
+  useEffect(() => {
+    let annule = false;
+    (async () => {
+      try {
+        const mod = await import("qr-code-styling");
+        if (annule) return;
+        const QRCodeStyling = mod.default;
+        const qr = new QRCodeStyling({
+          width: 180,
+          height: 180,
+          type: "svg",
+          data: url,
+          margin: 6,
+          qrOptions: { errorCorrectionLevel: "Q" },
+          dotsOptions: { type: "dots", color: C.teal },
+          backgroundOptions: { color: "#ffffff" },
+          cornersSquareOptions: { type: "dot", color: C.teal },
+          cornersDotOptions: { type: "dot", color: C.saffron },
+        });
+        qrRef.current = qr;
+        const node = containerRef.current;
+        if (node) {
+          while (node.firstChild) node.removeChild(node.firstChild);
+          qr.append(node);
+          setPret(true);
+        }
+      } catch (e) {
+        console.error("Erreur génération QR code accueil", e);
+      }
+    })();
+    return () => {
+      annule = true;
+      const node = containerRef.current;
+      if (node) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+      }
+    };
+  }, [url]);
+
+  const telecharger = (extension) => {
+    qrRef.current?.download({ name: "qr-make-your-moment-accueil", extension });
+  };
+
+  return (
+    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px", display: "flex", gap: "28px", flexWrap: "wrap", alignItems: "center" }}>
+      <div style={{ position: "relative", width: "180px", height: "180px", flexShrink: 0 }}>
+        {!pret && (
+          <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: C.gray }}>
+            Génération...
+          </span>
+        )}
+        {/* Conteneur piloté par qr-code-styling : React ne doit jamais y rendre d'enfants */}
+        <div ref={containerRef} style={{ width: "180px", height: "180px" }} />
+      </div>
+      <div style={{ flex: 1, minWidth: "220px" }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>📱 QR code — Page d'accueil</h2>
+        <p style={{ color: C.gray, fontSize: "14px", marginBottom: "6px", lineHeight: 1.6 }}>
+          Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé.
+        </p>
+        <p style={{ fontSize: "11px", color: C.gray, wordBreak: "break-all", marginBottom: "16px" }}>{url}</p>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={() => telecharger("png")} disabled={!pret} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
+            Télécharger PNG
+          </button>
+          <button onClick={() => telecharger("svg")} disabled={!pret} style={{ background: C.arctic, color: C.teal, border: "none", padding: "12px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13px", cursor: pret ? "pointer" : "not-allowed", opacity: pret ? 1 : 0.5 }}>
+            SVG
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── TABLEAUX / GRILLES ── */
 function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   const recent = (data || []).slice(0, 8);
@@ -2004,7 +2240,7 @@ function ParametresVirementCard({ parametres }) {
   );
 }
 
-export default function AdminDashboardClient({ stats, adminPrenom, parametres, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts }) {
+export default function AdminDashboardClient({ stats, adminPrenom, parametres, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts, clients }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -2014,6 +2250,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
   const [qrSejour, setQrSejour] = useState(null);
   const [chambresSejour, setChambresSejour] = useState(null);
+  const [inscriptionManuelleEnCours, setInscriptionManuelleEnCours] = useState(false);
   const [ficheEnfantId, setFicheEnfantId] = useState(null);
   const [rechercheEnfant, setRechercheEnfant] = useState("");
   const [filtreSejourId, setFiltreSejourId] = useState("");
@@ -2286,9 +2523,17 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
             <>
               {/* Filtres par séjour + recherche */}
               <div style={{ marginBottom: "20px" }}>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray, marginBottom: "14px" }}>
-                  {inscriptionsFiltrees.length} inscription{inscriptionsFiltrees.length > 1 ? "s" : ""}
-                  {filtreSejourId ? ` · ${(sejours || []).find((s) => s.id === filtreSejourId)?.titre || ""}` : ""}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "14px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: C.gray }}>
+                    {inscriptionsFiltrees.length} inscription{inscriptionsFiltrees.length > 1 ? "s" : ""}
+                    {filtreSejourId ? ` · ${(sejours || []).find((s) => s.id === filtreSejourId)?.titre || ""}` : ""}
+                  </div>
+                  <button
+                    onClick={() => setInscriptionManuelleEnCours(true)}
+                    style={{ background: C.yellow, color: C.teal, border: "none", padding: "10px 18px", borderRadius: "999px", fontWeight: 800, fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
+                  >
+                    <Plus size={15} /> Inscription manuelle
+                  </button>
                 </div>
 
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
@@ -2452,6 +2697,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
           {activeTab === "settings" && (
             <div>
               <ParametresVirementCard parametres={parametres} />
+              <QrCodeAccueilCard />
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
                 <div>
@@ -2500,6 +2746,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
       {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptionsVue} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {chambresSejour && <ModalChambres sejour={chambresSejour} inscriptions={inscriptionsVue} onClose={() => setChambresSejour(null)} />}
+      {inscriptionManuelleEnCours && <ModalInscriptionManuelle clients={clients} sejours={sejours} onClose={() => setInscriptionManuelleEnCours(false)} />}
       {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
   );

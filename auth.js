@@ -35,19 +35,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        // "email" reste le nom du champ pour ne pas casser les appels existants (signIn côté
-        // client), mais il accepte aussi un numéro de téléphone pour les comptes sans email.
-        email: { label: "Email ou téléphone", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Mot de passe", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const identifiant = credentials.email.toString().trim();
-
-        // 1. Chercher l'utilisateur en base de données, par email ou par téléphone
-        const user = await prisma.user.findFirst({
-          where: { OR: [{ email: identifiant }, { telephone: identifiant }] }
+        // 1. Chercher l'utilisateur en base de données
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
         });
 
         if (!user || !user.password) return null; // Utilisateur non trouvé ou pas de mot de passe

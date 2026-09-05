@@ -382,6 +382,84 @@ export async function creerInscription(
   }
 }
 
+// 👤 CRÉATION MANUELLE D'UNE INSCRIPTION PAR L'ADMIN — pour les personnes qui n'ont ni
+// email ni accès à internet : pas de compte créé, pas d'email envoyé, juste le dossier
+// enregistré directement par l'équipe (au téléphone, sur papier, etc.).
+export async function creerInscriptionAdmin(formData) {
+  const sejourId = formData.get("sejourId");
+  const statut = formData.get("statut") || "Inscription envoyée";
+
+  const clientId = formData.get("clientId") || null;
+  const clientNom = (formData.get("clientNom") || "").toString().trim();
+  const clientPrenom = (formData.get("clientPrenom") || "").toString().trim();
+  const clientEmail = (formData.get("clientEmail") || "").toString().trim() || null;
+  const clientTelephone = (formData.get("clientTelephone") || "").toString().trim() || null;
+
+  const enfantId = formData.get("enfantId") || null;
+  const enfantPrenom = (formData.get("enfantPrenom") || "").toString().trim();
+  const enfantNom = (formData.get("enfantNom") || "").toString().trim();
+  const enfantDateNaissance = formData.get("enfantDateNaissance") || null;
+
+  if (!sejourId) return { error: "Séjour manquant" };
+  if (!STATUTS_INSCRIPTION.includes(statut)) return { error: "Statut invalide" };
+  if (!clientId && (!clientNom || !clientPrenom)) {
+    return { error: "Merci de renseigner le nom et prénom du responsable, ou de sélectionner une famille existante." };
+  }
+  if (!enfantId && (!enfantPrenom || !enfantNom)) {
+    return { error: "Merci de renseigner le nom et prénom du participant, ou d'en sélectionner un existant." };
+  }
+
+  try {
+    const sejour = await prisma.sejour.findUnique({ where: { id: sejourId } });
+    if (!sejour) return { error: "Séjour introuvable" };
+
+    let client;
+    if (clientId) {
+      client = await prisma.client.findUnique({ where: { id: clientId } });
+      if (!client) return { error: "Famille introuvable" };
+    } else {
+      client = await prisma.client.create({
+        data: { nom: clientNom, prenom: clientPrenom, email: clientEmail, telephone: clientTelephone },
+      });
+    }
+
+    let enfant;
+    if (enfantId) {
+      enfant = await prisma.enfant.findUnique({ where: { id: enfantId } });
+      if (!enfant || enfant.clientId !== client.id) return { error: "Participant introuvable" };
+    } else {
+      enfant = await prisma.enfant.create({
+        data: {
+          clientId: client.id,
+          prenom: enfantPrenom,
+          nom: enfantNom,
+          dateNaissance: enfantDateNaissance ? new Date(enfantDateNaissance) : null,
+        },
+      });
+    }
+
+    const inscription = await prisma.inscription.create({
+      data: { clientId: client.id, enfantId: enfant.id, sejourId, statut },
+    });
+
+    // Documents requis : on prépare les lignes "manquant", comme pour une inscription classique
+    for (const docType of sejour.documentsRequis || []) {
+      const existing = await prisma.document.findUnique({
+        where: { enfantId_type: { enfantId: enfant.id, type: docType } },
+      }).catch(() => null);
+      if (!existing) {
+        await prisma.document.create({ data: { enfantId: enfant.id, type: docType, statut: "MANQUANT" } });
+      }
+    }
+
+    revalidatePath("/admin");
+    return { success: true, inscription };
+  } catch (error) {
+    console.error("Erreur création inscription manuelle (admin):", error);
+    return { error: "Erreur lors de la création de l'inscription" };
+  }
+}
+
 // 🔄 CHANGER L'ÉTAT D'UNE INSCRIPTION (admin)
 export async function changerStatutInscription(id, statut) {
   if (!STATUTS_INSCRIPTION.includes(statut)) {
