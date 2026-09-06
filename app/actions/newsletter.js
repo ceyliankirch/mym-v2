@@ -168,19 +168,33 @@ export async function sabonnerNewsletterPublic(formData) {
   const prenom = (formData.get("prenom") || "").toString().trim() || null;
   const nom = (formData.get("nom") || "").toString().trim() || null;
 
+  // Centres d'intérêt cochés sur la page (« Jeunes » / « Seniors ») → listes.
+  const ALLOWED_INTERETS = ["Jeunes", "Seniors"];
+  const interets = formData
+    .getAll("interets")
+    .map((v) => v.toString().trim())
+    .filter((v) => ALLOWED_INTERETS.includes(v));
+
   if (!EMAIL_REGEX.test(email)) {
     redirect("/newsletter?erreur=email");
   }
 
   try {
+    const existant = await prisma.newsletterContact.findUnique({
+      where: { email },
+      select: { tags: true },
+    });
+    const tagsFusionnes = [...new Set([...(existant?.tags || []), ...interets])];
+
     await prisma.newsletterContact.upsert({
       where: { email },
       update: {
         abonne: true,
         ...(prenom ? { prenom } : {}),
         ...(nom ? { nom } : {}),
+        ...(interets.length ? { tags: tagsFusionnes } : {}),
       },
-      create: { email, prenom, nom, tags: [], abonne: true, source: "site" },
+      create: { email, prenom, nom, tags: interets, abonne: true, source: "site" },
     });
     revalidatePath("/admin");
   } catch (error) {

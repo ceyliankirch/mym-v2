@@ -22,6 +22,20 @@ const champ = {
   boxSizing: "border-box",
 };
 
+const optionCard = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "12px 14px",
+  borderRadius: "12px",
+  border: `1px solid ${C.lightGray}`,
+  background: "#fff",
+  fontSize: "14px",
+  fontWeight: 600,
+  color: "#41545c",
+  cursor: "pointer",
+};
+
 const bouton = {
   border: "none",
   borderRadius: "999px",
@@ -84,6 +98,21 @@ export default async function NewsletterPage({ searchParams }) {
                 <input type="text" name="nom" placeholder="Nom (facultatif)" style={champ} />
               </div>
               <input type="email" name="email" required placeholder="Adresse email" style={champ} />
+
+              <fieldset style={{ border: "none", padding: 0, margin: "4px 0 0", display: "flex", flexDirection: "column", gap: 8 }}>
+                <legend style={{ fontSize: 12, fontWeight: 700, color: C.teal, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4, padding: 0 }}>
+                  Quelles actualités souhaitez-vous recevoir ?
+                </legend>
+                <label style={optionCard}>
+                  <input type="checkbox" name="interets" value="Jeunes" defaultChecked style={{ width: 18, height: 18, accentColor: C.teal }} />
+                  Séjours enfants &amp; ados
+                </label>
+                <label style={optionCard}>
+                  <input type="checkbox" name="interets" value="Seniors" style={{ width: 18, height: 18, accentColor: C.teal }} />
+                  Sorties seniors
+                </label>
+              </fieldset>
+
               <button type="submit" style={bouton}>S'inscrire à la newsletter</button>
             </form>
 

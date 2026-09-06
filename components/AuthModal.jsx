@@ -175,8 +175,8 @@ export default function AuthModal({ isOpen, onClose }) {
             </h2>
             <p style={{ fontSize: "14px", color: C.gray, fontWeight: 500, lineHeight: 1.5 }}>
               {mode === "login"
-                ? "Connectez-vous pour accéder au suivi des séjours et à vos inscriptions."
-                : "Créez votre compte Parent pour inscrire vos enfants à nos séjours."}
+                ? "Connectez-vous pour suivre vos séjours, vos sorties et vos inscriptions."
+                : "Créez votre compte pour inscrire vos proches à nos séjours et sorties, et suivre vos dossiers."}
             </p>
           </div>
 
