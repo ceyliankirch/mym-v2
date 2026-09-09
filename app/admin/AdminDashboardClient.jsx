@@ -318,17 +318,19 @@ function genererPlanChambresAuto(inscrits) {
     .forEach((x) => rooms.push({ id: nextId(), type: "simple", places: 1, occupants: [x.ins.id] }));
 
   const doubles = infos.filter((x) => x.type === "double");
-  const parNom = new Map();
+  // ⚠️ `Map` est ici l'icône lucide-react importée en haut du fichier, pas le
+  // constructeur natif : on indexe donc avec un objet simple.
+  const parNom = {};
   doubles.forEach((x) => {
     const cle = normaliserNom(nomCompletInscription(x.ins));
-    if (cle) parNom.set(cle, x);
+    if (cle) parNom[cle] = x;
   });
 
   const places = new Set();
   // 1er passage : appairages via le binôme déclaré
   doubles.forEach((x) => {
     if (places.has(x.ins.id)) return;
-    const cible = x.binome ? parNom.get(normaliserNom(x.binome)) : null;
+    const cible = x.binome ? parNom[normaliserNom(x.binome)] : null;
     if (cible && cible.ins.id !== x.ins.id && !places.has(cible.ins.id)) {
       rooms.push({ id: nextId(), type: "double", places: 2, occupants: [x.ins.id, cible.ins.id] });
       places.add(x.ins.id);
@@ -376,15 +378,16 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
     [inscriptions, sejour.id]
   );
 
+  // ⚠️ `Map` = icône lucide-react (import en tête de fichier) : on utilise des objets.
   const insById = useMemo(() => {
-    const m = new Map();
-    inscrits.forEach((ins) => m.set(ins.id, ins));
+    const m = {};
+    inscrits.forEach((ins) => { m[ins.id] = ins; });
     return m;
   }, [inscrits]);
 
   const infoById = useMemo(() => {
-    const m = new Map();
-    inscrits.forEach((ins) => m.set(ins.id, deriveChambreInfo(ins)));
+    const m = {};
+    inscrits.forEach((ins) => { m[ins.id] = deriveChambreInfo(ins); });
     return m;
   }, [inscrits]);
 
@@ -486,14 +489,15 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
   };
 
   const Puce = ({ insId, from }) => {
-    const ins = insById.get(insId);
+    const ins = insById[insId];
     if (!ins) return null;
-    const info = infoById.get(insId) || {};
+    const info = infoById[insId] || {};
     const nom = nomCompletInscription(ins);
     const room = from === "pool" ? null : rooms.find((r) => r.id === from);
-    const coOccupant = room && room.occupants.length === 2
-      ? insById.get(room.occupants.find((id) => id !== insId))
+    const coOccupantId = room && room.occupants.length === 2
+      ? room.occupants.find((id) => id !== insId)
       : null;
+    const coOccupant = coOccupantId ? insById[coOccupantId] : null;
     // Alerte : le binôme déclaré ne correspond pas au voisin de chambre effectif.
     const binomeMismatch =
       info.type === "double" &&
