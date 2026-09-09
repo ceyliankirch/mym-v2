@@ -460,6 +460,77 @@ export async function creerInscriptionAdmin(formData) {
   }
 }
 
+// 🔧 CORRIGER / SÉPARER LE PARTICIPANT D'UNE INSCRIPTION (admin).
+// Cas d'usage : une personne s'inscrit depuis son compte pour elle-même ET pour un
+// proche (séjours séniors) ; les deux inscriptions se retrouvent rattachées à sa
+// propre fiche. On détache l'inscription visée sur une fiche participant dédiée
+// (nouvelle, ou une fiche existante de la même famille) sans toucher aux autres
+// inscriptions ni aux documents déjà déposés sur la fiche d'origine.
+export async function reattribuerParticipantInscription(inscriptionId, data) {
+  if (!inscriptionId) return { error: "Inscription introuvable" };
+
+  const enfantIdExistant = data?.enfantId ? String(data.enfantId) : null;
+  const prenom = (data?.prenom || "").toString().trim();
+  const nom = (data?.nom || "").toString().trim();
+  const dateNaissance = data?.dateNaissance || null;
+
+  if (!enfantIdExistant && (!prenom || !nom)) {
+    return { error: "Merci de renseigner le prénom et le nom du participant." };
+  }
+
+  try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id: inscriptionId },
+      include: { sejour: true },
+    });
+    if (!inscription) return { error: "Inscription introuvable" };
+
+    let nouvelEnfantId = enfantIdExistant;
+    if (nouvelEnfantId) {
+      const enfant = await prisma.enfant.findUnique({ where: { id: nouvelEnfantId } });
+      if (!enfant || enfant.clientId !== inscription.clientId) {
+        return { error: "Participant introuvable dans cette famille" };
+      }
+      if (nouvelEnfantId === inscription.enfantId) {
+        return { error: "L'inscription est déjà rattachée à ce participant." };
+      }
+    } else {
+      const enfant = await prisma.enfant.create({
+        data: {
+          clientId: inscription.clientId,
+          prenom,
+          nom,
+          dateNaissance: dateNaissance ? new Date(dateNaissance) : null,
+        },
+      });
+      nouvelEnfantId = enfant.id;
+    }
+
+    await prisma.inscription.update({
+      where: { id: inscriptionId },
+      data: { enfantId: nouvelEnfantId },
+    });
+
+    // Documents requis : on (re)crée les lignes "manquant" sur la nouvelle fiche, sans
+    // retirer celles de la fiche d'origine (elles servent aux autres inscriptions).
+    for (const docType of inscription.sejour?.documentsRequis || []) {
+      const existing = await prisma.document
+        .findUnique({ where: { enfantId_type: { enfantId: nouvelEnfantId, type: docType } } })
+        .catch(() => null);
+      if (!existing) {
+        await prisma.document.create({ data: { enfantId: nouvelEnfantId, type: docType, statut: "MANQUANT" } });
+      }
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/espace-famille");
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur réattribution participant:", error);
+    return { error: "Erreur lors de la correction du participant" };
+  }
+}
+
 // 🔄 CHANGER L'ÉTAT D'UNE INSCRIPTION (admin)
 export async function changerStatutInscription(id, statut) {
   if (!STATUTS_INSCRIPTION.includes(statut)) {
