@@ -178,25 +178,52 @@ const calculerAge = (dateNaissance) => {
 // 📄 Export CSV des inscrits d'un séjour (pour les directeurs — ouvrable sur téléphone)
 function exporterInscritsCSV(sejour, inscrits) {
   const slug = (sejour.titre || "sejour").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "sejour";
-  // Colonnes dynamiques : tous les libellés de réponses présents chez les inscrits
-  const repLabels = [...new Set(
-    inscrits.flatMap((i) => (i.reponsesFormulaire && typeof i.reponsesFormulaire === "object" ? Object.keys(i.reponsesFormulaire) : []))
-  )];
+
+  // Colonnes du formulaire : on part du formSchema du séjour (tous les champs, dans
+  // l'ordre, même ceux que personne n'a remplis) puis on ajoute les réponses hors
+  // schéma présentes chez les inscrits (ex : "Tarif choisi", champ retiré depuis…).
+  let schema = [];
+  try { schema = sejour.formSchema ? JSON.parse(sejour.formSchema) : []; } catch (e) { schema = []; }
+  const repLabels = [];
+  const vus = new Set();
+  (Array.isArray(schema) ? schema : []).forEach((f) => {
+    if (!f || f.type === "section" || f.type === "info" || !f.label) return;
+    if (vus.has(f.label)) return;
+    vus.add(f.label);
+    repLabels.push(f.label);
+  });
+  inscrits.forEach((i) => {
+    const rep = i.reponsesFormulaire && typeof i.reponsesFormulaire === "object" ? i.reponsesFormulaire : {};
+    Object.keys(rep).forEach((k) => {
+      if (vus.has(k)) return;
+      vus.add(k);
+      repLabels.push(k);
+    });
+  });
+
+  // Une colonne par document requis du séjour, avec son statut par inscrit.
+  const docTypes = Array.isArray(sejour.documentsRequis) ? sejour.documentsRequis : [];
+  const statutDocLisible = { VALIDE: "Validé", EN_COURS: "En cours", MANQUANT: "Manquant" };
 
   const headers = [
-    "Prénom", "Nom", "Date de naissance", "Âge", "Sexe", "Taille (cm)", "Poids (kg)", "Pointure",
-    "Allergies", "Infos complémentaires", "Statut", "Inscrit le",
-    "Responsable / titulaire", "Email", "Téléphone", "Documents manquants",
+    "Séjour", "Prénom", "Nom", "Date de naissance", "Âge", "Sexe", "Taille (cm)", "Poids (kg)", "Pointure",
+    "Allergies", "Infos complémentaires",
+    "Statut inscription", "Montant payé (€)", "Inscrit le",
+    "Responsable / titulaire", "Email", "Téléphone",
     ...repLabels,
+    "Documents manquants",
+    ...docTypes.map((t) => `Doc : ${t}`),
   ];
 
   const rows = inscrits.map((ins) => {
     const e = ins.enfant || {};
     const c = ins.client || {};
     const age = e.dateNaissance ? calculerAge(e.dateNaissance) : null;
-    const docsManq = (e.documents || []).filter((d) => d.statut === "MANQUANT").map((d) => d.type).join(" ; ");
+    const docs = e.documents || [];
+    const docsManq = docs.filter((d) => d.statut === "MANQUANT").map((d) => d.type).join(" ; ");
     const rep = ins.reponsesFormulaire && typeof ins.reponsesFormulaire === "object" ? ins.reponsesFormulaire : {};
     return [
+      sejour.titre || "",
       e.prenom || "", e.nom || "",
       e.dateNaissance ? new Date(e.dateNaissance).toLocaleDateString("fr-FR") : "",
       age == null ? "" : age,
@@ -204,12 +231,17 @@ function exporterInscritsCSV(sejour, inscrits) {
       e.taille ?? "", e.poids ?? "", e.pointure ?? "",
       e.allergies || "", e.informationsComplementaires || "",
       ins.statut || "",
+      ins.montantPaye ?? 0,
       ins.createdAt ? new Date(ins.createdAt).toLocaleDateString("fr-FR") : "",
       `${c.prenom || ""} ${c.nom || ""}`.trim(), c.email || "", c.telephone || "",
-      docsManq,
       ...repLabels.map((l) => {
         const v = rep[l];
         return v === true ? "Oui" : v === false ? "Non" : (v ?? "");
+      }),
+      docsManq,
+      ...docTypes.map((t) => {
+        const d = docs.find((x) => x.type === t);
+        return d ? (statutDocLisible[d.statut] || d.statut) : "Manquant";
       }),
     ];
   });
