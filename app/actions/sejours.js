@@ -337,6 +337,34 @@ export async function dupliquerSejour(id) {
   return copie;
 }
 
+// 🛏️ Enregistre le plan d'attribution des chambres d'un séjour.
+// plan : [{ id, type: "simple"|"double", occupants: [inscriptionId] }]
+export async function enregistrerPlanChambres(sejourId, plan) {
+  if (!sejourId) return { error: "Séjour introuvable" };
+
+  const clean = (Array.isArray(plan) ? plan : []).map((r, i) => {
+    const type = r?.type === "simple" ? "simple" : "double";
+    return {
+      id: String(r?.id || `c${i + 1}`),
+      type,
+      places: type === "simple" ? 1 : 2,
+      occupants: Array.isArray(r?.occupants) ? r.occupants.map(String) : [],
+    };
+  });
+
+  try {
+    await prisma.sejour.update({
+      where: { id: sejourId },
+      data: { chambresPlan: clean },
+    });
+    revalidatePath("/admin");
+    return { ok: true };
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement du plan des chambres :", error);
+    return { error: "Erreur lors de l'enregistrement" };
+  }
+}
+
 // 📄 Génère le formulaire d'inscription "Totemia" en PDF (à imprimer / remplir à la main).
 // Renvoie le PDF encodé en base64 pour un téléchargement côté client.
 export async function genererFormulaireTotemiaPdf(sejourId) {

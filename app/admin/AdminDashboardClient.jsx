@@ -1,6 +1,6 @@
 // app/admin/AdminDashboardClient.jsx
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { 
   LayoutDashboard, Map, Users, FileText, Settings, 
   Menu, Tent, Euro, CheckCircle2, Clock, X, ChevronDown, 
@@ -21,7 +21,7 @@ import StatistiquesSection from "./StatistiquesSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
-import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour, genererFormulaireTotemiaPdf } from "../actions/sejours";
+import { creerSejour, modifierSejour, supprimerSejour, toggleStatut, toggleEnAvant, dupliquerSejour, genererFormulaireTotemiaPdf, enregistrerPlanChambres } from "../actions/sejours";
 // ⚡ IMPORTS ANIMATEURS
 import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../actions/animateurs";
 // ⚡ IMPORTS DOCUMENTS
@@ -286,89 +286,360 @@ function deriveChambreInfo(ins) {
   return { type, binome, listeAttente };
 }
 
-// 🛏️ Vue d'ensemble des chambres d'un séjour (simple / double), activable séjour par séjour
-// depuis ses paramètres. Répartit les inscrits d'après le tarif choisi et signale les
-// personnes en liste d'attente d'un binôme pour la chambre double.
-function ModalChambres({ sejour, inscriptions, onClose }) {
-  const inscrits = (inscriptions || []).filter(
-    (ins) => (ins.sejourId === sejour.id || ins.sejour?.id === sejour.id) && ins.statut !== "Annulée"
-  );
+// 🛏️ Normalise un nom (accents, casse, ponctuation) pour comparer un binôme déclaré
+// au texte libre au nom réel d'un autre inscrit.
+function normaliserNom(s) {
+  return String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
 
-  const simples = [];
-  const doubles = [];
-  const nonPrecise = [];
+function nomCompletInscription(ins) {
+  return `${ins?.enfant?.prenom || ""} ${ins?.enfant?.nom || ""}`.trim() || "—";
+}
 
-  inscrits.forEach((ins) => {
-    const { type, binome, listeAttente } = deriveChambreInfo(ins);
-    const nom = `${ins.enfant?.prenom || ""} ${ins.enfant?.nom || ""}`.trim() || "—";
-    if (type === "simple") simples.push({ nom, ins });
-    else if (type === "double") doubles.push({ nom, binome, listeAttente, ins });
-    else nonPrecise.push({ nom, ins });
+// 🛏️ Construit un plan de chambres automatique :
+//  • chaque personne en chambre simple → sa propre chambre simple
+//  • chambres doubles → appairées quand le binôme déclaré correspond au nom d'un autre
+//    inscrit lui aussi en chambre double (ex : Alain Barault a renseigné Jacqueline Pichet)
+//  • les doubles non appairés → une chambre double avec une place libre
+//  • les inscrits sans type de chambre → laissés « à placer »
+function genererPlanChambresAuto(inscrits) {
+  const infos = inscrits.map((ins) => ({ ins, ...deriveChambreInfo(ins) }));
+  const rooms = [];
+  let seq = 1;
+  const nextId = () => `c${seq++}`;
+
+  infos
+    .filter((x) => x.type === "simple")
+    .forEach((x) => rooms.push({ id: nextId(), type: "simple", places: 1, occupants: [x.ins.id] }));
+
+  const doubles = infos.filter((x) => x.type === "double");
+  const parNom = new Map();
+  doubles.forEach((x) => {
+    const cle = normaliserNom(nomCompletInscription(x.ins));
+    if (cle) parNom.set(cle, x);
   });
 
-  const carte = (children, key) => (
-    <div key={key} style={{ background: C.arctic, borderRadius: "10px", padding: "10px 14px" }}>
+  const places = new Set();
+  // 1er passage : appairages via le binôme déclaré
+  doubles.forEach((x) => {
+    if (places.has(x.ins.id)) return;
+    const cible = x.binome ? parNom.get(normaliserNom(x.binome)) : null;
+    if (cible && cible.ins.id !== x.ins.id && !places.has(cible.ins.id)) {
+      rooms.push({ id: nextId(), type: "double", places: 2, occupants: [x.ins.id, cible.ins.id] });
+      places.add(x.ins.id);
+      places.add(cible.ins.id);
+    }
+  });
+  // 2e passage : doubles restants, seuls dans une chambre à compléter
+  doubles.forEach((x) => {
+    if (places.has(x.ins.id)) return;
+    rooms.push({ id: nextId(), type: "double", places: 2, occupants: [x.ins.id] });
+    places.add(x.ins.id);
+  });
+
+  return rooms;
+}
+
+// 🛏️ Réconcilie un plan enregistré avec la liste courante des inscrits : on retire les
+// occupants qui n'existent plus (désinscription) et on renvoie les inscrits qui ne sont
+// dans aucune chambre (nouveaux, ou type non précisé) pour la zone « à placer ».
+function reconcilierPlanChambres(plan, inscrits) {
+  const idsValides = new Set(inscrits.map((i) => i.id));
+  const vus = new Set();
+  const rooms = (plan || []).map((r, i) => {
+    const type = r?.type === "simple" ? "simple" : "double";
+    const occupants = (Array.isArray(r?.occupants) ? r.occupants : []).filter(
+      (id) => idsValides.has(id) && !vus.has(id)
+    );
+    occupants.forEach((id) => vus.add(id));
+    return { id: String(r?.id || `c${i + 1}`), type, places: type === "simple" ? 1 : 2, occupants };
+  });
+  const aPlacer = inscrits.filter((i) => !vus.has(i.id)).map((i) => i.id);
+  return { rooms, aPlacer };
+}
+
+// 🛏️ Module de gestion des chambres d'un séjour, activable séjour par séjour depuis ses
+// paramètres. Répartition automatique (simple = chambre individuelle, double = appairage
+// via le binôme déclaré) puis réorganisation manuelle par glisser-déposer, et
+// enregistrement du plan sur le séjour.
+function ModalChambres({ sejour, inscriptions, onClose }) {
+  const inscrits = useMemo(
+    () =>
+      (inscriptions || []).filter(
+        (ins) => (ins.sejourId === sejour.id || ins.sejour?.id === sejour.id) && ins.statut !== "Annulée"
+      ),
+    [inscriptions, sejour.id]
+  );
+
+  const insById = useMemo(() => {
+    const m = new Map();
+    inscrits.forEach((ins) => m.set(ins.id, ins));
+    return m;
+  }, [inscrits]);
+
+  const infoById = useMemo(() => {
+    const m = new Map();
+    inscrits.forEach((ins) => m.set(ins.id, deriveChambreInfo(ins)));
+    return m;
+  }, [inscrits]);
+
+  // Répartition initiale, calculée une seule fois à l'ouverture (la modale est montée à
+  // l'ouverture puis démontée à la fermeture) : plan enregistré réconcilié avec les
+  // inscrits actuels, sinon répartition automatique.
+  const planInitial = useMemo(() => {
+    if (Array.isArray(sejour.chambresPlan) && sejour.chambresPlan.length) {
+      return reconcilierPlanChambres(sejour.chambresPlan, inscrits);
+    }
+    const r = genererPlanChambresAuto(inscrits);
+    const vus = new Set(r.flatMap((x) => x.occupants));
+    return { rooms: r, aPlacer: inscrits.filter((i) => !vus.has(i.id)).map((i) => i.id) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [rooms, setRooms] = useState(planInitial.rooms);
+  const [aPlacer, setAPlacer] = useState(planInitial.aPlacer);
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedAt, setSavedAt] = useState(sejour.chambresPlan ? "enregistré" : "");
+  const [err, setErr] = useState("");
+  const [selection, setSelection] = useState(null); // { id, from } — clic pour déplacer sans souris
+  const dragRef = useRef(null);
+  const [survol, setSurvol] = useState(null);
+
+  const seqRef = useRef(planInitial.rooms.length + 1);
+  const genId = () => {
+    const used = new Set(rooms.map((r) => r.id));
+    let id;
+    do {
+      id = `c${seqRef.current++}`;
+    } while (used.has(id));
+    return id;
+  };
+
+  // Retire un inscrit de partout puis le pose dans la cible ("pool" ou un id de chambre).
+  const deplacer = (insId, cibleId) => {
+    setErr("");
+    setRooms((prev) => {
+      const sansLui = prev.map((r) => ({ ...r, occupants: r.occupants.filter((id) => id !== insId) }));
+      if (cibleId === "pool") return sansLui;
+      return sansLui.map((r) => (r.id === cibleId ? { ...r, occupants: [...r.occupants, insId] } : r));
+    });
+    setAPlacer((prev) => {
+      const sansLui = prev.filter((id) => id !== insId);
+      return cibleId === "pool" ? [...sansLui, insId] : sansLui;
+    });
+    setDirty(true);
+    setSavedAt("");
+    setSelection(null);
+  };
+
+  const ajouterChambre = (type) => {
+    setRooms((prev) => [...prev, { id: genId(), type, places: type === "simple" ? 1 : 2, occupants: [] }]);
+    setDirty(true);
+    setSavedAt("");
+  };
+
+  const supprimerChambre = (roomId) => {
+    const cible = rooms.find((r) => r.id === roomId);
+    if (cible && cible.occupants.length) setAPlacer((p) => [...p, ...cible.occupants.filter((id) => !p.includes(id))]);
+    setRooms((prev) => prev.filter((r) => r.id !== roomId));
+    setDirty(true);
+    setSavedAt("");
+  };
+
+  const regenerer = () => {
+    if (dirty && !window.confirm("Régénérer la répartition automatique ? Les modifications non enregistrées seront perdues.")) return;
+    const r = genererPlanChambresAuto(inscrits);
+    const vus = new Set(r.flatMap((x) => x.occupants));
+    seqRef.current = r.length + 1;
+    setRooms(r);
+    setAPlacer(inscrits.filter((i) => !vus.has(i.id)).map((i) => i.id));
+    setDirty(true);
+    setSavedAt("");
+  };
+
+  const enregistrer = async () => {
+    setSaving(true);
+    setErr("");
+    const res = await enregistrerPlanChambres(sejour.id, rooms);
+    setSaving(false);
+    if (res?.error) {
+      setErr(res.error);
+    } else {
+      setDirty(false);
+      setSavedAt("enregistré");
+    }
+  };
+
+  // Clic sur une puce : la sélectionne ; clic sur une zone : y déplace la sélection.
+  const onClicPuce = (insId, from) => {
+    if (selection && selection.id === insId) setSelection(null);
+    else setSelection({ id: insId, from });
+  };
+  const onClicZone = (cibleId) => {
+    if (selection) deplacer(selection.id, cibleId);
+  };
+
+  const Puce = ({ insId, from }) => {
+    const ins = insById.get(insId);
+    if (!ins) return null;
+    const info = infoById.get(insId) || {};
+    const nom = nomCompletInscription(ins);
+    const room = from === "pool" ? null : rooms.find((r) => r.id === from);
+    const coOccupant = room && room.occupants.length === 2
+      ? insById.get(room.occupants.find((id) => id !== insId))
+      : null;
+    // Alerte : le binôme déclaré ne correspond pas au voisin de chambre effectif.
+    const binomeMismatch =
+      info.type === "double" &&
+      info.binome &&
+      coOccupant &&
+      normaliserNom(info.binome) !== normaliserNom(nomCompletInscription(coOccupant));
+    const selectionnee = selection && selection.id === insId;
+    return (
+      <div
+        draggable
+        onDragStart={() => { dragRef.current = { id: insId, from }; }}
+        onDragEnd={() => { dragRef.current = null; }}
+        onClick={(e) => { e.stopPropagation(); onClicPuce(insId, from); }}
+        title="Glisser vers une autre chambre, ou cliquer puis cliquer la chambre cible"
+        style={{
+          background: info.listeAttente ? "#fff7ed" : C.white,
+          border: selectionnee ? `2px solid ${C.yellow}` : info.listeAttente ? `1px solid ${C.saffron}55` : `1px solid ${C.lightGray}`,
+          borderRadius: "10px",
+          padding: "8px 10px",
+          cursor: "grab",
+          userSelect: "none",
+          boxShadow: selectionnee ? "0 4px 12px rgba(255,200,1,0.25)" : "none",
+        }}
+      >
+        <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+          {nom}
+          {info.type === "simple" && <BedSingle size={12} style={{ color: C.gray }} />}
+          {info.type === "double" && <BedDouble size={12} style={{ color: C.gray }} />}
+        </p>
+        {info.listeAttente ? (
+          <p style={{ fontSize: "10px", fontWeight: 700, color: C.saffron, margin: "3px 0 0" }}>⏳ Liste d'attente — pas de binôme</p>
+        ) : info.binome ? (
+          <p style={{ fontSize: "10px", color: binomeMismatch ? C.saffron : C.gray, margin: "3px 0 0" }}>
+            {binomeMismatch ? "⚠️ " : ""}Binôme souhaité : {info.binome}
+          </p>
+        ) : info.type === "double" ? (
+          <p style={{ fontSize: "10px", color: C.gray, margin: "3px 0 0" }}>Binôme non renseigné</p>
+        ) : null}
+      </div>
+    );
+  };
+
+  const Zone = ({ id, children, style }) => (
+    <div
+      onDragOver={(e) => { e.preventDefault(); if (survol !== id) setSurvol(id); }}
+      onDragLeave={() => setSurvol((s) => (s === id ? null : s))}
+      onDrop={(e) => {
+        e.preventDefault();
+        setSurvol(null);
+        const d = dragRef.current;
+        if (d && d.from !== id) deplacer(d.id, id);
+      }}
+      onClick={() => onClicZone(id)}
+      style={{ ...style, outline: survol === id ? `2px dashed ${C.yellow}` : "none", outlineOffset: "2px" }}
+    >
       {children}
     </div>
   );
 
+  const nbSimples = rooms.filter((r) => r.type === "simple").length;
+  const nbDoubles = rooms.filter((r) => r.type === "double").length;
+  const btn = (bg, color) => ({ padding: "8px 12px", borderRadius: "10px", border: "none", background: bg, color, fontSize: "12px", fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" });
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "780px", maxHeight: "85vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "920px", maxHeight: "88vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>🛏️ Chambres — {sejour.titre}</h2>
-        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "24px" }}>Répartition des inscrits par type de chambre, déduite du tarif choisi et des réponses au formulaire.</p>
+        <p style={{ fontSize: "13px", color: C.gray, marginBottom: "16px", maxWidth: "640px" }}>
+          Répartition automatique : chaque personne en chambre simple a sa chambre, les chambres doubles sont appairées quand le binôme souhaité correspond à un autre inscrit. Réorganisez par glisser-déposer (ou clic sur une personne puis clic sur la chambre) puis enregistrez.
+        </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
-          <div>
-            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <BedSingle size={15} /> Chambre simple ({simples.length})
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {simples.map(({ nom, ins }) => carte(
-                <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>,
-                ins.id
-              ))}
-              {simples.length === 0 && <p style={{ fontSize: "12px", color: C.gray }}>Aucun inscrit sur ce tarif.</p>}
-            </div>
-          </div>
-
-          <div>
-            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.teal, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <BedDouble size={15} /> Chambre double ({doubles.length})
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {doubles.map(({ nom, binome, listeAttente, ins }) => (
-                <div key={ins.id} style={{ background: listeAttente ? "#fff7ed" : C.arctic, border: listeAttente ? `1px solid ${C.saffron}50` : "1px solid transparent", borderRadius: "10px", padding: "10px 14px" }}>
-                  <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>
-                  {listeAttente ? (
-                    <p style={{ fontSize: "11px", fontWeight: 700, color: C.saffron, margin: "4px 0 0" }}>⏳ En liste d'attente — pas encore de binôme</p>
-                  ) : binome ? (
-                    <p style={{ fontSize: "11px", color: C.gray, margin: "4px 0 0" }}>Avec : {binome}</p>
-                  ) : (
-                    <p style={{ fontSize: "11px", color: C.gray, margin: "4px 0 0" }}>Binôme non renseigné</p>
-                  )}
-                </div>
-              ))}
-              {doubles.length === 0 && <p style={{ fontSize: "12px", color: C.gray }}>Aucun inscrit sur ce tarif.</p>}
-            </div>
-          </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginBottom: "20px" }}>
+          <button onClick={regenerer} style={btn(C.arctic, C.teal)}>↻ Régénérer automatiquement</button>
+          <button onClick={() => ajouterChambre("simple")} style={btn(C.arctic, C.teal)}><BedSingle size={13} /> Ajouter une simple</button>
+          <button onClick={() => ajouterChambre("double")} style={btn(C.arctic, C.teal)}><BedDouble size={13} /> Ajouter une double</button>
+          <span style={{ flex: 1 }} />
+          {savedAt && !dirty && <span style={{ fontSize: "12px", fontWeight: 700, color: "#15803d" }}>✓ Plan enregistré</span>}
+          {dirty && <span style={{ fontSize: "12px", fontWeight: 700, color: C.saffron }}>Modifications non enregistrées</span>}
+          <button onClick={enregistrer} disabled={saving || !dirty} style={{ ...btn(dirty ? C.yellow : C.lightGray, C.teal), cursor: saving ? "wait" : dirty ? "pointer" : "default" }}>
+            {saving ? "Enregistrement..." : "Enregistrer le plan"}
+          </button>
         </div>
 
-        {nonPrecise.length > 0 && (
-          <div style={{ marginTop: "24px" }}>
-            <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
-              Type de chambre non précisé ({nonPrecise.length})
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {nonPrecise.map(({ nom, ins }) => carte(
-                <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal, margin: 0 }}>{nom}</p>,
-                ins.id
-              ))}
-            </div>
-          </div>
-        )}
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+
+        <p style={{ fontSize: "11px", fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>
+          {nbSimples} chambre{nbSimples > 1 ? "s" : ""} simple{nbSimples > 1 ? "s" : ""} · {nbDoubles} chambre{nbDoubles > 1 ? "s" : ""} double{nbDoubles > 1 ? "s" : ""} · {aPlacer.length} à placer
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "14px" }}>
+          {rooms.map((r, idx) => {
+            const surbooke = r.occupants.length > r.places;
+            const rang = rooms.slice(0, idx + 1).filter((x) => x.type === r.type).length;
+            return (
+              <Zone
+                key={r.id}
+                id={r.id}
+                style={{
+                  background: C.arctic,
+                  border: `1px solid ${surbooke ? "#dc2626" : "transparent"}`,
+                  borderRadius: "14px",
+                  padding: "12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  minHeight: "96px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "12px", fontWeight: 800, color: C.teal, display: "flex", alignItems: "center", gap: "6px" }}>
+                    {r.type === "simple" ? <BedSingle size={14} /> : <BedDouble size={14} />}
+                    Chambre {r.type === "simple" ? "simple" : "double"} {rang}
+                    <span style={{ color: surbooke ? "#dc2626" : C.gray, fontWeight: 700 }}>({r.occupants.length}/{r.places})</span>
+                  </span>
+                  <button onClick={(e) => { e.stopPropagation(); supprimerChambre(r.id); }} title="Supprimer la chambre" style={{ background: "none", border: "none", cursor: "pointer", color: C.gray, display: "flex" }}><Trash2 size={13} /></button>
+                </div>
+                {r.occupants.map((insId) => <Puce key={insId} insId={insId} from={r.id} />)}
+                {r.occupants.length === 0 && <p style={{ fontSize: "11px", color: C.gray, margin: 0, fontStyle: "italic" }}>Glisser une personne ici</p>}
+              </Zone>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: "22px" }}>
+          <h3 style={{ fontSize: "12px", fontWeight: 800, color: C.gray, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>
+            À placer ({aPlacer.length})
+          </h3>
+          <Zone
+            id="pool"
+            style={{
+              background: aPlacer.length ? "#fff7ed" : C.arctic,
+              border: `1px dashed ${aPlacer.length ? C.saffron + "80" : C.lightGray}`,
+              borderRadius: "14px",
+              padding: "12px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: "8px",
+              minHeight: "60px",
+            }}
+          >
+            {aPlacer.map((insId) => <Puce key={insId} insId={insId} from="pool" />)}
+            {aPlacer.length === 0 && <p style={{ fontSize: "11px", color: C.gray, margin: 0, fontStyle: "italic" }}>Tout le monde est affecté à une chambre.</p>}
+          </Zone>
+        </div>
       </div>
     </div>
   );
@@ -1008,8 +1279,8 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
               <input type="checkbox" name="gestionChambres" defaultChecked={isEditing ? !!sejourData.gestionChambres : false} style={{ width: "16px", height: "16px", marginTop: "2px", cursor: "pointer" }} />
               <span>
-                <span style={{ display: "block", fontSize: "13px", fontWeight: 800, color: C.teal }}>🛏️ Activer la vue d'ensemble des chambres</span>
-                <span style={{ display: "block", fontSize: "11px", color: C.gray, marginTop: "2px" }}>Ajoute un bouton « Chambres » sur ce séjour dans le dashboard, avec la répartition chambre simple / chambre double des inscrits (utile pour les séjours séniors).</span>
+                <span style={{ display: "block", fontSize: "13px", fontWeight: 800, color: C.teal }}>🛏️ Activer la gestion des chambres</span>
+                <span style={{ display: "block", fontSize: "11px", color: C.gray, marginTop: "2px" }}>Ajoute un bouton « Chambres » sur ce séjour dans le dashboard : répartition automatique (chambre simple = chambre individuelle, chambre double = appairage via le binôme souhaité) puis réorganisation par glisser-déposer (utile pour les séjours séniors).</span>
               </span>
             </label>
 
