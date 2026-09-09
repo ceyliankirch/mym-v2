@@ -175,6 +175,53 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     setNewEnfantData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const ENFANT_VIDE = {
+    prenom: "",
+    nom: "",
+    dateNaissance: "",
+    sexe: "",
+    taille: "",
+    poids: "",
+    pointure: "",
+    allergies: "",
+    informationsComplementaires: "",
+  };
+
+  // 👵 Séjours séniors : le titulaire du compte peut s'inscrire lui-même OU inscrire un
+  // proche (conjoint, frère, sœur, ami…). Chaque participant a sa propre fiche, pour que
+  // le nom affiché côté admin / chambres soit bien celui de la personne qui part.
+  const prenomTitulaire = (session?.user?.prenom || session?.user?.name || "").trim();
+  const nomTitulaire = (session?.user?.nom || "").trim();
+  const fichePerso = enfants.find(
+    (e) =>
+      `${e.prenom} ${e.nom}`.trim().toLowerCase() ===
+      `${prenomTitulaire} ${nomTitulaire}`.trim().toLowerCase()
+  );
+
+  const remplirAvecMoi = () => {
+    if (fichePerso) {
+      setSelectedEnfantId(fichePerso.id);
+      setShowNewEnfantForm(false);
+    } else {
+      setSelectedEnfantId("");
+      setShowNewEnfantForm(true);
+      setNewEnfantData({ ...ENFANT_VIDE, prenom: prenomTitulaire, nom: nomTitulaire });
+    }
+  };
+
+  const inscrireUneAutrePersonne = () => {
+    setSuccess(false);
+    setError("");
+    setSelectedEnfantId("");
+    setShowNewEnfantForm(false);
+    setNewEnfantData(ENFANT_VIDE);
+    setFormData({});
+    setTarifChoisiIdx(tarifsListe.length === 1 ? 0 : null);
+    setListeAttenteChambre(false);
+    router.refresh();
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -183,31 +230,27 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
     try {
       let enfantData;
 
-      if (estSenior) {
-        // Séjour séniors : le participant = le titulaire du compte, pas de "Sélection de l'enfant"
-        enfantData = enfants.length > 0
-          ? { id: enfants[0].id }
-          : {
-              prenom: (session.user?.prenom || session.user?.name || "Participant").trim(),
-              nom: (session.user?.nom || "").trim() || "—",
-            };
-      } else {
-        if (!selectedEnfantId && !showNewEnfantForm) {
-          setError("Veuillez sélectionner ou créer un enfant");
+      if (!selectedEnfantId && !showNewEnfantForm) {
+        setError(estSenior ? "Veuillez indiquer qui participe à la sortie" : "Veuillez sélectionner ou créer un enfant");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (showNewEnfantForm) {
+        if (!newEnfantData.prenom.trim() || !newEnfantData.nom.trim()) {
+          setError(estSenior ? "Veuillez renseigner le prénom et le nom du participant" : "Veuillez renseigner le prénom et le nom de l'enfant");
           setIsSubmitting(false);
           return;
         }
-
-        enfantData = showNewEnfantForm ? newEnfantData : { id: selectedEnfantId };
-
-        if (!showNewEnfantForm) {
-          const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
-          if (!selectedEnfant) {
-            setError("Enfant sélectionné introuvable");
-            setIsSubmitting(false);
-            return;
-          }
+        enfantData = newEnfantData;
+      } else {
+        const selectedEnfant = enfants.find((e) => e.id === selectedEnfantId);
+        if (!selectedEnfant) {
+          setError(estSenior ? "Participant introuvable" : "Enfant sélectionné introuvable");
+          setIsSubmitting(false);
+          return;
         }
+        enfantData = { id: selectedEnfantId };
       }
 
       if (tarifsListe.length > 0 && tarifChoisiIdx == null) {
@@ -252,11 +295,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
           setTimeout(() => {
             window.location.href = lienPaiementActif;
           }, 2500);
-        } else {
+        } else if (!estSenior) {
           setTimeout(() => {
             router.push("/espace-famille?tab=documents");
           }, 2000);
         }
+        // Séjours séniors : pas de redirection automatique, on laisse le choix
+        // « inscrire une autre personne » / « aller à mon espace famille ».
       }
     } catch (err) {
       setError("Une erreur est survenue");
@@ -307,6 +352,28 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 >
                   Accéder au paiement maintenant
                 </a>
+              </>
+            ) : estSenior ? (
+              <>
+                <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
+                  Vous souhaitez inscrire une autre personne (conjoint, proche…) ? C'est possible juste ici.
+                </p>
+                <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginTop: "24px" }}>
+                  <button
+                    type="button"
+                    onClick={inscrireUneAutrePersonne}
+                    style={{ background: C.yellow, color: C.teal, padding: "14px 28px", borderRadius: "999px", fontWeight: 800, border: "none", fontSize: "14px", cursor: "pointer" }}
+                  >
+                    Inscrire une autre personne
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/espace-famille?tab=documents")}
+                    style={{ background: C.white, color: C.teal, border: `2px solid ${C.teal}`, padding: "14px 28px", borderRadius: "999px", fontWeight: 800, fontSize: "14px", cursor: "pointer" }}
+                  >
+                    Aller à mon espace famille
+                  </button>
+                </div>
               </>
             ) : (
               <p style={{ color: C.gray, marginTop: "16px", fontSize: "16px" }}>
@@ -411,9 +478,13 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                 </div>
               )}
 
-              {!estSenior && (
               <div style={styles.section}>
-                <h3 style={styles.sectionTitle}>Sélection de l'enfant</h3>
+                <h3 style={styles.sectionTitle}>{estSenior ? "Qui participe à cette sortie ?" : "Sélection de l'enfant"}</h3>
+                {estSenior && (
+                  <p style={styles.infoText}>
+                    Inscrivez-vous vous-même ou une autre personne (conjoint, frère, sœur, ami…). Pour inscrire plusieurs personnes, validez cette inscription puis recommencez pour la suivante.
+                  </p>
+                )}
                 {!showNewEnfantForm ? (
                   <>
                     {enfants.length > 0 && (
@@ -422,7 +493,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         onChange={(e) => setSelectedEnfantId(e.target.value)}
                         style={styles.select}
                       >
-                        <option value="">-- Sélectionner un enfant --</option>
+                        <option value="">-- {estSenior ? "Sélectionner un participant" : "Sélectionner un enfant"} --</option>
                         {enfants.map((enfant) => (
                           <option key={enfant.id} value={enfant.id}>
                             {enfant.prenom} {enfant.nom}
@@ -430,12 +501,21 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         ))}
                       </select>
                     )}
+                    {estSenior && (
+                      <button
+                        type="button"
+                        onClick={remplirAvecMoi}
+                        style={styles.addButton}
+                      >
+                        <Plus size={16} /> M'inscrire moi-même{prenomTitulaire ? ` (${prenomTitulaire} ${nomTitulaire})`.trimEnd() : ""}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setShowNewEnfantForm(true)}
                       style={styles.addButton}
                     >
-                      <Plus size={16} /> Ajouter un nouvel enfant
+                      <Plus size={16} /> {estSenior ? "Inscrire une autre personne" : "Ajouter un nouvel enfant"}
                     </button>
                   </>
                 ) : (
@@ -450,7 +530,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         }
                         required
                         style={styles.input}
-                        placeholder="Prénom de l'enfant"
+                        placeholder={estSenior ? "Prénom du participant" : "Prénom de l'enfant"}
                       />
                     </div>
                     <div style={styles.inputGroup}>
@@ -463,7 +543,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         }
                         required
                         style={styles.input}
-                        placeholder="Nom de l'enfant"
+                        placeholder={estSenior ? "Nom du participant" : "Nom de l'enfant"}
                       />
                     </div>
                     <div style={styles.inputGroup}>
@@ -477,61 +557,65 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         style={styles.input}
                       />
                     </div>
+                    {!estSenior && (
+                      <>
+                        <div style={styles.inputGroup}>
+                          <label style={styles.label}>Sexe</label>
+                          <select
+                            value={newEnfantData.sexe}
+                            onChange={(e) => handleNewEnfantChange("sexe", e.target.value)}
+                            style={styles.select}
+                          >
+                            <option value="">-- Sélectionner --</option>
+                            <option value="M">Garçon</option>
+                            <option value="F">Fille</option>
+                          </select>
+                        </div>
+                        <div style={{ display: "flex", gap: "16px" }}>
+                          <div style={{ ...styles.inputGroup, flex: 1 }}>
+                            <label style={styles.label}>Taille (cm)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={newEnfantData.taille}
+                              onChange={(e) => handleNewEnfantChange("taille", e.target.value)}
+                              style={styles.input}
+                              placeholder="ex: 140"
+                            />
+                          </div>
+                          <div style={{ ...styles.inputGroup, flex: 1 }}>
+                            <label style={styles.label}>Poids (kg)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={newEnfantData.poids}
+                              onChange={(e) => handleNewEnfantChange("poids", e.target.value)}
+                              style={styles.input}
+                              placeholder="ex: 35"
+                            />
+                          </div>
+                          <div style={{ ...styles.inputGroup, flex: 1 }}>
+                            <label style={styles.label}>Pointure</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={newEnfantData.pointure}
+                              onChange={(e) => handleNewEnfantChange("pointure", e.target.value)}
+                              style={styles.input}
+                              placeholder="ex: 34"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
                     <div style={styles.inputGroup}>
-                      <label style={styles.label}>Sexe</label>
-                      <select
-                        value={newEnfantData.sexe}
-                        onChange={(e) => handleNewEnfantChange("sexe", e.target.value)}
-                        style={styles.select}
-                      >
-                        <option value="">-- Sélectionner --</option>
-                        <option value="M">Garçon</option>
-                        <option value="F">Fille</option>
-                      </select>
-                    </div>
-                    <div style={{ display: "flex", gap: "16px" }}>
-                      <div style={{ ...styles.inputGroup, flex: 1 }}>
-                        <label style={styles.label}>Taille (cm)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={newEnfantData.taille}
-                          onChange={(e) => handleNewEnfantChange("taille", e.target.value)}
-                          style={styles.input}
-                          placeholder="ex: 140"
-                        />
-                      </div>
-                      <div style={{ ...styles.inputGroup, flex: 1 }}>
-                        <label style={styles.label}>Poids (kg)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={newEnfantData.poids}
-                          onChange={(e) => handleNewEnfantChange("poids", e.target.value)}
-                          style={styles.input}
-                          placeholder="ex: 35"
-                        />
-                      </div>
-                      <div style={{ ...styles.inputGroup, flex: 1 }}>
-                        <label style={styles.label}>Pointure</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={newEnfantData.pointure}
-                          onChange={(e) => handleNewEnfantChange("pointure", e.target.value)}
-                          style={styles.input}
-                          placeholder="ex: 34"
-                        />
-                      </div>
-                    </div>
-                    <div style={styles.inputGroup}>
-                      <label style={styles.label}>Allergies ou intolérances</label>
+                      <label style={styles.label}>{estSenior ? "Allergies ou régime alimentaire" : "Allergies ou intolérances"}</label>
                       <textarea
                         value={newEnfantData.allergies}
                         onChange={(e) => handleNewEnfantChange("allergies", e.target.value)}
                         rows="3"
                         style={styles.input}
-                        placeholder="ex: Allergie aux arachides, intolérance au lactose..."
+                        placeholder={estSenior ? "ex: Allergie aux fruits de mer, régime sans sel..." : "ex: Allergie aux arachides, intolérance au lactose..."}
                       />
                     </div>
                     <div style={styles.inputGroup}>
@@ -541,12 +625,12 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                         onChange={(e) => handleNewEnfantChange("informationsComplementaires", e.target.value)}
                         rows="3"
                         style={styles.input}
-                        placeholder="Toute information utile à l'équipe encadrante..."
+                        placeholder={estSenior ? "Toute information utile à l'organisation (mobilité, santé…)" : "Toute information utile à l'équipe encadrante..."}
                       />
                     </div>
                     <button
                       type="button"
-                      onClick={() => setShowNewEnfantForm(false)}
+                      onClick={() => { setShowNewEnfantForm(false); setNewEnfantData(ENFANT_VIDE); }}
                       style={styles.cancelButton}
                     >
                       Annuler
@@ -554,7 +638,6 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                   </>
                 )}
               </div>
-              )}
 
               {champsAffiches.length > 0 && (
                 <>

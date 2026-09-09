@@ -27,7 +27,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription, creerInscriptionAdmin } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription, creerInscriptionAdmin, reattribuerParticipantInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS PARAMÈTRES (IBAN de l'association pour le paiement par virement)
 import { modifierParametres } from "../actions/parametres";
@@ -1654,7 +1654,7 @@ function DocumentValidationRow({ doc }) {
 }
 
 /* ── MODALE : LISTE DES INSCRITS D'UN SÉJOUR ── */
-function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete, onFicheEnfant }) {
+function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelete, onFicheEnfant, onCorrigerParticipant }) {
   const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
 
   return (
@@ -1713,6 +1713,15 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                       >
                         <Trash2 size={14} />
                       </button>
+                      {onCorrigerParticipant && (
+                        <button
+                          onClick={() => onCorrigerParticipant(ins)}
+                          title="Corriger / séparer le participant de cette inscription"
+                          style={{ background: C.white, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.teal }}
+                        >
+                          <User size={15} />
+                        </button>
+                      )}
                       <button
                         onClick={() => ins.enfant?.id && onFicheEnfant?.(ins.enfant.id)}
                         title="Voir la fiche complète"
@@ -1728,6 +1737,92 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ── MODALE : CORRIGER / SÉPARER LE PARTICIPANT D'UNE INSCRIPTION (admin) ──
+   Quand une même personne a pris plusieurs inscriptions depuis son compte pour des
+   proches (séjours séniors), toutes rattachées à sa propre fiche. On détache
+   l'inscription sur une fiche dédiée (nouvelle ou existante de la même famille). */
+function ModalCorrigerParticipant({ inscription, autresParticipants = [], onClose }) {
+  const [mode, setMode] = useState("nouveau"); // "nouveau" | "existant"
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [dateNaissance, setDateNaissance] = useState("");
+  const [enfantId, setEnfantId] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const champ = { padding: "10px 12px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "13px", width: "100%", fontFamily: "inherit", boxSizing: "border-box" };
+  const lab = { fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "4px" };
+  const toggleBtn = (actif) => ({ flex: 1, padding: "9px", borderRadius: "10px", border: "none", fontSize: "12px", fontWeight: 800, cursor: "pointer", background: actif ? C.teal : C.arctic, color: actif ? C.white : C.teal });
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    setSaving(true);
+    const payload = mode === "existant" ? { enfantId } : { prenom, nom, dateNaissance };
+    const res = await reattribuerParticipantInscription(inscription.id, payload);
+    setSaving(false);
+    if (res?.error) setErr(res.error);
+    else window.location.reload();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+        <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Corriger le participant</h3>
+        <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
+          Inscription actuellement au nom de <strong style={{ color: C.teal }}>{inscription.enfant?.prenom} {inscription.enfant?.nom}</strong>
+          {inscription.sejour?.titre ? ` — ${inscription.sejour.titre}` : ""}. Elle sera déplacée sur la fiche ci-dessous ; les autres inscriptions de {inscription.enfant?.prenom} {inscription.enfant?.nom} ne sont pas touchées.
+        </p>
+
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+
+        {autresParticipants.length > 0 && (
+          <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+            <button type="button" onClick={() => setMode("nouveau")} style={toggleBtn(mode === "nouveau")}>Nouvelle fiche</button>
+            <button type="button" onClick={() => setMode("existant")} style={toggleBtn(mode === "existant")}>Fiche existante</button>
+          </div>
+        )}
+
+        {mode === "existant" ? (
+          <div>
+            <label style={lab}>Participant (même famille)</label>
+            <select style={champ} value={enfantId} onChange={(e) => setEnfantId(e.target.value)} required>
+              <option value="">-- Sélectionner --</option>
+              {autresParticipants.map((p) => (
+                <option key={p.id} value={p.id}>{p.prenom} {p.nom}</option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ flex: 1 }}>
+                <label style={lab}>Prénom</label>
+                <input style={champ} value={prenom} onChange={(e) => setPrenom(e.target.value)} required />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={lab}>Nom</label>
+                <input style={champ} value={nom} onChange={(e) => setNom(e.target.value)} required />
+              </div>
+            </div>
+            <div>
+              <label style={lab}>Date de naissance (facultatif)</label>
+              <input type="date" style={champ} value={dateNaissance} onChange={(e) => setDateNaissance(e.target.value)} />
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+          <button type="button" onClick={onClose} style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, color: C.teal, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+          <button type="submit" disabled={saving} style={{ flex: 2, padding: "12px", borderRadius: "12px", border: "none", background: C.yellow, color: C.teal, fontWeight: 800, cursor: saving ? "wait" : "pointer" }}>
+            {saving ? "Correction..." : "Déplacer l'inscription"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -2439,6 +2534,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
   const [sejourInscritsEnView, setSejourInscritsEnView] = useState(null);
   const [qrSejour, setQrSejour] = useState(null);
   const [chambresSejour, setChambresSejour] = useState(null);
+  const [inscriptionACorriger, setInscriptionACorriger] = useState(null);
   const [inscriptionManuelleEnCours, setInscriptionManuelleEnCours] = useState(false);
   const [ficheEnfantId, setFicheEnfantId] = useState(null);
   const [rechercheEnfant, setRechercheEnfant] = useState("");
@@ -2937,7 +3033,18 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
       {sejourEnEdition && <ModalSejour sejourData={sejourEnEdition} setSejourEnEdition={setSejourEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {animEnEdition && <ModalAnimateur data={animEnEdition} setEdition={setAnimEnEdition} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
       {albumEnEdition && <ModalAlbum albumData={albumEnEdition} setAlbumEnEdition={setAlbumEnEdition} sejours={sejours} isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />}
-      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptionsVue} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} />}
+      {sejourInscritsEnView && <ModalInscrits sejour={sejourInscritsEnView} inscriptions={inscriptionsVue} onClose={() => setSejourInscritsEnView(null)} onChangerStatut={handleChangerStatutInscription} onDelete={handleDeleteInscription} onFicheEnfant={setFicheEnfantId} onCorrigerParticipant={setInscriptionACorriger} />}
+
+      {inscriptionACorriger && (
+        <ModalCorrigerParticipant
+          inscription={inscriptionACorriger}
+          autresParticipants={(inscriptionsVue || [])
+            .filter((i) => i.clientId === inscriptionACorriger.clientId && i.enfant?.id && i.enfant.id !== inscriptionACorriger.enfant?.id)
+            .map((i) => i.enfant)
+            .filter((e, idx, arr) => arr.findIndex((x) => x.id === e.id) === idx)}
+          onClose={() => setInscriptionACorriger(null)}
+        />
+      )}
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {chambresSejour && <ModalChambres sejour={chambresSejour} inscriptions={inscriptionsVue} onClose={() => setChambresSejour(null)} />}
       {inscriptionManuelleEnCours && <ModalInscriptionManuelle clients={clients} sejours={sejours} onClose={() => setInscriptionManuelleEnCours(false)} />}
