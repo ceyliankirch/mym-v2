@@ -43,7 +43,7 @@ const C = {
 /* ─── MODALE : DOCUMENTS D'UN SÉJOUR ────────────────────────────────
    Ouverte en cliquant sur un séjour inscrit : reprend les documents déjà
    enregistrés en base pour l'enfant, et permet d'importer ceux qui manquent. */
-function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId, onDeleteInscription, isDeleting }) {
+function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId, uploadProgress = 0, onDeleteInscription, isDeleting }) {
   const enfantRecord = enfants.find((e) => e.id === sejour.enfantId);
   const documentsRequis = sejour.documentsRequis || [];
   const [nomAutreDoc, setNomAutreDoc] = useState("");
@@ -109,13 +109,16 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
                         onChange={(e) => onUpload(enfantRecord.id, docType, e)}
                         disabled={uploadingDocId === docType}
                       />
-                      <div className="flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
+                      <div className="relative overflow-hidden flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
                         {uploadingDocId === docType ? (
                           <Loader size={16} className="animate-spin" />
                         ) : (
                           <UploadCloud size={16} />
                         )}
-                        Importer
+                        {uploadingDocId === docType ? `${uploadProgress}%` : "Importer"}
+                        {uploadingDocId === docType && (
+                          <span className="absolute left-0 bottom-0 h-1 bg-[#FFC801] transition-all" style={{ width: `${uploadProgress}%` }} />
+                        )}
                       </div>
                     </label>
                   )}
@@ -164,7 +167,7 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
                   />
                   <div className="flex items-center justify-center gap-2 bg-white text-teal px-3 py-2.5 rounded-lg font-bold text-sm border border-slate-200">
                     {uploadingDocId === nomAutreDoc.trim() ? <Loader size={16} className="animate-spin" /> : <UploadCloud size={16} />}
-                    Importer
+                    {uploadingDocId === nomAutreDoc.trim() ? `${uploadProgress}%` : "Importer"}
                   </div>
                 </label>
               </div>
@@ -191,7 +194,7 @@ function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDoc
    Ouverte en cliquant sur un enfant dans l'onglet "Mes Enfants". Permet de
    modifier ses informations, d'associer des documents pour les prochains
    séjours (indépendamment de toute inscription), et de le supprimer. */
-function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId }) {
+function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId, uploadProgress = 0 }) {
   const [form, setForm] = useState({
     prenom: enfant.prenom || "",
     nom: enfant.nom || "",
@@ -360,13 +363,16 @@ function EnfantModal({ enfant, clientId, onClose, onUpload, uploadingDocId }) {
                           onChange={(e) => onUpload(enfant.id, docType, e)}
                           disabled={uploadingDocId === docType}
                         />
-                        <div className="flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
+                        <div className="relative overflow-hidden flex items-center gap-2 bg-white text-teal px-3 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition border border-slate-200">
                           {uploadingDocId === docType ? (
                             <Loader size={16} className="animate-spin" />
                           ) : (
                             <UploadCloud size={16} />
                           )}
-                          Importer
+                          {uploadingDocId === docType ? `${uploadProgress}%` : "Importer"}
+                          {uploadingDocId === docType && (
+                            <span className="absolute left-0 bottom-0 h-1 bg-[#FFC801] transition-all" style={{ width: `${uploadProgress}%` }} />
+                          )}
                         </div>
                       </label>
                     )}
@@ -681,6 +687,7 @@ export default function EspaceFamilleClient({
   const clientId = client?.id;
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploadingDocId, setUploadingDocId] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [showAjouterEnfant, setShowAjouterEnfant] = useState(false);
   const [showModifierClient, setShowModifierClient] = useState(false);
   const [sejourEnConsultation, setSejourEnConsultation] = useState(null);
@@ -713,13 +720,19 @@ export default function EspaceFamilleClient({
     if (!file) return;
 
     setUploadingDocId(docType);
+    setUploadProgress(0);
 
     try {
       // Upload direct vers Vercel Blob (évite la limite de 4,5 Mo des fonctions serverless)
       const blob = await upload(
         `documents/${enfantId}/${docType}-${file.name}`,
         file,
-        { access: "private", handleUploadUrl: "/api/documents/upload" }
+        {
+          access: "private",
+          handleUploadUrl: "/api/documents/upload",
+          multipart: file.size > 5 * 1024 * 1024,
+          onUploadProgress: ({ percentage }) => setUploadProgress(Math.round(percentage)),
+        }
       );
       const result = await uploaderDocument(enfantId, docType, blob.url);
       if (result.error) {
@@ -1244,6 +1257,7 @@ export default function EspaceFamilleClient({
           onClose={() => setSejourEnConsultation(null)}
           onUpload={handleUploadClick}
           uploadingDocId={uploadingDocId}
+          uploadProgress={uploadProgress}
           onDeleteInscription={handleDeleteInscription}
           isDeleting={isDeletingInscription}
         />
@@ -1263,6 +1277,7 @@ export default function EspaceFamilleClient({
           onClose={() => setEnfantEnConsultation(null)}
           onUpload={handleUploadClick}
           uploadingDocId={uploadingDocId}
+          uploadProgress={uploadProgress}
         />
       )}
 
