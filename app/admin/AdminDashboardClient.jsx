@@ -1665,7 +1665,7 @@ function DocumentValidationRow({ doc }) {
       <div style={{ flex: 1 }}>
         <p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>{doc.type}</p>
         {doc.url && (
-          <a href={doc.url} target="_blank" rel="noreferrer" style={{ fontSize: "11px", color: C.saffron, fontWeight: 600 }}>
+          <a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer" style={{ fontSize: "11px", color: C.saffron, fontWeight: 600 }}>
             Voir le fichier →
           </a>
         )}
