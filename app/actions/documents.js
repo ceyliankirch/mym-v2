@@ -10,6 +10,20 @@ export async function uploaderDocument(enfantId, docType, fileUrl) {
     return { error: "Données incomplètes" };
   }
 
+  // 🔒 L'URL doit pointer vers notre stockage Blob, dans le dossier de cet enfant
+  try {
+    const u = new URL(fileUrl);
+    if (
+      u.protocol !== "https:" ||
+      !u.hostname.endsWith(".blob.vercel-storage.com") ||
+      !decodeURIComponent(u.pathname).startsWith(`/documents/${enfantId}/`)
+    ) {
+      return { error: "URL de document invalide" };
+    }
+  } catch {
+    return { error: "URL de document invalide" };
+  }
+
   try {
     const enfant = await prisma.enfant.findUnique({
       where: { id: enfantId },
