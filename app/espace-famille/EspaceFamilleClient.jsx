@@ -26,7 +26,6 @@ import {
   UserCog,
   ClipboardList,
 } from "lucide-react";
-import { upload } from "@vercel/blob/client";
 import { uploaderDocument } from "@/app/actions/documents";
 import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant, creerEnfant, modifierClient, modifierReponsesInscription } from "@/app/actions/inscriptions";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
@@ -751,24 +750,12 @@ export default function EspaceFamilleClient({
       if (file.type.startsWith("image/") && file.size > MAX_SERVEUR) {
         fichier = await compresserImage(file, MAX_SERVEUR);
       }
-      let result;
-      if (fichier.size <= MAX_SERVEUR) {
-        setUploadProgress(50);
-        result = await uploaderDocument(enfantId, docType, fichier);
-      } else {
-        // Gros fichier (PDF) : upload direct vers Vercel Blob
-        const blob = await upload(
-          `documents/${enfantId}/${docType}-${fichier.name}`,
-          fichier,
-          {
-            access: "private",
-            handleUploadUrl: "/api/documents/upload",
-            multipart: true,
-            onUploadProgress: ({ percentage }) => setUploadProgress(Math.round(percentage)),
-          }
-        );
-        result = await uploaderDocument(enfantId, docType, blob.url);
+      if (fichier.size > MAX_SERVEUR) {
+        alert("Ce fichier dépasse 4 Mo. Merci de le compresser ou d'envoyer une photo à la place.");
+        return;
       }
+      setUploadProgress(50);
+      const result = await uploaderDocument(enfantId, docType, fichier);
       if (result.error) {
         alert(`Erreur: ${result.error}`);
       } else {

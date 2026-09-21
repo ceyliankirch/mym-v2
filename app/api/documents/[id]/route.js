@@ -1,7 +1,7 @@
 import { get } from "@vercel/blob";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { PRIVATE_BLOB_TOKEN } from "@/lib/blobPrive";
+import { BLOB_PRIVE } from "@/lib/blobPrive";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,7 @@ export async function GET(_request, { params }) {
   const estProprietaire = document.enfant?.client?.userId === session.user.id;
   if (!estAdmin && !estProprietaire) return new Response("Interdit", { status: 403 });
 
-  const result = await get(document.url, { access: "private", token: PRIVATE_BLOB_TOKEN });
+  const result = await get(document.url, { access: "private", ...BLOB_PRIVE });
   if (!result || result.statusCode !== 200) return new Response("Introuvable", { status: 404 });
 
   return new Response(result.stream, {

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { put, del } from "@vercel/blob";
-import { PRIVATE_BLOB_TOKEN } from "@/lib/blobPrive";
+import { BLOB_PRIVE } from "@/lib/blobPrive";
 import { revalidatePath } from "next/cache";
 import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/email";
 
@@ -42,7 +42,7 @@ export async function uploaderDocument(enfantId, docType, fichier) {
       where: { enfantId_type: { enfantId, type: docType } },
     });
     if (ancienDoc?.url) {
-      try { await del(ancienDoc.url, { token: PRIVATE_BLOB_TOKEN }); } catch (e) { console.error("Erreur suppression ancien document", e); }
+      try { await del(ancienDoc.url, BLOB_PRIVE); } catch (e) { console.error("Erreur suppression ancien document", e); }
     }
 
     const blob = estUrl
@@ -50,7 +50,7 @@ export async function uploaderDocument(enfantId, docType, fichier) {
       : await put(
           `documents/${enfantId}/${docType}-${Date.now()}-${fichier.name}`,
           fichier,
-          { access: "private", token: PRIVATE_BLOB_TOKEN }
+          { access: "private", ...BLOB_PRIVE }
         );
 
     const document = await prisma.document.upsert({

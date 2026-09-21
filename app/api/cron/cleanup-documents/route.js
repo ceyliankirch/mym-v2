@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { del } from "@vercel/blob";
-import { PRIVATE_BLOB_TOKEN } from "@/lib/blobPrive";
+import { BLOB_PRIVE } from "@/lib/blobPrive";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export async function GET(request) {
     for (const doc of enfant.documents) {
       if (doc.url) {
         try {
-          await del(doc.url, { token: PRIVATE_BLOB_TOKEN });
+          await del(doc.url, BLOB_PRIVE);
         } catch (e) {
           console.error(`Erreur suppression blob pour document ${doc.id}`, e);
         }
