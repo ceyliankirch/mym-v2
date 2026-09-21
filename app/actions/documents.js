@@ -5,14 +5,17 @@ import { put, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/email";
 
-export async function uploaderDocument(enfantId, docType, fileUrl) {
-  if (!enfantId || !docType || !fileUrl) {
+// `fichier` : soit un File (petits fichiers, envoyé via le serveur), soit l'URL d'un blob déjà uploadé directement.
+export async function uploaderDocument(enfantId, docType, fichier) {
+  if (!enfantId || !docType || !fichier) {
     return { error: "Données incomplètes" };
   }
 
+  const estUrl = typeof fichier === "string";
+
   // 🔒 L'URL doit pointer vers notre stockage Blob, dans le dossier de cet enfant
-  try {
-    const u = new URL(fileUrl);
+  if (estUrl) try {
+    const u = new URL(fichier);
     if (
       u.protocol !== "https:" ||
       !u.hostname.endsWith(".blob.vercel-storage.com") ||
@@ -41,7 +44,13 @@ export async function uploaderDocument(enfantId, docType, fileUrl) {
       try { await del(ancienDoc.url); } catch (e) { console.error("Erreur suppression ancien document", e); }
     }
 
-    const blob = { url: fileUrl };
+    const blob = estUrl
+      ? { url: fichier }
+      : await put(
+          `documents/${enfantId}/${docType}-${Date.now()}-${fichier.name}`,
+          fichier,
+          { access: "private" }
+        );
 
     const document = await prisma.document.upsert({
       where: { enfantId_type: { enfantId, type: docType } },

@@ -43,6 +43,29 @@ const C = {
 /* ─── MODALE : DOCUMENTS D'UN SÉJOUR ────────────────────────────────
    Ouverte en cliquant sur un séjour inscrit : reprend les documents déjà
    enregistrés en base pour l'enfant, et permet d'importer ceux qui manquent. */
+// Réduit une image (redimensionnement + JPEG) jusqu'à passer sous maxBytes
+async function compresserImage(file, maxBytes) {
+  const bitmap = await createImageBitmap(file);
+  let echelle = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
+  let qualite = 0.85;
+  for (let i = 0; i < 6; i++) {
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * echelle);
+    canvas.height = Math.round(bitmap.height * echelle);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", qualite));
+    if (blob && blob.size <= maxBytes) {
+      return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+    }
+    echelle *= 0.8;
+    qualite = Math.max(0.6, qualite - 0.05);
+  }
+  return file;
+}
+
 function SejourDocumentsModal({ sejour, enfants, onClose, onUpload, uploadingDocId, uploadProgress = 0, onDeleteInscription, isDeleting }) {
   const enfantRecord = enfants.find((e) => e.id === sejour.enfantId);
   const documentsRequis = sejour.documentsRequis || [];
@@ -723,18 +746,29 @@ export default function EspaceFamilleClient({
     setUploadProgress(0);
 
     try {
-      // Upload direct vers Vercel Blob (évite la limite de 4,5 Mo des fonctions serverless)
-      const blob = await upload(
-        `documents/${enfantId}/${docType}-${file.name}`,
-        file,
-        {
-          access: "private",
-          handleUploadUrl: "/api/documents/upload",
-          multipart: file.size > 5 * 1024 * 1024,
-          onUploadProgress: ({ percentage }) => setUploadProgress(Math.round(percentage)),
-        }
-      );
-      const result = await uploaderDocument(enfantId, docType, blob.url);
+      const MAX_SERVEUR = 4 * 1024 * 1024; // limite des fonctions Vercel : 4,5 Mo
+      let fichier = file;
+      if (file.type.startsWith("image/") && file.size > MAX_SERVEUR) {
+        fichier = await compresserImage(file, MAX_SERVEUR);
+      }
+      let result;
+      if (fichier.size <= MAX_SERVEUR) {
+        setUploadProgress(50);
+        result = await uploaderDocument(enfantId, docType, fichier);
+      } else {
+        // Gros fichier (PDF) : upload direct vers Vercel Blob
+        const blob = await upload(
+          `documents/${enfantId}/${docType}-${fichier.name}`,
+          fichier,
+          {
+            access: "private",
+            handleUploadUrl: "/api/documents/upload",
+            multipart: true,
+            onUploadProgress: ({ percentage }) => setUploadProgress(Math.round(percentage)),
+          }
+        );
+        result = await uploaderDocument(enfantId, docType, blob.url);
+      }
       if (result.error) {
         alert(`Erreur: ${result.error}`);
       } else {
