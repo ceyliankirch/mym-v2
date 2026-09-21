@@ -26,6 +26,7 @@ import {
   UserCog,
   ClipboardList,
 } from "lucide-react";
+import { upload } from "@vercel/blob/client";
 import { uploaderDocument } from "@/app/actions/documents";
 import { supprimerInscriptionFamille, modifierEnfant, supprimerEnfant, creerEnfant, modifierClient, modifierReponsesInscription } from "@/app/actions/inscriptions";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
@@ -712,11 +713,15 @@ export default function EspaceFamilleClient({
     if (!file) return;
 
     setUploadingDocId(docType);
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
-      const result = await uploaderDocument(enfantId, docType, file);
+      // Upload direct vers Vercel Blob (évite la limite de 4,5 Mo des fonctions serverless)
+      const blob = await upload(
+        `documents/${enfantId}/${docType}-${file.name}`,
+        file,
+        { access: "private", handleUploadUrl: "/api/documents/upload" }
+      );
+      const result = await uploaderDocument(enfantId, docType, blob.url);
       if (result.error) {
         alert(`Erreur: ${result.error}`);
       } else {

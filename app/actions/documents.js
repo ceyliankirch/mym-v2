@@ -5,8 +5,8 @@ import { put, del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { sendDocumentValidatedEmail, sendDocumentRejectedEmail } from "@/lib/email";
 
-export async function uploaderDocument(enfantId, docType, file) {
-  if (!enfantId || !docType || !file) {
+export async function uploaderDocument(enfantId, docType, fileUrl) {
+  if (!enfantId || !docType || !fileUrl) {
     return { error: "Données incomplètes" };
   }
 
@@ -27,11 +27,7 @@ export async function uploaderDocument(enfantId, docType, file) {
       try { await del(ancienDoc.url); } catch (e) { console.error("Erreur suppression ancien document", e); }
     }
 
-    const blob = await put(
-      `documents/${enfantId}/${docType}-${Date.now()}-${file.name}`,
-      file,
-      { access: "private" }
-    );
+    const blob = { url: fileUrl };
 
     const document = await prisma.document.upsert({
       where: { enfantId_type: { enfantId, type: docType } },
