@@ -65,6 +65,8 @@ model Sejour {
   dateFin      DateTime?
   saison       String?
   imageUrl     String?   // Obligatoire pour stocker le lien Vercel Blob
+  imageFocalX  Float     @default(50) // Point de mise au point de l'image de couverture (% horizontal, 0-100)
+  imageFocalY  Float     @default(50) // Point de mise au point de l'image de couverture (% vertical, 0-100)
   places       Int       @default(0)
   prix         Float     @default(0)  // tarif principal (montant)
   prixLabel    String?   // libellé du tarif principal (ex: "Chambre double ou twin")

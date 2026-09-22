@@ -952,11 +952,13 @@ function CustomSelect({ name, label, options, defaultValue }) {
   );
 }
 
-function ImageUpload({ defaultValue, onImageCompressed }) {
+function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, focalDefault = { x: 50, y: 50 } }) {
   const [preview, setPreview] = useState(defaultValue || null);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [focal, setFocal] = useState(focalDefault);
   const fileInputRef = useRef(null);
-  
+  const previewRef = useRef(null);
+
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -970,13 +972,51 @@ function ImageUpload({ defaultValue, onImageCompressed }) {
     }
   };
 
+  // 🎯 Clic sur l'aperçu = déplace le point de mise au point (recadrage automatique du site)
+  const handleFocalClick = (e) => {
+    if (!showFocalPoint || !preview || !previewRef.current) return;
+    const rect = previewRef.current.getBoundingClientRect();
+    const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100)));
+    const y = Math.round(Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100)));
+    setFocal({ x, y });
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Image de couverture</label>
-      <div onClick={() => fileInputRef.current?.click()} style={{ width: "100%", height: "160px", borderRadius: "16px", border: `2px dashed ${preview ? "transparent" : C.lightGray}`, background: C.arctic, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", overflow: "hidden" }}>
+      {showFocalPoint && <input type="hidden" name="imageFocalX" value={focal.x} />}
+      {showFocalPoint && <input type="hidden" name="imageFocalY" value={focal.y} />}
+      <div
+        ref={previewRef}
+        onClick={(e) => (preview && showFocalPoint ? handleFocalClick(e) : fileInputRef.current?.click())}
+        style={{ width: "100%", aspectRatio: showFocalPoint ? "4 / 3" : undefined, height: showFocalPoint ? undefined : "160px", borderRadius: "16px", border: `2px dashed ${preview ? "transparent" : C.lightGray}`, background: C.arctic, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preview && showFocalPoint ? "crosshair" : "pointer", position: "relative", overflow: "hidden" }}
+      >
         <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
-        {isCompressing ? <p style={{ fontSize: "13px", fontWeight: 700, color: C.saffron }}>Compression WebP... ⚡</p> : preview ? <img src={preview} alt="Aperçu" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <><UploadCloud size={32} color={C.gray} style={{ marginBottom: "8px" }} /><p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>Cliquez pour uploader (1200px max)</p></>}
+        {isCompressing ? (
+          <p style={{ fontSize: "13px", fontWeight: 700, color: C.saffron }}>Compression WebP... ⚡</p>
+        ) : preview ? (
+          <>
+            <img src={preview} alt="Aperçu" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: showFocalPoint ? `${focal.x}% ${focal.y}%` : undefined }} />
+            {showFocalPoint && (
+              <div style={{ position: "absolute", left: `${focal.x}%`, top: `${focal.y}%`, transform: "translate(-50%, -50%)", width: "24px", height: "24px", borderRadius: "50%", border: "3px solid white", boxShadow: "0 0 0 2px rgba(17,76,90,0.8), 0 2px 8px rgba(0,0,0,0.3)", pointerEvents: "none" }} />
+            )}
+            {showFocalPoint && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                style={{ position: "absolute", top: "10px", right: "10px", background: "rgba(17,76,90,0.85)", color: "white", border: "none", borderRadius: "999px", padding: "6px 12px", fontSize: "11px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                <UploadCloud size={12} /> Changer
+              </button>
+            )}
+          </>
+        ) : (
+          <><UploadCloud size={32} color={C.gray} style={{ marginBottom: "8px" }} /><p style={{ fontSize: "13px", fontWeight: 700, color: C.teal }}>Cliquez pour uploader (1200px max)</p></>
+        )}
       </div>
+      {showFocalPoint && preview && (
+        <p style={{ fontSize: "11px", color: C.gray }}>Cliquez sur l'image pour centrer le cadrage (format 4:3) sur la zone importante.</p>
+      )}
     </div>
   );
 }
@@ -1428,7 +1468,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <p style={{ fontSize: "11px", color: C.gray }}>Lien utilisé quand la famille sélectionne le tarif réduit réservé aux habitants du Val-de-Marne (uniquement si le tarif ci-dessus est activé).</p>
             </div>
 
-            <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} />
+            <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} showFocalPoint focalDefault={{ x: isEditing ? (sejourData.imageFocalX ?? 50) : 50, y: isEditing ? (sejourData.imageFocalY ?? 50) : 50 }} />
           </div>
 
           {/* ── ONGLET 2 : DÉTAILS ET GALERIE ── */}

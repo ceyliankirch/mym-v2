@@ -52,6 +52,8 @@ export async function creerSejour(formData) {
 
   // Gestion de l'image de couverture
   const imageFile = formData.get("image");
+  const imageFocalX = parseFloat(formData.get("imageFocalX"));
+  const imageFocalY = parseFloat(formData.get("imageFocalY"));
   let imageUrl = null;
 
   if (imageFile && imageFile.size > 0) {
@@ -108,6 +110,8 @@ export async function creerSejour(formData) {
       gestionChambres,
       ficheSanitaireActive,
       imageUrl,
+      imageFocalX: Number.isNaN(imageFocalX) ? 50 : imageFocalX,
+      imageFocalY: Number.isNaN(imageFocalY) ? 50 : imageFocalY,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
       programme,
@@ -177,6 +181,8 @@ export async function modifierSejour(id, formData) {
 
   // Gestion de l'image de couverture
   const imageFile = formData.get("image");
+  const imageFocalX = parseFloat(formData.get("imageFocalX"));
+  const imageFocalY = parseFloat(formData.get("imageFocalY"));
   let imageUrl = sejourActuel.imageUrl;
 
   if (imageFile && imageFile.size > 0) {
@@ -245,6 +251,8 @@ export async function modifierSejour(id, formData) {
       gestionChambres,
       ficheSanitaireActive,
       imageUrl,
+      imageFocalX: Number.isNaN(imageFocalX) ? 50 : imageFocalX,
+      imageFocalY: Number.isNaN(imageFocalY) ? 50 : imageFocalY,
       // ⚡ Sauvegarde des nouveaux champs
       shortDescription,
       programme,
@@ -347,6 +355,8 @@ export async function dupliquerSejour(id) {
       documentsRequis: source.documentsRequis,
       lienPaiementCIC: source.lienPaiementCIC,
       lienPaiementCICValDeMarne: source.lienPaiementCICValDeMarne,
+      imageFocalX: source.imageFocalX,
+      imageFocalY: source.imageFocalY,
       reductionVdmActive: source.reductionVdmActive,
       reductionVdmType: source.reductionVdmType,
       reductionVdmValeur: source.reductionVdmValeur,
