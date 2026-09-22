@@ -2,6 +2,8 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import SejourDetailClient from "./SejourDetailClient";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 export const dynamic = "force-dynamic";
 
@@ -34,5 +36,7 @@ export default async function SejourPage({ params }) {
     take: 3
   });
 
-  return <SejourDetailClient sejour={sejour} autresSejours={autresSejours} />;
+  const coordonnees = getCoordonnees(await getParametres());
+
+  return <SejourDetailClient sejour={sejour} autresSejours={autresSejours} coordonnees={coordonnees} />;
 }

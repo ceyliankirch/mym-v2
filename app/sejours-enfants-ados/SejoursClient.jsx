@@ -225,7 +225,8 @@ function SejourCard({ s, idx }) {
 }
 
 /* ─── PAGE SEJOURS CLIENT ─────────────────────────────────────────────────────── */
-export default function SejoursClient({ sejoursFromDb }) {
+export default function SejoursClient({ sejoursFromDb, coordonnees = {} }) {
+  const { emailContact } = coordonnees;
   const [cat, setCat]         = useState("tous");
   const [periode, setPeriode] = useState("tous");
   const [search, setSearch]   = useState("");
@@ -416,7 +417,7 @@ export default function SejoursClient({ sejoursFromDb }) {
               <a href="tel:+33698965002" style={{display:"flex",alignItems:"center",gap:"8px",background:C.yellow,color:C.teal,fontSize:"13px",fontWeight:800,borderRadius:"999px",padding:"14px 28px",textDecoration:"none", transition:"all .2s"}} onMouseEnter={e=>e.currentTarget.style.background=C.saffron} onMouseLeave={e=>e.currentTarget.style.background=C.yellow}>
                 📞 Nous appeler
               </a>
-              <a href="mailto:mym.makeyourmoment@gmail.com" style={{display:"flex",alignItems:"center",gap:"8px",background:"transparent",color:C.white,fontSize:"13px",fontWeight:700,borderRadius:"999px",padding:"14px 28px",textDecoration:"none",border:"2px solid rgba(255,255,255,0.25)", transition:"all .2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.1)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <a href={`mailto:${emailContact}`} style={{display:"flex",alignItems:"center",gap:"8px",background:"transparent",color:C.white,fontSize:"13px",fontWeight:700,borderRadius:"999px",padding:"14px 28px",textDecoration:"none",border:"2px solid rgba(255,255,255,0.25)", transition:"all .2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.1)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 ✉️ Nous écrire
               </a>
             </div>

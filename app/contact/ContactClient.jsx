@@ -16,7 +16,8 @@ const C = {
 };
 
 /* ─── PAGE ───────────────────────────────────────────────────────────────── */
-export default function Contact() {
+export default function Contact({ coordonnees = {} }) {
+  const { emailContact, telephoneContact, adresseRue, adresseVille } = coordonnees;
   const [visible, setVisible] = useState(false);
   const [formStatus, setFormStatus] = useState("idle"); // idle, submitting, success
 
@@ -76,7 +77,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <p style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Téléphone</p>
-                    <p style={{ fontSize: "16px", fontWeight: 800, color: C.white }}>+33 6 98 96 50 02</p>
+                    <p style={{ fontSize: "16px", fontWeight: 800, color: C.white }}>{telephoneContact}</p>
                   </div>
                 </div>
 
@@ -86,7 +87,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <p style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Email</p>
-                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.white }}>mym.makeyourmoment@gmail.com</p>
+                    <p style={{ fontSize: "14px", fontWeight: 800, color: C.white }}>{emailContact}</p>
                   </div>
                 </div>
 
@@ -96,7 +97,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <p style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Siège de l'association</p>
-                    <p style={{ fontSize: "14px", fontWeight: 600, color: C.white, lineHeight: 1.5 }}>16 av. du Rond Point<br/>94370 Sucy-en-Brie<br/>France</p>
+                    <p style={{ fontSize: "14px", fontWeight: 600, color: C.white, lineHeight: 1.5 }}>{adresseRue}<br/>{adresseVille}<br/>France</p>
                   </div>
                 </div>
               </div>

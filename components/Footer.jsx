@@ -55,7 +55,8 @@ function FooterCol({ title, links, emptyLabel }) {
 }
 
 /* ─── FOOTER PRINCIPAL ───────────────────────────────────────────────────── */
-export default function Footer({ sejours = [] }) {
+export default function Footer({ sejours = [], coordonnees = {} }) {
+  const { emailContact, telephoneContact, adresseRue, adresseVille } = coordonnees;
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
@@ -119,7 +120,7 @@ export default function Footer({ sejours = [] }) {
               </div>
             </div>
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, marginBottom: "20px", maxWidth: "300px" }}>
-              Séjours inoubliables pour enfants, ados et séniors depuis Sucy-en-Brie.
+              Séjours inoubliables pour enfants, ados et séniors depuis {adresseVille?.replace(/^\d+\s*/, '') || 'Sucy-en-Brie'}.
             </p>
             <div style={{ display: "flex", borderRadius: "14px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.12)", maxWidth: "300px" }}>
               <input type="email" placeholder="Votre email"
@@ -147,9 +148,9 @@ export default function Footer({ sejours = [] }) {
             <h4 style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "18px" }}>Contact</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", padding: 0, margin: 0 }}>
               {[
-                { Ic: Mail,   t: "mym.makeyourmoment@gmail.com" },
-                { Ic: Phone,  t: "+33 6 98 96 50 02" },
-                { Ic: MapPin, t: "16 av. du Rond Point\n94370 Sucy-en-Brie" },
+                { Ic: Mail,   t: emailContact },
+                { Ic: Phone,  t: telephoneContact },
+                { Ic: MapPin, t: `${adresseRue}\n${adresseVille}` },
               ].map(({ Ic, t }, i) => (
                 <li key={i} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                   <Ic size={13} style={{ color: C.yellow, flexShrink: 0, marginTop: "1px" }} />

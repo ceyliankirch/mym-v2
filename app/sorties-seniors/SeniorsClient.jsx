@@ -161,7 +161,8 @@ function SortieCard({ s, passe = false }) {
 }
 
 /* ─── PAGE PRINCIPALE ────────────────────────────────────────────────────── */
-export default function SeniorsClient({ sejoursFromDb }) {
+export default function SeniorsClient({ sejoursFromDb, coordonnees = {} }) {
+  const { telephoneContact } = coordonnees;
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -317,7 +318,7 @@ export default function SeniorsClient({ sejoursFromDb }) {
               </div>
               <div>
                 <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "rgba(255,255,255,0.6)" }}>Appelez-nous</p>
-                <p style={{ fontSize: "20px", fontWeight: 900, color: C.yellow }}>+33 6 98 96 50 02</p>
+                <p style={{ fontSize: "20px", fontWeight: 900, color: C.yellow }}>{telephoneContact}</p>
               </div>
             </div>
             <button style={{ background: C.white, color: C.teal, border: "none", padding: "16px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>

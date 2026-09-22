@@ -83,7 +83,9 @@ function ThemeCard({ t }) {
 }
 
 /* ─── PAGE ───────────────────────────────────────────────────────────────── */
-export default function Scolaires() {
+export default function Scolaires({ coordonnees = {} }) {
+  const { emailContact, telephoneContact } = coordonnees;
+  const telHref = telephoneContact?.replace(/\s+/g, "");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -225,11 +227,11 @@ export default function Scolaires() {
             Remplissez notre formulaire de contact rapide pour recevoir une première estimation gratuite et sans engagement.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
-            <a href="mailto:mym.makeyourmoment@gmail.com" style={{ textDecoration: "none", background: C.yellow, color: C.teal, border: "none", padding: "16px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 8px 24px rgba(255,200,1,0.35)", transition: "all .2s" }}>
+            <a href={`mailto:${emailContact}`} style={{ textDecoration: "none", background: C.yellow, color: C.teal, border: "none", padding: "16px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", boxShadow: "0 8px 24px rgba(255,200,1,0.35)", transition: "all .2s" }}>
               <Mail size={16} /> Demander un devis gratuit
             </a>
-            <a href="tel:+33698965002" style={{ textDecoration: "none", background: "transparent", color: C.teal, border: `2px solid ${C.teal}`, padding: "14px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", transition: "all .2s" }}>
-              <Phone size={14} /> +33 6 98 96 50 02
+            <a href={`tel:${telHref}`} style={{ textDecoration: "none", background: "transparent", color: C.teal, border: `2px solid ${C.teal}`, padding: "14px 32px", borderRadius: "999px", fontSize: "13px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", transition: "all .2s" }}>
+              <Phone size={14} /> {telephoneContact}
             </a>
           </div>
           <p style={{ fontSize: "11px", color: "#8aaa", marginTop: "20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>

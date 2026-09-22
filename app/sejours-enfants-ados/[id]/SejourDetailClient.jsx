@@ -162,7 +162,9 @@ function ReductionTooltip() {
 }
 
 /* ─── STICKY CTA SIDEBAR ────────────────────────────────────────────────────── */
-function StickySidebar({ sejour }) {
+function StickySidebar({ sejour, coordonnees = {} }) {
+  const { emailContact, telephoneContact } = coordonnees;
+  const telHref = telephoneContact?.replace(/\s+/g, "");
   const placesTotales = sejour.places || 0;
   const placesRestantes = placesTotales; 
   const urgent = placesRestantes <= 3 && placesRestantes > 0;
@@ -264,11 +266,11 @@ function StickySidebar({ sejour }) {
 
       <div style={{marginTop:"20px",paddingTop:"20px",borderTop:`1px solid ${C.arctic}`}}>
         <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"10px",textTransform:"uppercase",letterSpacing:"1px"}}>Une question ?</p>
-        <a href="tel:+33698965002" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
-          <Phone size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>+33 6 98 96 50 02</span>
+        <a href={`tel:${telHref}`} style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
+          <Phone size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>{telephoneContact}</span>
         </a>
-        <a href="mailto:mym.makeyourmoment@gmail.com" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none"}}>
-          <Mail size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>mym.makeyourmoment@gmail.com</span>
+        <a href={`mailto:${emailContact}`} style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none"}}>
+          <Mail size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>{emailContact}</span>
         </a>
       </div>
     </div>
@@ -276,7 +278,9 @@ function StickySidebar({ sejour }) {
 }
 
 /* ─── BARRE PERSISTANTE MOBILE (incite à l'inscription, "Voir plus" pour détailler) ── */
-function MobileBottomBar({ sejour }) {
+function MobileBottomBar({ sejour, coordonnees = {} }) {
+  const { emailContact, telephoneContact } = coordonnees;
+  const telHref2 = telephoneContact?.replace(/\s+/g, "");
   const [expanded, setExpanded] = useState(false);
   const placesTotales = sejour.places || 0;
   const urgent = placesTotales <= 3 && placesTotales > 0;
@@ -320,11 +324,11 @@ function MobileBottomBar({ sejour }) {
 
           <div style={{paddingTop:"16px",borderTop:`1px solid ${C.arctic}`,marginBottom:"8px"}}>
             <p style={{fontSize:"11px",color:"#8aa",fontWeight:600,marginBottom:"10px",textTransform:"uppercase",letterSpacing:"1px"}}>Une question ?</p>
-            <a href="tel:+33698965002" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
-              <Phone size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>+33 6 98 96 50 02</span>
+            <a href={`tel:${telHref2}`} style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none",marginBottom:"6px"}}>
+              <Phone size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>{telephoneContact}</span>
             </a>
-            <a href="mailto:mym.makeyourmoment@gmail.com" style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none"}}>
-              <Mail size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>mym.makeyourmoment@gmail.com</span>
+            <a href={`mailto:${emailContact}`} style={{display:"flex",alignItems:"center",gap:"8px",textDecoration:"none"}}>
+              <Mail size={12} style={{color:C.teal}}/><span style={{fontSize:"12px",fontWeight:600,color:C.teal}}>{emailContact}</span>
             </a>
           </div>
         </div>
@@ -362,7 +366,7 @@ function MobileBottomBar({ sejour }) {
 }
 
 /* ─── PAGE DETAIL PRINCIPALE ─────────────────────────────────────────────────── */
-export default function SejourDetailClient({ sejour, autresSejours }) {
+export default function SejourDetailClient({ sejour, autresSejours, coordonnees = {} }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("programme");
 
@@ -546,12 +550,12 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
 
           {/* ── COL DROITE — SIDEBAR ────────────────────────────────────────── */}
           <div className="sidebar-wrapper">
-             <StickySidebar sejour={sejour}/>
+             <StickySidebar sejour={sejour} coordonnees={coordonnees}/>
           </div>
         </div>
 
         {/* ── BARRE PERSISTANTE MOBILE ──────────────────────────────────────── */}
-        <MobileBottomBar sejour={sejour} />
+        <MobileBottomBar sejour={sejour} coordonnees={coordonnees} />
 
         {/* ── AUTRES SÉJOURS SIMILAIRES ──────────────────────────────────── */}
         {autresSejours && autresSejours.length > 0 && (

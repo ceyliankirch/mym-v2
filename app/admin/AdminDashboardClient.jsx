@@ -2725,6 +2725,82 @@ function GridAlbums({ data, onEdit, onDelete }) {
 }
 
 /* ── DASHBOARD PRINCIPAL ── */
+/* Carte "Coordonnées" (onglet Paramètres) : adresse email, téléphone et adresse postale
+   affichés partout sur le site (contact, mentions légales, footer, séjours...). Tant que
+   rien n'est renseigné ici, le site garde ses valeurs historiques (voir lib/coordonnees.js). */
+function ParametresCoordonneesCard({ parametres }) {
+  const [form, setForm] = useState({
+    emailContact: parametres?.emailContact || "",
+    telephoneContact: parametres?.telephoneContact || "",
+    adresseRue: parametres?.adresseRue || "",
+    adresseVille: parametres?.adresseVille || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const majChamp = (champ, valeur) => setForm((f) => ({ ...f, [champ]: valeur }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setSaved(false);
+    const fd = new FormData();
+    // On repart des paramètres existants pour ne pas écraser l'IBAN enregistré dans l'autre carte
+    fd.set("ibanAsso", parametres?.ibanAsso || "");
+    fd.set("bicAsso", parametres?.bicAsso || "");
+    fd.set("titulaireIban", parametres?.titulaireIban || "");
+    fd.set("emailContact", form.emailContact);
+    fd.set("telephoneContact", form.telephoneContact);
+    fd.set("adresseRue", form.adresseRue);
+    fd.set("adresseVille", form.adresseVille);
+    try {
+      await modifierParametres(fd);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const champStyle = { width: "100%", padding: "12px 14px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "14px", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { display: "block", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: C.gray, marginBottom: "6px" };
+
+  return (
+    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+      <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>📇 Coordonnées de l'association</h2>
+      <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
+        Email, téléphone et adresse affichés sur tout le site : page Contact, mentions légales, pied de page, fiches séjours… Un changement ici se répercute partout, sans avoir à modifier chaque page.
+      </p>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", maxWidth: "820px" }}>
+        <div>
+          <label style={labelStyle}>Email de contact</label>
+          <input type="email" style={champStyle} value={form.emailContact} onChange={(e) => majChamp("emailContact", e.target.value)} placeholder="contact@make-your-moment.com" />
+        </div>
+        <div>
+          <label style={labelStyle}>Téléphone</label>
+          <input style={champStyle} value={form.telephoneContact} onChange={(e) => majChamp("telephoneContact", e.target.value)} placeholder="+33 6 98 96 50 02" />
+        </div>
+        <div>
+          <label style={labelStyle}>Adresse (rue)</label>
+          <input style={champStyle} value={form.adresseRue} onChange={(e) => majChamp("adresseRue", e.target.value)} placeholder="16 avenue du Rond-Point" />
+        </div>
+        <div>
+          <label style={labelStyle}>Code postal & ville</label>
+          <input style={champStyle} value={form.adresseVille} onChange={(e) => majChamp("adresseVille", e.target.value)} placeholder="94370 Sucy-en-Brie" />
+        </div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "12px" }}>
+          <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 800, cursor: saving ? "wait" : "pointer", whiteSpace: "nowrap" }}>
+            {saving ? "Enregistrement..." : "Enregistrer"}
+          </button>
+          {saved && <span style={{ color: "#10b981", fontWeight: 700, fontSize: "13px" }}>✓ Enregistré</span>}
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /* Carte "Paiement par virement" (onglet Paramètres) : configure l'IBAN de l'association.
    Une fois renseigné, il est ajouté automatiquement dans l'email de confirmation d'une
    famille qui choisit "Virement bancaire" comme moyen de paiement dans le formulaire. */
@@ -2747,6 +2823,11 @@ function ParametresVirementCard({ parametres }) {
     fd.set("titulaireIban", form.titulaireIban);
     fd.set("ibanAsso", form.ibanAsso);
     fd.set("bicAsso", form.bicAsso);
+    // On repart des coordonnées existantes pour ne pas les écraser (autre carte du même formulaire)
+    fd.set("emailContact", parametres?.emailContact || "");
+    fd.set("telephoneContact", parametres?.telephoneContact || "");
+    fd.set("adresseRue", parametres?.adresseRue || "");
+    fd.set("adresseVille", parametres?.adresseVille || "");
     try {
       await modifierParametres(fd);
       setSaved(true);
@@ -3248,6 +3329,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
 
           {activeTab === "settings" && (
             <div>
+              <ParametresCoordonneesCard parametres={parametres} />
               <ParametresVirementCard parametres={parametres} />
               <QrCodeCard
                 titre="📱 QR code — Page d'accueil"

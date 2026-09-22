@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 const C = {
   yellow: "#FFC801",
@@ -19,7 +21,8 @@ function Section({ title, children }) {
   );
 }
 
-export default function MentionsLegalesPage() {
+export default async function MentionsLegalesPage() {
+  const { emailContact, telephoneContact, adresseRue, adresseVille } = getCoordonnees(await getParametres());
   return (
     <div style={{ fontFamily: "'Montserrat',sans-serif", background: C.arctic, color: C.teal, minHeight: "100vh" }}>
       <section style={{ padding: "80px 32px 48px", textAlign: "center" }}>
@@ -37,9 +40,9 @@ export default function MentionsLegalesPage() {
           <Section title="Éditeur du site">
             <p>
               Make Your Moment — Association loi 1901<br />
-              16 avenue du Rond Point, 94370 Sucy-en-Brie, France<br />
-              Email : mym.makeyourmoment@gmail.com<br />
-              Téléphone : +33 6 98 96 50 02<br />
+              {adresseRue}, {adresseVille}, France<br />
+              Email : {emailContact}<br />
+              Téléphone : {telephoneContact}<br />
               Numéro SIRET : [à compléter]
             </p>
           </Section>
@@ -62,7 +65,7 @@ export default function MentionsLegalesPage() {
           </Section>
 
           <Section title="Contact">
-            <p>Pour toute question relative à ce site, contactez-nous à mym.makeyourmoment@gmail.com.</p>
+            <p>Pour toute question relative à ce site, contactez-nous à {emailContact}.</p>
           </Section>
 
         </div>

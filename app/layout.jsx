@@ -11,6 +11,8 @@ import PageViewTracker from "@/components/PageViewTracker";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import AuthProvider from "@/components/AuthProvider"; // ⚡ On importe le provider
 import { prisma } from "@/lib/prisma";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 // ⚡ Police auto-hébergée (au lieu de next/font/google) : évite les échecs de
 // build Vercel quand fonts.gstatic.com est injoignable au moment du build.
@@ -48,6 +50,8 @@ export default async function RootLayout({ children }) {
     console.error("Erreur récupération séjours pour le footer", e);
   }
 
+  const coordonnees = getCoordonnees(await getParametres());
+
   // ⚡ Logos partenaires : lus depuis public/partenaires (déposer un fichier suffit)
   let partnerLogos = [];
   try {
@@ -73,7 +77,7 @@ export default async function RootLayout({ children }) {
           <EncadrantsBanner />
           <main>{children}</main>
           <PartnersMarquee logos={partnerLogos} />
-          <Footer sejours={footerSejours} />
+          <Footer sejours={footerSejours} coordonnees={coordonnees} />
         </AuthProvider>
       </body>
     </html>

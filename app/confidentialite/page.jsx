@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 const C = {
   yellow: "#FFC801",
@@ -19,7 +21,8 @@ function Section({ title, children }) {
   );
 }
 
-export default function ConfidentialitePage() {
+export default async function ConfidentialitePage() {
+  const { emailContact } = getCoordonnees(await getParametres());
   return (
     <div style={{ fontFamily: "'Montserrat',sans-serif", background: C.arctic, color: C.teal, minHeight: "100vh" }}>
       <section style={{ padding: "80px 32px 48px", textAlign: "center" }}>
@@ -59,7 +62,7 @@ export default function ConfidentialitePage() {
           <Section title="4. Droits des personnes">
             <p>
               Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos
-              données. Pour exercer ces droits, contactez-nous à mym.makeyourmoment@gmail.com.
+              données. Pour exercer ces droits, contactez-nous à {emailContact}.
             </p>
           </Section>
 

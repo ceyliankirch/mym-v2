@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 const C = {
   yellow: "#FFC801",
@@ -19,7 +21,8 @@ function Section({ title, children }) {
   );
 }
 
-export default function CgvPage() {
+export default async function CgvPage() {
+  const { emailContact } = getCoordonnees(await getParametres());
   return (
     <div style={{ fontFamily: "'Montserrat',sans-serif", background: C.arctic, color: C.teal, minHeight: "100vh" }}>
       <section style={{ padding: "80px 32px 48px", textAlign: "center" }}>
@@ -70,7 +73,7 @@ export default function CgvPage() {
           </Section>
 
           <Section title="6. Contact">
-            <p>Pour toute question relative à une inscription, contactez-nous à mym.makeyourmoment@gmail.com.</p>
+            <p>Pour toute question relative à une inscription, contactez-nous à {emailContact}.</p>
           </Section>
 
         </div>

@@ -54,6 +54,10 @@ model Parametres {
   ibanAsso      String?
   bicAsso       String?
   titulaireIban String?
+  emailContact      String? // Adresse email affichée sur tout le site (contact, mentions légales, footer…)
+  telephoneContact  String? // Numéro de téléphone affiché sur tout le site
+  adresseRue        String? // Ex: "16 avenue du Rond-Point"
+  adresseVille      String? // Ex: "94370 Sucy-en-Brie"
   updatedAt     DateTime @updatedAt
 }
 
