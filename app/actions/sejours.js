@@ -22,6 +22,7 @@ export async function creerSejour(formData) {
   const shortDescription = formData.get("shortDescription") || "";
   const programme = formData.get("programme") || "";
   const infosPratiques = formData.get("infosPratiques") || "";
+  const cadreDeVie = formData.get("cadreDeVie") || "";
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
@@ -108,6 +109,7 @@ export async function creerSejour(formData) {
       shortDescription,
       programme,
       infosPratiques,
+      cadreDeVie,
       adresseComplete,
       formSchema,
       documentsRequis,
@@ -139,6 +141,7 @@ export async function modifierSejour(id, formData) {
   const shortDescription = formData.get("shortDescription") || "";
   const programme = formData.get("programme") || "";
   const infosPratiques = formData.get("infosPratiques") || "";
+  const cadreDeVie = formData.get("cadreDeVie") || "";
   const adresseComplete = formData.get("adresseComplete") || "";
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
@@ -237,6 +240,7 @@ export async function modifierSejour(id, formData) {
       shortDescription,
       programme,
       infosPratiques,
+      cadreDeVie,
       adresseComplete,
       formSchema,
       documentsRequis,

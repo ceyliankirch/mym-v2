@@ -79,6 +79,7 @@ model Sejour {
   shortDescription String?
   programme        String?
   infosPratiques   String?
+  cadreDeVie       String?
   adresseComplete  String?
   galerie          String[] // Tableau d'URLs pour tes 10 photos max
   formSchema       String?  // Le JSON du constructeur de formulaire
