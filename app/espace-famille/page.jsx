@@ -29,65 +29,38 @@ export default async function EspaceFamillePage() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Construire la liste des séjours à venir
+  // Construire la liste des séjours à venir, avec pour chacun le nombre de
+  // documents que la famille doit encore envoyer pour CET enfant précis
+  // (jamais uploadé, ou rejeté par l'admin — statut "MANQUANT").
   const sejoursAVenir = enfants.flatMap((enfant) =>
-    enfant.inscriptions.map((ins) => ({
-      id: ins.id,
-      sejourId: ins.sejour.id,
-      titre: ins.sejour.titre,
-      enfant: enfant.prenom,
-      enfantId: enfant.id,
-      clientId: client.id,
-      dates: ins.sejour.dateDebut && ins.sejour.dateFin
-        ? `${new Date(ins.sejour.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(ins.sejour.dateFin).toLocaleDateString("fr-FR")}`
-        : "Voir détails du séjour",
-      statut: ins.statut,
-      isValide: ins.statut === "Paiement validé",
-      documentsRequis: ins.sejour.documentsRequis || [],
-      formSchema: ins.sejour.formSchema || null,
-      reponsesFormulaire: ins.reponsesFormulaire || null,
-    }))
-  );
-
-  // Aplatir et formater les documents (uniquement ceux encore requis par une
-  // inscription active — sinon les documents d'une inscription annulée/supprimée
-  // restent en base et déclenchent de fausses alertes)
-  const documents = enfants.flatMap((enfant) => {
-    const typesRequisActuels = new Set(
-      enfant.inscriptions.flatMap((ins) => ins.sejour.documentsRequis || [])
-    );
-
-    return enfant.documents
-      .filter((doc) => typesRequisActuels.has(doc.type))
-      .map((doc) => {
-      let etatVisuel = "warning";
-      if (doc.statut === "VALIDE") etatVisuel = "success";
-      if (doc.statut === "MANQUANT") etatVisuel = "error";
-
-      const inscriptionsEnfant = enfant.inscriptions
-        .map((ins) => ins.sejour.titre)
-        .join(", ");
+    enfant.inscriptions.map((ins) => {
+      const documentsRequis = ins.sejour.documentsRequis || [];
+      const docsAEnvoyer = documentsRequis.filter((type) => {
+        const doc = enfant.documents.find((d) => d.type === type);
+        return !doc || doc.statut === "MANQUANT";
+      }).length;
 
       return {
-        id: doc.id,
-        nom: doc.type,
-        concerne: `${enfant.prenom} ${enfant.nom}${inscriptionsEnfant ? ` (${inscriptionsEnfant})` : ""}`,
-        statut: doc.statut,
-        etat: etatVisuel,
+        id: ins.id,
+        sejourId: ins.sejour.id,
+        titre: ins.sejour.titre,
+        enfant: enfant.prenom,
+        enfantId: enfant.id,
+        clientId: client.id,
+        dates: ins.sejour.dateDebut && ins.sejour.dateFin
+          ? `${new Date(ins.sejour.dateDebut).toLocaleDateString("fr-FR")} - ${new Date(ins.sejour.dateFin).toLocaleDateString("fr-FR")}`
+          : "Voir détails du séjour",
+        statut: ins.statut,
+        isValide: ins.statut === "Paiement validé",
+        documentsRequis,
+        docsAEnvoyer,
+        formSchema: ins.sejour.formSchema || null,
+        reponsesFormulaire: ins.reponsesFormulaire || null,
       };
-    });
-  });
+    })
+  );
 
-  const docsManquants = documents.filter((d) => d.etat === "error");
   const notifications = [];
-
-  if (docsManquants.length > 0) {
-    notifications.push({
-      id: "doc-alerte",
-      type: "urgence",
-      message: `Il manque ${docsManquants.length} document(s) obligatoire(s) pour finaliser vos dossiers.`,
-    });
-  }
 
   // Séjours du catalogue à découvrir (publiés, à venir, non déjà inscrits)
   const idsSejoursInscrits = new Set(sejoursAVenir.map((s) => s.sejourId).filter(Boolean));
@@ -120,7 +93,6 @@ export default async function EspaceFamillePage() {
       client={client}
       sejoursAVenir={sejoursAVenir}
       sejoursCatalogue={sejoursCatalogue}
-      documents={documents}
       notifications={notifications}
       enfants={enfants}
     />

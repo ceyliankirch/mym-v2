@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Users,
-  FileText,
   CheckSquare,
   History,
   AlertCircle,
@@ -15,7 +14,6 @@ import {
   UploadCloud,
   Calendar,
   ChevronRight,
-  Download,
   Loader,
   X,
   Trash2,
@@ -703,7 +701,6 @@ export default function EspaceFamilleClient({
   notifications = [],
   sejoursAVenir = [],
   sejoursCatalogue = [],
-  documents = [],
   enfants = [],
 }) {
   const clientId = client?.id;
@@ -773,7 +770,6 @@ export default function EspaceFamilleClient({
   const tabs = [
     { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
     { id: "enfants", label: "Mes Enfants", icon: Users },
-    { id: "documents", label: "Mes Documents", icon: FileText },
     { id: "trousseau", label: "Valise & Trousseau", icon: CheckSquare },
     { id: "historique", label: "Historique & Factures", icon: History },
   ];
@@ -853,12 +849,6 @@ export default function EspaceFamilleClient({
                       <strong className="font-bold">Action requise :</strong>{" "}
                       {notif.message}
                     </p>
-                    <button
-                      onClick={() => setActiveTab("documents")}
-                      className="ml-auto text-sm bg-white text-red-600 px-3 py-1 rounded-lg border border-red-200 hover:bg-red-50 font-bold transition"
-                    >
-                      Voir les documents
-                    </button>
                   </div>
                 ))}
               </div>
@@ -889,12 +879,17 @@ export default function EspaceFamilleClient({
                     <div
                       key={sejour.id}
                       onClick={() => setSejourEnConsultation(sejour)}
-                      className={`bg-white p-6 rounded-2xl shadow-sm border-t-4 transition-all hover:shadow-md cursor-pointer ${
+                      className={`relative bg-white p-6 rounded-2xl shadow-sm border-t-4 transition-all hover:shadow-md cursor-pointer ${
                         sejour.isValide
                           ? "border-[#27ae60]"
                           : "border-[#FF9932]"
                       }`}
                     >
+                      {sejour.docsAEnvoyer > 0 && (
+                        <span className="absolute -top-2 -right-2 flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                          {sejour.docsAEnvoyer} document{sejour.docsAEnvoyer > 1 ? "s" : ""} à envoyer
+                        </span>
+                      )}
                       <h3 className="text-lg font-black text-slate-900 mb-4">
                         {sejour.titre}
                       </h3>
@@ -1107,120 +1102,6 @@ export default function EspaceFamilleClient({
                           </strong>{" "}
                           documents validés
                         </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* MES DOCUMENTS */}
-        {activeTab === "documents" && (
-          <div className="animate-in fade-in duration-500 space-y-8">
-            <header className="pb-6 border-b border-slate-200">
-              <h1 className="text-3xl font-black text-slate-900">
-                Mes Documents
-              </h1>
-              <p className="text-slate-500 mt-2 font-medium">
-                Téléchargez et gérez vos documents importants.
-              </p>
-            </header>
-
-            {documents.length === 0 ? (
-              <div className="bg-slate-100 rounded-2xl p-8 text-center">
-                <p className="text-slate-600 font-medium">
-                  Aucun document requis pour le moment.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {documents.map((doc) => {
-                  const [enfantId, ...rest] = doc.concerne.split("(");
-                  const enfantRecord = enfants.find((e) => `${e.prenom} ${e.nom}` === enfantId.trim());
-
-                  const statusBadges = {
-                    success: {
-                      bg: "bg-green-50",
-                      border: "border-green-200",
-                      text: "text-green-700",
-                      label: "Validé",
-                    },
-                    warning: {
-                      bg: "bg-yellow-50",
-                      border: "border-yellow-200",
-                      text: "text-yellow-700",
-                      label: "En cours",
-                    },
-                    error: {
-                      bg: "bg-red-50",
-                      border: "border-red-200",
-                      text: "text-red-700",
-                      label: "À fournir",
-                    },
-                  };
-
-                  const badge = statusBadges[doc.etat];
-
-                  return (
-                    <div
-                      key={doc.id}
-                      className={`${badge.bg} border ${badge.border} rounded-2xl p-6 flex items-center justify-between gap-4`}
-                    >
-                      <div className="flex-1">
-                        <h3 className={`font-bold text-lg ${badge.text}`}>
-                          {doc.nom}
-                        </h3>
-                        <p className={`text-sm ${badge.text} opacity-75`}>
-                          {doc.concerne}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${badge.text}`}
-                        >
-                          {doc.etat === "success" && <CheckCircle2 size={14} />}
-                          {doc.etat === "warning" && <Clock size={14} />}
-                          {doc.etat === "error" && <XCircle size={14} />}
-                          {badge.label}
-                        </span>
-
-                        {doc.etat === "error" && enfantRecord && (
-                          <label className="cursor-pointer">
-                            <input
-                              type="file"
-                              className="hidden"
-                              onChange={(e) =>
-                                handleUploadClick(
-                                  enfantRecord.id,
-                                  doc.nom,
-                                  e
-                                )
-                              }
-                              disabled={uploadingDocId === doc.nom}
-                            />
-                            <div className="flex items-center gap-2 bg-white text-teal px-4 py-2 rounded-lg font-bold hover:bg-slate-100 transition cursor-pointer border border-slate-200">
-                              {uploadingDocId === doc.nom ? (
-                                <Loader size={18} className="animate-spin" />
-                              ) : (
-                                <UploadCloud size={18} />
-                              )}
-                              Uploader
-                            </div>
-                          </label>
-                        )}
-
-                        {doc.etat === "success" && (
-                          <a
-                            href="#"
-                            className="flex items-center gap-2 bg-white text-teal px-4 py-2 rounded-lg font-bold hover:bg-slate-100 transition border border-slate-200"
-                          >
-                            <Download size={18} />
-                            Télécharger
-                          </a>
-                        )}
                       </div>
                     </div>
                   );
