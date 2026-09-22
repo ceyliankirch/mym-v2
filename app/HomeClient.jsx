@@ -254,7 +254,10 @@ function SejourCard({ s, idx }) {
             const autres = arr.filter(t => Number(t.montant) !== Number(s.prix));
             const lignes = [{ montant: s.prix, label: principalLabel }, ...autres];
             const modeBoxes = lignes.length > 1 && lignes.some(l => l.label);
-            const vdm = !estSenior && !s.isPast && s.prix > 0;
+            const vdm = !estSenior && !s.isPast && s.reductionVdmActive && s.prix > 0;
+            const prixVdm = vdm
+              ? Math.max(0, s.reductionVdmType === "pourcentage" ? s.prix * (1 - (s.reductionVdmValeur || 0) / 100) : s.prix - (s.reductionVdmValeur || 0))
+              : 0;
 
             if (modeBoxes) {
               return (
@@ -268,7 +271,7 @@ function SejourCard({ s, idx }) {
                   {vdm && (
                     <div style={{ position: "relative", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "6px 12px", textAlign: "center" }}>
                       <ReductionTooltip />
-                      <p style={{ fontSize: "22px", fontWeight: 900, color: "#059669", lineHeight: 1, margin: 0 }}>{Math.max(0, s.prix - 100)}€</p>
+                      <p style={{ fontSize: "22px", fontWeight: 900, color: "#059669", lineHeight: 1, margin: 0 }}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
                       <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", margin: "2px 0 0" }}>Habitant du Val-de-Marne</p>
                     </div>
                   )}
@@ -282,7 +285,7 @@ function SejourCard({ s, idx }) {
                 {vdm && (
                   <div style={{ position: "relative", marginTop: "12px", background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "4px 12px", textAlign: "center" }}>
                     <ReductionTooltip />
-                    <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{Math.max(0, s.prix - 100)}€</p>
+                    <p style={{ fontSize: "34px", fontWeight: 900, color: "#059669", lineHeight: 1 }}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
                     <p style={{ fontSize: "9px", fontWeight: 700, color: "#047857", marginTop: "-2px" }}>Habitant du Val-de-Marne</p>
                   </div>
                 )}

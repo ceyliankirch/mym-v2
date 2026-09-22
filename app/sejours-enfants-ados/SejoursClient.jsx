@@ -170,10 +170,10 @@ function SejourCard({ s, idx }) {
             <h3 style={{fontSize:"14px",fontWeight:800,color:C.teal,lineHeight:1.3,margin:0}}>{s.titre}</h3>
             <span style={{fontSize:"20px",fontWeight:900,color:C.saffron,whiteSpace:"nowrap"}}>{s.prix || "0"}€</span>
           </div>
-          {!s.isPast && s.prix > 0 && !/senior|sénior/i.test(s.tranchesAge || "") && (
+          {!s.isPast && s.reductionVdmActive && s.prix > 0 && !/senior|sénior/i.test(s.tranchesAge || "") && (
             <div style={{position:"relative",alignSelf:"flex-end",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 16px",marginTop:"8px",textAlign:"center"}}>
               <ReductionTooltip />
-              <p style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1.1}}>{Math.max(0, s.prix - 100)}€</p>
+              <p style={{fontSize:"20px",fontWeight:900,color:"#059669",lineHeight:1.1}}>{Math.max(0, s.reductionVdmType === "pourcentage" ? s.prix * (1 - (s.reductionVdmValeur || 0) / 100) : s.prix - (s.reductionVdmValeur || 0)).toFixed(2).replace(/\.00$/,"")}€</p>
               <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
             </div>
           )}
