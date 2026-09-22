@@ -9,7 +9,7 @@ import {
   ClipboardList, ExternalLink, Edit, Trash2,
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
-  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, AlignCenter, AlignRight, CheckSquare, Copy,
+  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, AlignCenter, AlignRight, CheckSquare, Copy, Crop,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
   Baby, Cake, Ruler, Footprints, Weight, QrCode, User, BedDouble, BedSingle
 } from "lucide-react";
@@ -952,12 +952,120 @@ function CustomSelect({ name, label, options, defaultValue }) {
   );
 }
 
-function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, focalDefault = { x: 50, y: 50 } }) {
+// 🖼️ Modale de recadrage : viewport fixe (ratio imposé), l'image se déplace/zoome dedans.
+// À la validation, la zone visible est "cuite" dans un nouveau fichier (vrai rognage, pas
+// juste un object-position CSS).
+function ImageCropModal({ src, ratio = 2, onCancel, onConfirm }) {
+  const VIEW_W = 640;
+  const VIEW_H = Math.round(VIEW_W / ratio);
+  const imgRef = useRef(null);
+  const [natural, setNatural] = useState(null); // { w, h }
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 }); // top-left de l'image affichée, en px du viewport
+  const dragState = useRef(null);
+
+  const baseScale = natural ? Math.max(VIEW_W / natural.w, VIEW_H / natural.h) : 1;
+  const scale = baseScale * zoom;
+  const dispW = natural ? natural.w * scale : 0;
+  const dispH = natural ? natural.h * scale : 0;
+
+  const clampPan = (p, w = dispW, h = dispH) => ({
+    x: Math.min(0, Math.max(VIEW_W - w, p.x)),
+    y: Math.min(0, Math.max(VIEW_H - h, p.y)),
+  });
+
+  const handleImgLoad = () => {
+    const img = imgRef.current;
+    if (!img) return;
+    const w = img.naturalWidth, h = img.naturalHeight;
+    setNatural({ w, h });
+    const s = Math.max(VIEW_W / w, VIEW_H / h);
+    setPan({ x: (VIEW_W - w * s) / 2, y: (VIEW_H - h * s) / 2 });
+  };
+
+  const handleZoom = (z) => {
+    const newZoom = Math.max(1, Math.min(4, z));
+    if (!natural) { setZoom(newZoom); return; }
+    const newScale = baseScale * newZoom;
+    // Zoome depuis le centre du viewport pour rester intuitif
+    const cx = VIEW_W / 2, cy = VIEW_H / 2;
+    const ratioScale = newScale / scale;
+    const next = { x: cx - (cx - pan.x) * ratioScale, y: cy - (cy - pan.y) * ratioScale };
+    setZoom(newZoom);
+    setPan(clampPan(next, natural.w * newScale, natural.h * newScale));
+  };
+
+  const handlePointerDown = (e) => {
+    dragState.current = { startX: e.clientX, startY: e.clientY, pan };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const handlePointerMove = (e) => {
+    if (!dragState.current) return;
+    const dx = e.clientX - dragState.current.startX;
+    const dy = e.clientY - dragState.current.startY;
+    setPan(clampPan({ x: dragState.current.pan.x + dx, y: dragState.current.pan.y + dy }));
+  };
+  const handlePointerUp = () => { dragState.current = null; };
+
+  const handleConfirm = () => {
+    if (!natural) return;
+    const srcX = -pan.x / scale;
+    const srcY = -pan.y / scale;
+    const srcW = VIEW_W / scale;
+    const srcH = VIEW_H / scale;
+    const outW = 1200, outH = Math.round(1200 / ratio);
+    const canvas = document.createElement("canvas");
+    canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(imgRef.current, srcX, srcY, srcW, srcH, 0, 0, outW, outH);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], "couverture-rognee.webp", { type: "image/webp" });
+      onConfirm({ file, preview: URL.createObjectURL(blob) });
+    }, "image/webp", 0.85);
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(17,76,90,0.75)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+      <div style={{ background: C.white, borderRadius: "20px", padding: "20px", display: "flex", flexDirection: "column", gap: "14px", maxWidth: "calc(100vw - 40px)" }}>
+        <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>Rogner l'image de couverture</p>
+        <div
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{ width: VIEW_W, maxWidth: "100%", aspectRatio: `${ratio} / 1`, borderRadius: "12px", overflow: "hidden", position: "relative", background: "#000", cursor: "grab", touchAction: "none" }}
+        >
+          <img
+            ref={imgRef}
+            src={src}
+            crossOrigin="anonymous"
+            onLoad={handleImgLoad}
+            alt="À rogner"
+            draggable={false}
+            style={{ position: "absolute", left: pan.x, top: pan.y, width: dispW || "auto", height: dispH || "auto", maxWidth: "none", userSelect: "none", pointerEvents: "none" }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "11px", color: C.gray, fontWeight: 700 }}>Zoom</span>
+          <input type="range" min="1" max="4" step="0.05" value={zoom} onChange={(e) => handleZoom(parseFloat(e.target.value))} style={{ flex: 1 }} />
+        </div>
+        <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Glissez l'image pour la repositionner, ajustez le zoom pour cadrer.</p>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+          <button type="button" onClick={onCancel} style={{ background: "none", border: "none", color: C.gray, fontWeight: 700, cursor: "pointer", padding: "10px 16px" }}>Annuler</button>
+          <button type="button" onClick={handleConfirm} disabled={!natural} style={{ background: C.yellow, color: C.teal, border: "none", borderRadius: "12px", padding: "10px 20px", fontWeight: 800, cursor: "pointer" }}>Valider le rognage</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, focalDefault = { x: 50, y: 50 }, cropRatio = 2 }) {
   const [preview, setPreview] = useState(defaultValue || null);
   const [isCompressing, setIsCompressing] = useState(false);
   const [focal, setFocal] = useState(focalDefault);
+  const [cropping, setCropping] = useState(false);
   const fileInputRef = useRef(null);
-  const previewRef = useRef(null);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -972,13 +1080,11 @@ function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, 
     }
   };
 
-  // 🎯 Clic sur l'aperçu = déplace le point de mise au point (recadrage automatique du site)
-  const handleFocalClick = (e) => {
-    if (!showFocalPoint || !preview || !previewRef.current) return;
-    const rect = previewRef.current.getBoundingClientRect();
-    const x = Math.round(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100)));
-    const y = Math.round(Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100)));
-    setFocal({ x, y });
+  const handleCropConfirm = ({ file, preview: croppedPreview }) => {
+    setPreview(croppedPreview);
+    setFocal({ x: 50, y: 50 }); // l'image est désormais déjà cadrée exactement au bon ratio
+    onImageCompressed(file);
+    setCropping(false);
   };
 
   return (
@@ -987,9 +1093,8 @@ function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, 
       {showFocalPoint && <input type="hidden" name="imageFocalX" value={focal.x} />}
       {showFocalPoint && <input type="hidden" name="imageFocalY" value={focal.y} />}
       <div
-        ref={previewRef}
-        onClick={(e) => (preview && showFocalPoint ? handleFocalClick(e) : fileInputRef.current?.click())}
-        style={{ width: "100%", aspectRatio: showFocalPoint ? "4 / 3" : undefined, height: showFocalPoint ? undefined : "160px", borderRadius: "16px", border: `2px dashed ${preview ? "transparent" : C.lightGray}`, background: C.arctic, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preview && showFocalPoint ? "crosshair" : "pointer", position: "relative", overflow: "hidden" }}
+        onClick={() => !preview && fileInputRef.current?.click()}
+        style={{ width: "100%", aspectRatio: showFocalPoint ? `${cropRatio} / 1` : undefined, height: showFocalPoint ? undefined : "160px", borderRadius: "16px", border: `2px dashed ${preview ? "transparent" : C.lightGray}`, background: C.arctic, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preview ? "default" : "pointer", position: "relative", overflow: "hidden" }}
       >
         <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
         {isCompressing ? (
@@ -998,16 +1103,22 @@ function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, 
           <>
             <img src={preview} alt="Aperçu" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: showFocalPoint ? `${focal.x}% ${focal.y}%` : undefined }} />
             {showFocalPoint && (
-              <div style={{ position: "absolute", left: `${focal.x}%`, top: `${focal.y}%`, transform: "translate(-50%, -50%)", width: "24px", height: "24px", borderRadius: "50%", border: "3px solid white", boxShadow: "0 0 0 2px rgba(17,76,90,0.8), 0 2px 8px rgba(0,0,0,0.3)", pointerEvents: "none" }} />
-            )}
-            {showFocalPoint && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                style={{ position: "absolute", top: "10px", right: "10px", background: "rgba(17,76,90,0.85)", color: "white", border: "none", borderRadius: "999px", padding: "6px 12px", fontSize: "11px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <UploadCloud size={12} /> Changer
-              </button>
+              <div style={{ position: "absolute", top: "10px", right: "10px", display: "flex", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setCropping(true); }}
+                  style={{ background: "rgba(17,76,90,0.85)", color: "white", border: "none", borderRadius: "999px", padding: "6px 12px", fontSize: "11px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Crop size={12} /> Rogner
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                  style={{ background: "rgba(17,76,90,0.85)", color: "white", border: "none", borderRadius: "999px", padding: "6px 12px", fontSize: "11px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <UploadCloud size={12} /> Changer
+                </button>
+              </div>
             )}
           </>
         ) : (
@@ -1015,7 +1126,10 @@ function ImageUpload({ defaultValue, onImageCompressed, showFocalPoint = false, 
         )}
       </div>
       {showFocalPoint && preview && (
-        <p style={{ fontSize: "11px", color: C.gray }}>Cliquez sur l'image pour centrer le cadrage (format 4:3) sur la zone importante.</p>
+        <p style={{ fontSize: "11px", color: C.gray }}>Format {cropRatio === 2 ? "4:2" : `${cropRatio}:1`} sur le site. Utilisez « Rogner » pour choisir précisément la zone affichée.</p>
+      )}
+      {cropping && preview && (
+        <ImageCropModal src={preview} ratio={cropRatio} onCancel={() => setCropping(false)} onConfirm={handleCropConfirm} />
       )}
     </div>
   );
@@ -1379,6 +1493,8 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           
           {/* ── ONGLET 1 : INFOS DE BASE ── */}
           <div style={{ display: tab === "infos" ? "flex" : "none", flexDirection: "column", gap: "20px" }}>
+            <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} showFocalPoint focalDefault={{ x: isEditing ? (sejourData.imageFocalX ?? 50) : 50, y: isEditing ? (sejourData.imageFocalY ?? 50) : 50 }} />
+
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
               <input type="text" name="titre" defaultValue={isEditing ? sejourData.titre : ""} required placeholder="Titre du séjour" style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <input type="text" name="tranchesAge" defaultValue={isEditing ? sejourData.tranchesAge : defaultAge} placeholder="Âges (ex: 6-12 ans)" style={{ flex: 1, minWidth: "160px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
@@ -1468,8 +1584,6 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <input type="url" name="lienPaiementCICValDeMarne" defaultValue={isEditing ? sejourData.lienPaiementCICValDeMarne : ""} placeholder="https://..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <p style={{ fontSize: "11px", color: C.gray }}>Lien utilisé quand la famille sélectionne le tarif réduit réservé aux habitants du Val-de-Marne (uniquement si le tarif ci-dessus est activé).</p>
             </div>
-
-            <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} showFocalPoint focalDefault={{ x: isEditing ? (sejourData.imageFocalX ?? 50) : 50, y: isEditing ? (sejourData.imageFocalY ?? 50) : 50 }} />
           </div>
 
           {/* ── ONGLET 2 : DÉTAILS ET GALERIE ── */}

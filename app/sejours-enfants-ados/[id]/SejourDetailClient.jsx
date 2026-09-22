@@ -440,8 +440,8 @@ export default function SejourDetailClient({ sejour, autresSejours }) {
         }
       `}</style>
 
-      {/* ── BANNIERE (format 4:3, cadrée sur le point de mise au point choisi en admin) ── */}
-      <section style={{position:"relative",width:"100%",aspectRatio:"4 / 3",maxHeight:"600px",overflow:"hidden"}}>
+      {/* ── BANNIERE (format 4:2, cadrée sur le point de mise au point choisi en admin) ── */}
+      <section style={{position:"relative",width:"100%",aspectRatio:"4 / 2",maxHeight:"600px",overflow:"hidden"}}>
         <img src={sejour.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600"} alt={sejour.titre} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:`${sejour.imageFocalX ?? 50}% ${sejour.imageFocalY ?? 50}%`}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(17,76,90,0.85) 0%,rgba(17,76,90,0.15) 50%,transparent 100%)"}}/>
 
