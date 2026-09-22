@@ -661,7 +661,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       if (field.type === "info") {
                         return (
                           <p key={field.id} style={styles.infoText}>
-                            {field.label}
+                            {field.label.replaceAll("{{ASSURANCE}}", montantAssurance)}
                           </p>
                         );
                       }

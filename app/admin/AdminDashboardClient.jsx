@@ -1400,7 +1400,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
     { id: "20", type: "checkbox", label: "J'autorise l'utilisation de l'image de mon enfant (photos & vidéos) liée au séjour, à titre gracieux, pour permettre aux familles de suivre le déroulement du séjour, pour la réalisation de plaquettes d'informations et pour le site de l'association.", required: true },
 
     { id: "21", type: "section", label: "Assurance annulation (partenaire MAIF)", required: false },
-    { id: "22", type: "info", label: "Vous avez la possibilité de souscrire à une assurance annulation auprès de notre partenaire MAIF. Le prix de cette assurance est de 30€, à ajouter au prix du séjour, et doit être souscrite au moment de l'inscription.\nEn cas d'annulation sous conditions, Make Your Moment retient 25% du montant du séjour ; le reste (après remboursement MAIF) vous est remboursé à la date de l'annulation.", required: false },
+    { id: "22", type: "info", label: "Vous avez la possibilité de souscrire à une assurance annulation auprès de notre partenaire MAIF. Le prix de cette assurance est de {{ASSURANCE}}€, à ajouter au prix du séjour, et doit être souscrite au moment de l'inscription.\nEn cas d'annulation sous conditions, Make Your Moment retient 25% du montant du séjour ; le reste (après remboursement MAIF) vous est remboursé à la date de l'annulation.", required: false },
     { id: "23", type: "select", label: "Souscrire à cette assurance ?", required: true, options: "Oui, Non" },
 
     { id: "24", type: "section", label: "Paiement", required: false },
@@ -1654,6 +1654,10 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
                       <button type="button" onClick={() => removeField(field.id)} style={{ padding: "8px", background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Trash2 size={14}/></button>
                     </div>
                   </div>
+
+                  {field.type === 'info' && (
+                    <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Astuce : écrivez <code>{"{{ASSURANCE}}"}</code> dans le texte pour insérer automatiquement le montant de l'assurance annulation défini ci-dessus (onglet Infos de base).</p>
+                  )}
 
                   {field.type === 'select' && (
                     <div style={{ background: C.arctic, padding: "10px", borderRadius: "8px" }}>
