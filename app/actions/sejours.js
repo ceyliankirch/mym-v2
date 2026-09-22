@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
+import { BLOB_PUBLIC } from "@/lib/blobPublic";
 import { generateTotemiaFormPdf } from "@/lib/totemiaFormPdf";
 
 // ➕ CRÉER
@@ -50,7 +51,7 @@ export async function creerSejour(formData) {
   let imageUrl = null;
 
   if (imageFile && imageFile.size > 0) {
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
+    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: "public", ...BLOB_PUBLIC });
     imageUrl = blob.url;
   }
 
@@ -59,7 +60,7 @@ export async function creerSejour(formData) {
   const galerieUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
+      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: "public", ...BLOB_PUBLIC });
       galerieUrls.push(blob.url);
     }
   }
@@ -168,9 +169,9 @@ export async function modifierSejour(id, formData) {
 
   if (imageFile && imageFile.size > 0) {
     if (sejourActuel.imageUrl) {
-      try { await del(sejourActuel.imageUrl); } catch (e) { console.error("Erreur suppression ancien blob", e); }
+      try { await del(sejourActuel.imageUrl, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression ancien blob", e); }
     }
-    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
+    const blob = await put(`sejours/${Date.now()}-${imageFile.name}`, imageFile, { access: "public", ...BLOB_PUBLIC });
     imageUrl = blob.url;
   }
 
@@ -181,7 +182,7 @@ export async function modifierSejour(id, formData) {
   const nouvellesUrls = [];
   for (const file of galerieFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: 'public' });
+      const blob = await put(`sejours/galerie/${Date.now()}-${file.name}`, file, { access: "public", ...BLOB_PUBLIC });
       nouvellesUrls.push(blob.url);
     }
   }
@@ -200,7 +201,7 @@ export async function modifierSejour(id, formData) {
   // 🧹 Nettoyage Vercel : on supprime du blob store les images retirées de la galerie
   const removedUrls = (sejourActuel.galerie || []).filter((url) => !finalGalerie.includes(url));
   for (const url of removedUrls) {
-     try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+     try { await del(url, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression image galerie", e); }
   }
 
   // ⚡ Gestion des documents requis
@@ -257,13 +258,13 @@ export async function supprimerSejour(id) {
 
   // On nettoie l'image principale
   if (sejour?.imageUrl) {
-    try { await del(sejour.imageUrl); } catch (e) { console.error("Erreur suppression blob", e); }
+    try { await del(sejour.imageUrl, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression blob", e); }
   }
 
   // ⚡ On nettoie aussi toutes les images de la galerie sur Vercel !
   if (sejour?.galerie && sejour.galerie.length > 0) {
     for (const url of sejour.galerie) {
-      try { await del(url); } catch (e) { console.error("Erreur suppression image galerie", e); }
+      try { await del(url, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression image galerie", e); }
     }
   }
 

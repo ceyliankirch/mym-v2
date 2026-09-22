@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
+import { BLOB_PUBLIC } from "@/lib/blobPublic";
 
 // ➕ CRÉER UN ALBUM (avec photos initiales)
 export async function creerAlbum(formData) {
@@ -14,7 +15,7 @@ export async function creerAlbum(formData) {
   const photoUrls = [];
   for (const file of photoFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`galerie/${Date.now()}-${file.name}`, file, { access: "public" });
+      const blob = await put(`galerie/${Date.now()}-${file.name}`, file, { access: "public", ...BLOB_PUBLIC });
       photoUrls.push(blob.url);
     }
   }
@@ -41,7 +42,7 @@ export async function modifierAlbum(id, formData) {
   const photoUrls = [];
   for (const file of photoFiles) {
     if (file && file.size > 0) {
-      const blob = await put(`galerie/${Date.now()}-${file.name}`, file, { access: "public" });
+      const blob = await put(`galerie/${Date.now()}-${file.name}`, file, { access: "public", ...BLOB_PUBLIC });
       photoUrls.push(blob.url);
     }
   }
@@ -65,7 +66,7 @@ export async function supprimerAlbum(id) {
   const album = await prisma.album.findUnique({ where: { id }, include: { photos: true } });
 
   for (const photo of album?.photos || []) {
-    try { await del(photo.url); } catch (e) { console.error("Erreur suppression photo", e); }
+    try { await del(photo.url, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression photo", e); }
   }
 
   await prisma.album.delete({ where: { id } });
@@ -91,7 +92,7 @@ export async function supprimerPhoto(id) {
   const photo = await prisma.photo.findUnique({ where: { id } });
   if (!photo) return;
 
-  try { await del(photo.url); } catch (e) { console.error("Erreur suppression photo", e); }
+  try { await del(photo.url, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression photo", e); }
 
   await prisma.photo.delete({ where: { id } });
 

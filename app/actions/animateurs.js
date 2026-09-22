@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
+import { BLOB_PUBLIC } from "@/lib/blobPublic";
 
 export async function creerAnimateur(formData) {
   const nom = formData.get("nom");
@@ -12,7 +13,7 @@ export async function creerAnimateur(formData) {
 
   let imageUrl = null;
   if (imageFile && imageFile.size > 0) {
-    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
+    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: "public", ...BLOB_PUBLIC });
     imageUrl = blob.url;
   }
 
@@ -34,9 +35,9 @@ export async function modifierAnimateur(id, formData) {
   if (imageFile && imageFile.size > 0) {
     const animateurActuel = await prisma.animateur.findUnique({ where: { id } });
     if (animateurActuel?.imageUrl) {
-      try { await del(animateurActuel.imageUrl); } catch (e) { console.error("Erreur suppression ancien blob", e); }
+      try { await del(animateurActuel.imageUrl, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression ancien blob", e); }
     }
-    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: 'public' });
+    const blob = await put(`equipe/${Date.now()}-${imageFile.name}`, imageFile, { access: "public", ...BLOB_PUBLIC });
     data.imageUrl = blob.url;
   }
 
@@ -48,7 +49,7 @@ export async function modifierAnimateur(id, formData) {
 export async function supprimerAnimateur(id) {
   const animateur = await prisma.animateur.findUnique({ where: { id } });
   if (animateur?.imageUrl) {
-    try { await del(animateur.imageUrl); } catch (e) { console.error("Erreur suppression blob", e); }
+    try { await del(animateur.imageUrl, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression blob", e); }
   }
   await prisma.animateur.delete({ where: { id } });
   revalidatePath("/admin");

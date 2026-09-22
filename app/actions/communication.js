@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { put, del } from "@vercel/blob";
+import { BLOB_PUBLIC } from "@/lib/blobPublic";
 import { revalidatePath } from "next/cache";
 
 const slugify = (s) =>
@@ -31,7 +32,7 @@ export async function enregistrerVisuelCommunication({ dataUrl, type, nom, sejou
     const blob = await put(
       `communication/${Date.now()}-${slugify(nomFinal)}.${ext}`,
       buffer,
-      { access: "public", contentType: mimeType }
+      { access: "public", contentType: mimeType, ...BLOB_PUBLIC }
     );
 
     const fichier = await prisma.fichierCommunication.create({
@@ -67,7 +68,7 @@ export async function importerFichierCommunication(formData) {
     const blob = await put(
       `communication/imports/${Date.now()}-${slugify(file.name.replace(/\.[^.]+$/, ""))}${file.name.match(/\.[^.]+$/)?.[0] || ""}`,
       file,
-      { access: "public", contentType: file.type || undefined }
+      { access: "public", contentType: file.type || undefined, ...BLOB_PUBLIC }
     );
 
     const fichier = await prisma.fichierCommunication.create({
@@ -107,7 +108,7 @@ export async function supprimerFichierCommunication(id) {
   try {
     const fichier = await prisma.fichierCommunication.findUnique({ where: { id } });
     if (fichier?.url) {
-      try { await del(fichier.url); } catch (e) { console.error("Erreur suppression blob communication", e); }
+      try { await del(fichier.url, BLOB_PUBLIC); } catch (e) { console.error("Erreur suppression blob communication", e); }
     }
     await prisma.fichierCommunication.delete({ where: { id } });
     revalidatePath("/admin");
