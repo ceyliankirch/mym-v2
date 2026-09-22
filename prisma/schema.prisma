@@ -86,6 +86,9 @@ model Sejour {
   documentsRequis  String[] @default([]) // Sous-ensemble du catalogue fixe
   lienPaiementCIC  String?  // Lien de paiement CIC vers lequel rediriger la famille après inscription
   lienPaiementCICValDeMarne String? // Lien de paiement CIC pour le tarif réduit "Habitant du Val-de-Marne"
+  reductionVdmActive   Boolean @default(false) // Active le tarif "Habitant du Val-de-Marne" sur ce séjour (désactivé par défaut : les anciens séjours ne l'affichent pas)
+  reductionVdmType     String  @default("montant") // "montant" (€) ou "pourcentage" (%)
+  reductionVdmValeur   Float   @default(100) // Montant en € ou pourcentage selon reductionVdmType
   createdAt    DateTime  @default(now())
   inscriptions Inscription[]
   albums       Album[]

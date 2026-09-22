@@ -27,6 +27,9 @@ export async function creerSejour(formData) {
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
   const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
+  const reductionVdmActive = formData.get("reductionVdmActive") === "on";
+  const reductionVdmType = formData.get("reductionVdmType") === "pourcentage" ? "pourcentage" : "montant";
+  const reductionVdmValeur = parseFloat(formData.get("reductionVdmValeur"));
 
   const prixPrincipal = parseFloat(formData.get("prix")) || 0;
   const prixLabel = (formData.get("prixLabel") || "").toString().trim() || null;
@@ -116,6 +119,9 @@ export async function creerSejour(formData) {
       galerie: galerieFinale,
       lienPaiementCIC,
       lienPaiementCICValDeMarne,
+      reductionVdmActive,
+      reductionVdmType,
+      reductionVdmValeur: Number.isNaN(reductionVdmValeur) ? 100 : reductionVdmValeur,
     },
   });
 
@@ -146,6 +152,9 @@ export async function modifierSejour(id, formData) {
   const formSchema = formData.get("formSchema") || "";
   const lienPaiementCIC = formData.get("lienPaiementCIC") || "";
   const lienPaiementCICValDeMarne = formData.get("lienPaiementCICValDeMarne") || "";
+  const reductionVdmActive = formData.get("reductionVdmActive") === "on";
+  const reductionVdmType = formData.get("reductionVdmType") === "pourcentage" ? "pourcentage" : "montant";
+  const reductionVdmValeur = parseFloat(formData.get("reductionVdmValeur"));
 
   const prixPrincipal = parseFloat(formData.get("prix")) || 0;
   const prixLabel = (formData.get("prixLabel") || "").toString().trim() || null;
@@ -247,6 +256,9 @@ export async function modifierSejour(id, formData) {
       galerie: finalGalerie,
       lienPaiementCIC,
       lienPaiementCICValDeMarne,
+      reductionVdmActive,
+      reductionVdmType,
+      reductionVdmValeur: Number.isNaN(reductionVdmValeur) ? 100 : reductionVdmValeur,
     },
   });
 
@@ -335,6 +347,9 @@ export async function dupliquerSejour(id) {
       documentsRequis: source.documentsRequis,
       lienPaiementCIC: source.lienPaiementCIC,
       lienPaiementCICValDeMarne: source.lienPaiementCICValDeMarne,
+      reductionVdmActive: source.reductionVdmActive,
+      reductionVdmType: source.reductionVdmType,
+      reductionVdmValeur: source.reductionVdmValeur,
     },
   });
 

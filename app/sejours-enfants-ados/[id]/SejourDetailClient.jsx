@@ -178,6 +178,12 @@ function StickySidebar({ sejour }) {
           const autres = arr.filter(t => Number(t.montant) !== Number(sejour.prix));
           const lignes = [{ montant: sejour.prix, label: principalLabel }, ...autres];
           const modeBoxes = lignes.length > 1 && lignes.some(l => l.label);
+          const vdmActif = sejour.reductionVdmActive && sejour.prix > 0;
+          const prixVdm = vdmActif
+            ? Math.max(0, sejour.reductionVdmType === "pourcentage"
+                ? sejour.prix * (1 - (sejour.reductionVdmValeur || 0) / 100)
+                : sejour.prix - (sejour.reductionVdmValeur || 0))
+            : 0;
           return (
             <>
               {modeBoxes ? (
@@ -188,10 +194,10 @@ function StickySidebar({ sejour }) {
                       <p style={{fontSize:"10px",fontWeight:700,color:"#8aa",margin:"3px 0 0"}}>{l.label || "Tarif"}</p>
                     </div>
                   ))}
-                  {!estSenior && sejour.prix > 0 && (
+                  {!estSenior && vdmActif && (
                     <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"14px",padding:"10px 18px",textAlign:"center"}}>
                       <ReductionTooltip />
-                      <p style={{fontSize:"1.9rem",fontWeight:900,color:"#059669",lineHeight:1,margin:0}}>{Math.max(0, sejour.prix - 100)}€</p>
+                      <p style={{fontSize:"1.9rem",fontWeight:900,color:"#059669",lineHeight:1,margin:0}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
                       <p style={{fontSize:"10px",fontWeight:700,color:"#047857",margin:"3px 0 0"}}>Habitant du Val-de-Marne</p>
                     </div>
                   )}
@@ -199,10 +205,10 @@ function StickySidebar({ sejour }) {
               ) : (
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"16px",flexWrap:"wrap"}}>
                   <span style={{fontSize:"2.8rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px"}}>{sejour.prix || 0}€</span>
-                  {!estSenior && sejour.prix > 0 && (
+                  {!estSenior && vdmActif && (
                     <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
                       <ReductionTooltip />
-                      <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{Math.max(0, sejour.prix - 100)}€</p>
+                      <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
                       <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
                     </div>
                   )}
@@ -338,9 +344,9 @@ function MobileBottomBar({ sejour }) {
             <p style={{fontSize:"9px",color:"#8aa",fontWeight:700,textTransform:"uppercase",margin:0,textAlign:"left"}}>Prix</p>
             <p style={{fontSize:"24px",fontWeight:900,color:C.teal,margin:0,lineHeight:1.1}}>{sejour.prix || 0}€</p>
           </div>
-          {sejour.prix > 0 && (
+          {sejour.reductionVdmActive && sejour.prix > 0 && !/senior|sénior/i.test(sejour.tranchesAge || "") && (
             <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"10px",padding:"4px 12px",textAlign:"center",flexShrink:0,marginTop:"20px"}}>
-              <p style={{fontSize:"26px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.prix - 100)}€</p>
+              <p style={{fontSize:"26px",fontWeight:900,color:"#059669",margin:0,lineHeight:1.1}}>{Math.max(0, sejour.reductionVdmType === "pourcentage" ? sejour.prix * (1 - (sejour.reductionVdmValeur || 0) / 100) : sejour.prix - (sejour.reductionVdmValeur || 0)).toFixed(2).replace(/\.00$/,"")}€</p>
               <p style={{fontSize:"8px",fontWeight:700,color:"#047857",margin:0,whiteSpace:"nowrap"}}>Val-de-Marne</p>
             </div>
           )}

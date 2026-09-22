@@ -62,6 +62,12 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
 
   // 👵 Séjour séniors : pas de tarif réduit "Habitant du Val-de-Marne"
   const estSenior = /senior|sénior/i.test(sejour.tranchesAge || "");
+  // 🏷️ Le tarif Val-de-Marne n'existe que si le séjour l'a activé dans ses paramètres
+  const vdmDisponible = !estSenior && !!sejour.reductionVdmActive;
+  const reductionVdm = (montant) =>
+    sejour.reductionVdmType === "pourcentage"
+      ? montant * ((sejour.reductionVdmValeur || 0) / 100)
+      : (sejour.reductionVdmValeur || 0);
 
   const handleChange = (fieldId, value) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
@@ -161,7 +167,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
   const montantBase =
     tarifsListe.length > 0
       ? (tarifChoisiIdx != null ? tarifsListe[tarifChoisiIdx].montant : sejour.prix)
-      : sejour.prix - (tarifSelectionne === "val_de_marne" ? 100 : 0);
+      : sejour.prix - (tarifSelectionne === "val_de_marne" ? reductionVdm(sejour.prix) : 0);
 
   // 💶 Montant total à régler (base + assurance + frais bancaires carte)
   const montantTotal = Math.max(
@@ -827,7 +833,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                           {(sejour.prix + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
                         </p>
                       </div>
-                      {!estSenior && (
+                      {vdmDisponible && (
                         <div
                           onClick={handleClicValDeMarne}
                           style={{
@@ -844,7 +850,7 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                             Habitant du Val-de-Marne
                           </p>
                           <p style={styles.priceBoxAmount}>
-                            {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - 100).toFixed(2)} €
+                            {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - reductionVdm(sejour.prix)).toFixed(2)} €
                           </p>
                           {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
                         </div>
