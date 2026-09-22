@@ -9,7 +9,7 @@ import {
   ClipboardList, ExternalLink, Edit, Trash2,
   MapPin, Filter, Link as LinkIcon,
   Leaf, Snowflake, Flower, Sun,
-  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, CheckSquare, Copy,
+  Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, AlignCenter, AlignRight, CheckSquare, Copy,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
   Baby, Cake, Ruler, Footprints, Weight, QrCode, User, BedDouble, BedSingle
 } from "lucide-react";
@@ -1083,6 +1083,15 @@ function RichTextToolbarButton({ onClick, title, children }) {
   );
 }
 
+// Tailles proposées dans le sélecteur (correspond à la taille réelle en pixels affichée sur le site)
+const RICH_TEXT_FONT_SIZES = [
+  { value: "12", label: "Petit" },
+  { value: "13", label: "Normal" },
+  { value: "16", label: "Moyen" },
+  { value: "19", label: "Grand" },
+  { value: "24", label: "Très grand" },
+];
+
 function RichTextEditor({ name, label, defaultValue, placeholder }) {
   const editorRef = useRef(null);
   const [html, setHtml] = useState(defaultValue || "");
@@ -1103,9 +1112,32 @@ function RichTextEditor({ name, label, defaultValue, placeholder }) {
     setIsEmpty(!editorRef.current?.textContent?.trim());
   };
 
-  const exec = (command) => {
+  const exec = (command, value = null) => {
     editorRef.current?.focus();
-    document.execCommand(command, false, null);
+    document.execCommand(command, false, value);
+    syncState();
+  };
+
+  // 📋 Coller en texte brut par défaut (Word, Google Docs… n'importent pas leur mise en forme
+  // ni leurs couleurs) — on garde uniquement les retours à la ligne.
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const texte = e.clipboardData.getData("text/plain");
+    document.execCommand("insertText", false, texte);
+    syncState();
+  };
+
+  // 🔤 Taille de police : execCommand("fontSize") ne sait faire que 7 tailles fixes (1-7),
+  // on applique donc directement un <span style="font-size:…"> sur la sélection.
+  const appliquerTaille = (px) => {
+    editorRef.current?.focus();
+    document.execCommand("fontSize", false, "7"); // crée des <font size="7"> ciblables…
+    editorRef.current?.querySelectorAll('font[size="7"]').forEach((el) => {
+      const span = document.createElement("span");
+      span.style.fontSize = `${px}px`;
+      span.innerHTML = el.innerHTML;
+      el.replaceWith(span);
+    });
     syncState();
   };
 
@@ -1114,10 +1146,27 @@ function RichTextEditor({ name, label, defaultValue, placeholder }) {
       {label && <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>{label}</label>}
       <input type="hidden" name={name} value={html} />
       <div style={{ border: `1px solid ${C.lightGray}`, borderRadius: "12px", overflow: "hidden", position: "relative" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "2px", padding: "6px 8px", background: C.arctic, borderBottom: `1px solid ${C.lightGray}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2px", padding: "6px 8px", background: C.arctic, borderBottom: `1px solid ${C.lightGray}`, flexWrap: "wrap" }}>
+          <select
+            onMouseDown={(e) => e.stopPropagation()}
+            onChange={(e) => { if (e.target.value) appliquerTaille(e.target.value); e.target.value = ""; }}
+            defaultValue=""
+            title="Taille du texte"
+            style={{ height: "28px", borderRadius: "6px", border: `1px solid ${C.lightGray}`, background: C.white, color: C.teal, fontSize: "12px", cursor: "pointer", padding: "0 4px" }}
+          >
+            <option value="" disabled>Taille…</option>
+            {RICH_TEXT_FONT_SIZES.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+          <div style={{ width: "1px", height: "18px", background: C.lightGray, margin: "0 4px" }} />
           <RichTextToolbarButton title="Gras" onClick={() => exec("bold")}><Bold size={14} /></RichTextToolbarButton>
           <RichTextToolbarButton title="Italique" onClick={() => exec("italic")}><Italic size={14} /></RichTextToolbarButton>
           <RichTextToolbarButton title="Souligné" onClick={() => exec("underline")}><Underline size={14} /></RichTextToolbarButton>
+          <div style={{ width: "1px", height: "18px", background: C.lightGray, margin: "0 4px" }} />
+          <RichTextToolbarButton title="Aligner à gauche" onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></RichTextToolbarButton>
+          <RichTextToolbarButton title="Centrer" onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></RichTextToolbarButton>
+          <RichTextToolbarButton title="Aligner à droite" onClick={() => exec("justifyRight")}><AlignRight size={14} /></RichTextToolbarButton>
           <div style={{ width: "1px", height: "18px", background: C.lightGray, margin: "0 4px" }} />
           <RichTextToolbarButton title="Liste à puces" onClick={() => exec("insertUnorderedList")}><List size={14} /></RichTextToolbarButton>
           <RichTextToolbarButton title="Liste numérotée" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></RichTextToolbarButton>
@@ -1134,6 +1183,7 @@ function RichTextEditor({ name, label, defaultValue, placeholder }) {
             suppressContentEditableWarning
             onInput={syncState}
             onBlur={syncState}
+            onPaste={handlePaste}
             className="rich-text-editor-content"
             style={{ padding: "12px", minHeight: "120px", fontSize: "13px", lineHeight: 1.7, outline: "none", fontFamily: "inherit", color: C.teal }}
           />
