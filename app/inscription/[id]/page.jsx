@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { getOrCreateClientForUser } from "@/app/actions/inscriptions";
 import InscriptionClient from "./InscriptionClient";
+import { getParametres } from "@/app/actions/parametres";
+import { getCoordonnees } from "@/lib/coordonnees";
 
 export const dynamic = "force-dynamic";
 
@@ -36,5 +38,8 @@ export default async function InscriptionPage({ params }) {
     }
   }
 
-  return <InscriptionClient sejour={sejour} enfants={enfants} />;
+  const parametres = await getParametres();
+  const coordonnees = getCoordonnees(parametres);
+
+  return <InscriptionClient sejour={sejour} enfants={enfants} coordonnees={coordonnees} parametres={parametres} />;
 }

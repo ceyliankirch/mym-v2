@@ -26,7 +26,7 @@ const C = {
   lightGray: "#e2e8f0",
 };
 
-export default function InscriptionClient({ sejour, enfants = [] }) {
+export default function InscriptionClient({ sejour, enfants = [], coordonnees = {}, parametres = {} }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const isLoggedIn = !!session;
@@ -659,9 +659,15 @@ export default function InscriptionClient({ sejour, enfants = [] }) {
                       }
 
                       if (field.type === "info") {
+                        const texte = field.label
+                          .replaceAll("{{ASSURANCE}}", montantAssurance)
+                          .replaceAll("{{IBAN}}", parametres?.ibanAsso || "FR76 1027 8060 3600 0209 3910 120")
+                          .replaceAll("{{BIC}}", parametres?.bicAsso || "")
+                          .replaceAll("{{TITULAIRE}}", parametres?.titulaireIban || "Make Your Moment")
+                          .replaceAll("{{ADRESSE}}", `${coordonnees?.adresseRue || ""}, ${coordonnees?.adresseVille || ""}`);
                         return (
                           <p key={field.id} style={styles.infoText}>
-                            {field.label.replaceAll("{{ASSURANCE}}", montantAssurance)}
+                            {texte}
                           </p>
                         );
                       }
