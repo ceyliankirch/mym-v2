@@ -1404,6 +1404,27 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <p style={{ fontSize: "11px", color: C.gray }}>Le 1er tarif est le prix principal affiché. Les suivants apparaissent en dessous avec leur libellé (comme le tarif Val-de-Marne).</p>
             </div>
 
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
+                <input type="checkbox" name="reductionVdmActive" checked={vdmActive} onChange={(e) => setVdmActive(e.target.checked)} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
+                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne »</span>
+              </label>
+              <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Désactivé par défaut : les anciens séjours n'affichent pas ce tarif. À activer séjour par séjour.</p>
+
+              {vdmActive && (
+                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", borderRadius: "10px", overflow: "hidden", border: `1px solid ${C.lightGray}` }}>
+                    <button type="button" onClick={() => setVdmType("montant")} style={{ padding: "10px 14px", border: "none", cursor: "pointer", fontWeight: 800, fontSize: "13px", background: vdmType === "montant" ? C.teal : C.white, color: vdmType === "montant" ? C.white : C.gray }}>€</button>
+                    <button type="button" onClick={() => setVdmType("pourcentage")} style={{ padding: "10px 14px", border: "none", cursor: "pointer", fontWeight: 800, fontSize: "13px", background: vdmType === "pourcentage" ? C.teal : C.white, color: vdmType === "pourcentage" ? C.white : C.gray }}>%</button>
+                  </div>
+                  <input type="hidden" name="reductionVdmType" value={vdmType} />
+                  <input type="number" min="0" step="0.01" name="reductionVdmValeur" defaultValue={isEditing ? (sejourData.reductionVdmValeur ?? 100) : 100} style={{ width: "120px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
+                  <span style={{ fontSize: "12px", color: C.gray }}>{vdmType === "montant" ? "€ de réduction sur le tarif principal" : "% de réduction sur le tarif principal"}</span>
+                </div>
+              )}
+            </div>
+
+
             <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px", cursor: "pointer" }}>
               <input type="checkbox" name="gestionChambres" defaultChecked={isEditing ? !!sejourData.gestionChambres : false} style={{ width: "16px", height: "16px", marginTop: "2px", cursor: "pointer" }} />
               <span>
@@ -1440,26 +1461,6 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement CIC — Tarif standard</label>
               <input type="url" name="lienPaiementCIC" defaultValue={isEditing ? sejourData.lienPaiementCIC : ""} placeholder="https://paiement.cic.fr/..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <p style={{ fontSize: "11px", color: C.gray }}>Une fois son inscription envoyée, la famille sera redirigée vers ce lien pour régler le séjour. Laissez vide si le paiement se fait autrement.</p>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px" }}>
-              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-                <input type="checkbox" name="reductionVdmActive" checked={vdmActive} onChange={(e) => setVdmActive(e.target.checked)} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
-                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne »</span>
-              </label>
-              <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Désactivé par défaut : les anciens séjours n'affichent pas ce tarif. À activer séjour par séjour.</p>
-
-              {vdmActive && (
-                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                  <div style={{ display: "flex", borderRadius: "10px", overflow: "hidden", border: `1px solid ${C.lightGray}` }}>
-                    <button type="button" onClick={() => setVdmType("montant")} style={{ padding: "10px 14px", border: "none", cursor: "pointer", fontWeight: 800, fontSize: "13px", background: vdmType === "montant" ? C.teal : C.white, color: vdmType === "montant" ? C.white : C.gray }}>€</button>
-                    <button type="button" onClick={() => setVdmType("pourcentage")} style={{ padding: "10px 14px", border: "none", cursor: "pointer", fontWeight: 800, fontSize: "13px", background: vdmType === "pourcentage" ? C.teal : C.white, color: vdmType === "pourcentage" ? C.white : C.gray }}>%</button>
-                  </div>
-                  <input type="hidden" name="reductionVdmType" value={vdmType} />
-                  <input type="number" min="0" step="0.01" name="reductionVdmValeur" defaultValue={isEditing ? (sejourData.reductionVdmValeur ?? 100) : 100} style={{ width: "120px", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
-                  <span style={{ fontSize: "12px", color: C.gray }}>{vdmType === "montant" ? "€ de réduction sur le tarif principal" : "% de réduction sur le tarif principal"}</span>
-                </div>
-              )}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
