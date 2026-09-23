@@ -77,7 +77,7 @@ function FranceMapPin({ imageUrl, lieu }) {
   const coords = getCoordinates(villeCourte);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "600px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.lightGray}` }}>
+    <div style={{ position: "relative", width: "100%", height: "440px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.lightGray}` }}>
       
       <div style={{ position: "relative", width: "100%", maxWidth: "480px", height: "100%" }}>
         <img src="/france.svg" alt="Carte de la France" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.08, objectFit: "contain", pointerEvents: "none" }} />
@@ -111,7 +111,7 @@ function Galerie({ images }) {
   if (!images || images.length === 0) return null;
   const visible = images.slice(0, 9);
   return (
-    <div style={{background:C.white, borderRadius:"32px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, height:"600px", display:"flex", flexDirection:"column"}}>
+    <div style={{background:C.white, borderRadius:"32px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, height:"440px", display:"flex", flexDirection:"column"}}>
       <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"16px",flexShrink:0}}>Galerie Photos</h3>
 
       <a href="https://www.instagram.com/makeyourmoment_mym/" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px",flexShrink:0,textDecoration:"none"}}>
@@ -456,7 +456,9 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
             gap: 48px;
           }
           .sidebar-wrapper {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
           }
           .mobile-cta-wrapper {
             display: none;
@@ -569,7 +571,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
           </div>
 
           {/* ── COL DROITE — SIDEBAR + GALERIE ─────────────────────────────── */}
-          <div className="sidebar-wrapper" style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+          <div className="sidebar-wrapper">
              <StickySidebar sejour={sejour} coordonnees={coordonnees}/>
              <Galerie images={sejour.galerie} />
           </div>
