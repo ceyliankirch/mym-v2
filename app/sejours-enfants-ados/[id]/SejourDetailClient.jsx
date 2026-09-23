@@ -77,7 +77,7 @@ function FranceMapPin({ imageUrl, lieu }) {
   const coords = getCoordinates(villeCourte);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "440px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.lightGray}` }}>
+    <div className="map-block" style={{ position: "relative", width: "100%", background: "#f8fafc", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.lightGray}` }}>
       
       <div style={{ position: "relative", width: "100%", maxWidth: "480px", height: "100%" }}>
         <img src="/france.svg" alt="Carte de la France" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.08, objectFit: "contain", pointerEvents: "none" }} />
@@ -97,7 +97,7 @@ function FranceMapPin({ imageUrl, lieu }) {
         </div>
       </div>
 
-      <div style={{ position: "absolute", top: "32px", left: "32px", pointerEvents: "none" }}>
+      <div className="map-caption" style={{ position: "absolute", pointerEvents: "none" }}>
         <p style={{ fontSize: "11px", fontWeight: 800, color: C.saffron, textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>Localisation</p>
         <h3 style={{ fontSize: "24px", fontWeight: 900, color: C.teal }}>Au cœur du séjour</h3>
       </div>
@@ -111,7 +111,7 @@ function Galerie({ images }) {
   if (!images || images.length === 0) return null;
   const visible = images.slice(0, 9);
   return (
-    <div style={{background:C.white, borderRadius:"32px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, height:"440px", display:"flex", flexDirection:"column"}}>
+    <div className="gallery-block" style={{background:C.white, boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, display:"flex", flexDirection:"column"}}>
       <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"16px",flexShrink:0}}>Galerie Photos</h3>
 
       <a href="https://www.instagram.com/makeyourmoment_mym/" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px",flexShrink:0,textDecoration:"none"}}>
@@ -139,19 +139,19 @@ function Galerie({ images }) {
       </div>
 
       {active !== null && (
-        <div onClick={()=>setActive(null)} style={{position:"fixed",inset:0,background:"rgba(13,50,60,0.92)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"32px"}}>
-          <button onClick={()=>setActive(null)} style={{position:"absolute",top:"24px",right:"24px",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"44px",height:"44px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-            <X size={20} style={{color:"white"}}/>
+        <div onClick={()=>setActive(null)} style={{position:"fixed",inset:0,background:"rgba(13,50,60,0.92)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px"}}>
+          <button onClick={()=>setActive(null)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"38px",height:"38px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+            <X size={18} style={{color:"white"}}/>
           </button>
           {visible.length > 1 && (
-            <button onClick={e=>{e.stopPropagation();setActive(p=>(p-1+visible.length)%visible.length);}} style={{position:"absolute",left:"24px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-              <ChevronLeft size={22} style={{color:"white"}}/>
+            <button onClick={e=>{e.stopPropagation();setActive(p=>(p-1+visible.length)%visible.length);}} style={{position:"absolute",left:"8px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"38px",height:"38px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+              <ChevronLeft size={20} style={{color:"white"}}/>
             </button>
           )}
-          <img src={visible[active]} alt="" onClick={e=>e.stopPropagation()} style={{maxWidth:"90%",maxHeight:"85vh",objectFit:"contain",borderRadius:"12px"}}/>
+          <img src={visible[active]} alt="" onClick={e=>e.stopPropagation()} style={{maxWidth:"82%",maxHeight:"80vh",objectFit:"contain",borderRadius:"12px"}}/>
           {visible.length > 1 && (
-            <button onClick={e=>{e.stopPropagation();setActive(p=>(p+1)%visible.length);}} style={{position:"absolute",right:"24px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-              <ChevronRight size={22} style={{color:"white"}}/>
+            <button onClick={e=>{e.stopPropagation();setActive(p=>(p+1)%visible.length);}} style={{position:"absolute",right:"8px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"38px",height:"38px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+              <ChevronRight size={20} style={{color:"white"}}/>
             </button>
           )}
         </div>
@@ -467,20 +467,57 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
 
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ── Responsive : mobile-first, resserré sous 640px ────────────── */
+        .sejour-banner { aspect-ratio: 4 / 3; max-height: 420px; }
+        .sejour-banner-inner { padding: 16px 20px; }
+        .sejour-title { font-size: clamp(1.5rem, 6vw, 3rem); }
+        .sejour-content { padding: 24px 20px 120px; }
+        .sejour-card { padding: 20px; border-radius: 18px; }
+        .sejour-tabs-bar { overflow-x: auto; }
+        .sejour-tabs-bar button { flex: 0 0 auto !important; padding: 14px 18px !important; }
+        .sejour-tab-panel { padding: 22px 20px; }
+        .map-block { height: 260px !important; border-radius: 22px !important; }
+        .gallery-block { height: 380px; border-radius: 22px; padding: 18px; }
+        .map-block .map-caption { top: 18px !important; left: 18px !important; }
+        .map-block .map-caption p:first-child { font-size: 10px !important; margin-bottom: 4px !important; }
+        .map-block .map-caption h3 { font-size: 16px !important; }
+        .mobile-gallery { display: block; margin-top: 24px; }
+        .similar-heading { flex-direction: column; align-items: flex-start !important; gap: 16px; }
+        .similar-section { margin-top: 56px !important; }
+
+        @media (min-width: 640px) {
+          .sejour-banner { aspect-ratio: 4 / 2; max-height: 600px; }
+          .sejour-banner-inner { padding: 28px 32px; }
+          .sejour-content { padding: 48px 32px 100px; }
+          .sejour-card { padding: 28px; border-radius: 20px; }
+          .sejour-tabs-bar button { flex: 1 !important; padding: 16px !important; }
+          .sejour-tab-panel { padding: 32px; }
+          .map-block { height: 440px !important; border-radius: 32px !important; }
+          .gallery-block { height: 440px; border-radius: 32px; padding: 28px; }
+          .map-block .map-caption { top: 32px !important; left: 32px !important; }
+          .map-block .map-caption p:first-child { font-size: 11px !important; margin-bottom: 6px !important; }
+          .map-block .map-caption h3 { font-size: 24px !important; }
+          .similar-heading { flex-direction: row; align-items: center !important; }
+          .similar-section { margin-top: 100px !important; }
+        }
+        @media (min-width: 1024px) {
+          .mobile-gallery { display: none; }
+        }
       `}</style>
 
       {/* ── BANNIERE (format 4:2, cadrée sur le point de mise au point choisi en admin) ── */}
-      <section style={{position:"relative",width:"100%",aspectRatio:"4 / 2",maxHeight:"600px",overflow:"hidden"}}>
+      <section className="sejour-banner" style={{position:"relative",width:"100%",overflow:"hidden"}}>
         <img src={sejour.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600"} alt={sejour.titre} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:`${sejour.imageFocalX ?? 50}% ${sejour.imageFocalY ?? 50}%`}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(17,76,90,0.85) 0%,rgba(17,76,90,0.15) 50%,transparent 100%)"}}/>
 
-        <div style={{position:"absolute",top:"24px",left:"32px",display:"flex",alignItems:"center",gap:"8px"}}>
+        <div className="sejour-banner-inner" style={{position:"absolute",top:0,left:0,display:"flex",alignItems:"center",gap:"8px"}}>
           <Link href="/sejours-enfants-ados" style={{display:"flex",alignItems:"center",gap:"6px",background:"rgba(255,255,255,0.15)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"6px 14px",textDecoration:"none",color:"white",fontSize:"12px",fontWeight:600}}>
             <ArrowLeft size={12}/> Tous les séjours
           </Link>
         </div>
 
-        <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"28px 32px"}}>
+        <div className="sejour-banner-inner" style={{position:"absolute",bottom:0,left:0,right:0}}>
           <div style={{maxWidth:"1760px",margin:"0 auto"}}>
             <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
               <div style={{background:"rgba(255,255,255,0.15)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"5px 14px"}}>
@@ -495,7 +532,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
               </div>
             </div>
 
-            <h1 style={{fontWeight:900,color:C.white,fontSize:"clamp(1.8rem,4vw,3rem)",letterSpacing:"-1px",marginBottom:"8px"}}>
+            <h1 className="sejour-title" style={{fontWeight:900,color:C.white,letterSpacing:"-1px",marginBottom:"8px"}}>
               {sejour.titre}
             </h1>
             <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
@@ -507,7 +544,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
       </section>
 
       {/* ── CONTENT ───────────────────────────────────────────────────────── */}
-      <div style={{maxWidth:"1760px",margin:"0 auto",padding:"48px 32px", paddingBottom: "100px"}}>
+      <div className="sejour-content" style={{maxWidth:"1760px",margin:"0 auto"}}>
         
         <div className="layout-container">
 
@@ -515,7 +552,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
           <div style={{ minWidth: 0 }}>
             
             {/* Résumé */}
-            <div style={{background:C.white,borderRadius:"20px",padding:"28px",marginBottom:"24px",boxShadow:"0 2px 16px rgba(17,76,90,0.06)"}}>
+            <div className="sejour-card" style={{background:C.white,marginBottom:"24px",boxShadow:"0 2px 16px rgba(17,76,90,0.06)"}}>
               <p style={{fontSize:"11px",fontWeight:800,color:C.saffron,textTransform:"uppercase",letterSpacing:"2px",marginBottom:"10px"}}>En bref</p>
               
               <p style={{fontSize:"15px",color:"#5a7a84",lineHeight:1.8,fontWeight:600}}>
@@ -538,10 +575,10 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
 
             {/* Tabs */}
             <div style={{background:C.white,borderRadius:"20px",overflow:"hidden",boxShadow:"0 2px 16px rgba(17,76,90,0.06)", marginBottom: "24px"}}>
-              <div style={{display:"flex",borderBottom:`1px solid ${C.arctic}`, overflowX: "auto"}}>
+              <div className="sejour-tabs-bar hide-scroll" style={{display:"flex",borderBottom:`1px solid ${C.arctic}`}}>
                 {TABS.map(t=>(
                   <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{
-                    flex:1,padding:"16px",fontSize:"13px",fontWeight:800,border:"none",cursor:"pointer",
+                    padding:"16px",fontSize:"13px",fontWeight:800,border:"none",cursor:"pointer",
                     background:"transparent",fontFamily:"Montserrat,sans-serif",transition:"all .2s",
                     color:activeTab===t.id?C.teal:"#8aa",
                     borderBottom:activeTab===t.id?`3px solid ${C.yellow}`:"3px solid transparent",
@@ -552,7 +589,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
                 ))}
               </div>
 
-              <div style={{padding:"32px"}}>
+              <div className="sejour-tab-panel">
                 {activeTab==="programme"&&(
                   <div className="rich-text" dangerouslySetInnerHTML={{ __html: sejour.programme || "<p>Le programme de ce séjour sera très prochainement disponible.</p>" }} />
                 )}
@@ -568,6 +605,11 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
             {/* CARTE FRANCE */}
             <FranceMapPin imageUrl={sejour.imageUrl} lieu={sejour.lieu} />
 
+            {/* GALERIE (visible sur mobile/tablette, remplacée par la version sidebar sur desktop) */}
+            <div className="mobile-gallery">
+              <Galerie images={sejour.galerie} />
+            </div>
+
           </div>
 
           {/* ── COL DROITE — SIDEBAR + GALERIE ─────────────────────────────── */}
@@ -582,8 +624,8 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
 
         {/* ── AUTRES SÉJOURS SIMILAIRES ──────────────────────────────────── */}
         {autresSejours && autresSejours.length > 0 && (
-          <section style={{marginTop:"100px"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"32px"}}>
+          <section className="similar-section">
+            <div className="similar-heading" style={{display:"flex",justifyContent:"space-between",marginBottom:"32px"}}>
               <div>
                 <p style={{fontSize:"11px",fontWeight:800,color:C.saffron,textTransform:"uppercase",letterSpacing:"2px",marginBottom:"6px"}}>À découvrir aussi</p>
                 <h2 style={{fontWeight:900,color:C.teal,fontSize:"1.8rem",letterSpacing:"-0.5px"}}>Séjours similaires</h2>
@@ -593,7 +635,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
               </Link>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:"24px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))",gap:"20px"}}>
               {autresSejours.map((s)=>(
                 <Link key={s.id} href={`/sejours-enfants-ados/${s.id}`} style={{textDecoration:"none"}}>
                   <div style={{background:C.white,borderRadius:"20px",overflow:"hidden",boxShadow:"0 2px 16px rgba(17,76,90,0.07)",transition:"all .3s"}}
