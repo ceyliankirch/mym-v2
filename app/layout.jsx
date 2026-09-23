@@ -34,6 +34,11 @@ export const metadata = {
     template: "%s - Make Your Moment",
   },
   description: "Association Make Your Moment - Séjours, colonies de vacances et sorties pour enfants, ados et séniors.",
+  // ⚡ Vérification Google Search Console (méthode "balise HTML") : renseigner
+  // le code fourni par Search Console dans la variable d'env GOOGLE_SITE_VERIFICATION.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export default async function RootLayout({ children }) {

@@ -183,8 +183,17 @@ function GoogleTab() {
           <Search size={18} style={{ color: C.saffron }} />
           <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Google Search Console</h3>
         </div>
+        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
+          Le site est prêt à recevoir la vérification par balise HTML (méthode recommandée, sans fichier à héberger). Pour l'activer :
+        </p>
+        <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
+          <li>Ajoute une propriété sur <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>search.google.com/search-console</a> pour make-your-moment.com</li>
+          <li>Choisis la méthode de vérification <strong>« Balise HTML »</strong> et copie le code fourni (le contenu de l'attribut <code>content</code>, sans les guillemets)</li>
+          <li>Ajoute-le en variable d'environnement <code>GOOGLE_SITE_VERIFICATION</code> sur Vercel, puis redéploie</li>
+          <li>Reviens sur Search Console et clique sur « Vérifier »</li>
+        </ol>
         <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
-          Pas encore configuré. Une fois le site vérifié sur <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>search.google.com/search-console</a>, on pourra y consulter les recherches qui amènent des visiteurs sur le site (clics, impressions, position moyenne).
+          Une fois vérifié, on pourra y consulter les recherches qui amènent des visiteurs sur le site (clics, impressions, position moyenne).
         </p>
       </div>
 
