@@ -202,8 +202,17 @@ function GoogleTab() {
           <Users size={18} style={{ color: C.saffron }} />
           <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Avis Google Business</h3>
         </div>
+        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
+          Le site est prêt à afficher la vraie note et les vrais avis Google via l'<strong>API Places</strong> (contrairement à l'API Google Business Profile citée précédemment, celle-ci ne nécessite pas de demande d'accès — juste une clé API). Pour l'activer :
+        </p>
+        <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
+          <li>Crée un projet sur <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>console.cloud.google.com</a>, active la facturation (le crédit gratuit mensuel couvre largement ce volume) et active l'API <strong>« Places API »</strong></li>
+          <li>Crée une clé API (Identifiants → Créer des identifiants → Clé API), et restreins-la à l'API Places</li>
+          <li>Ajoute-la en variable d'environnement <code>GOOGLE_PLACES_API_KEY</code> sur Vercel</li>
+          <li>Ajoute aussi <code>GOOGLE_PLACE_ID</code> avec l'ID de la fiche « Make Your Moment » (récupérable via l'outil de recherche d'ID de lieu de Google), puis redéploie</li>
+        </ol>
         <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
-          Non connecté. L'accès à l'API Google Business Profile (pour récupérer automatiquement la note et les avis) est restreint par Google et nécessite une demande d'accès spécifique — pas de garantie d'obtention. En attendant, la note et les avis peuvent être consultés directement sur la fiche établissement Google de l'association.
+          Sans ces deux variables, le site continue d'afficher les avis de secours codés en dur. En attendant, la note et les avis peuvent aussi être consultés directement sur la fiche établissement Google de l'association.
         </p>
       </div>
     </div>

@@ -535,7 +535,10 @@ function GalleryRotator({ photos }) {
 }
 
 /* ─── PAGE PRINCIPALE ────────────────────────────────────────────── */
-export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
+export default function HomeClient({ sejoursFromDb, galleryPhotos, googleReviews }) {
+  const avisAffiches = googleReviews?.reviews?.length > 0 ? googleReviews.reviews : AVIS;
+  const noteMoyenne = googleReviews?.rating ?? 5;
+  const totalAvis = googleReviews?.totalReviews ?? 73;
   const [cat, setCat] = useState("tous");
   const [visible, setVisible] = useState(false);
   
@@ -948,12 +951,12 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               <GoogleGIcon size={18} />
               <div style={{ width: "1px", height: "16px", background: "#e8eaed" }} />
               <div style={{ display: "flex", gap: "2px" }}>{[...Array(5)].map((_, i) => <Star key={i} size={14} fill={GOOGLE_YELLOW} color={GOOGLE_YELLOW} />)}</div>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "#202124" }}>5</span>
-              <span style={{ fontSize: "13px", color: "#70757a", fontWeight: 600 }}>/ 5 · 73 avis Google</span>
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "#202124" }}>{noteMoyenne}</span>
+              <span style={{ fontSize: "13px", color: "#70757a", fontWeight: 600 }}>/ 5 · {totalAvis} avis Google</span>
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginBottom: "40px" }}>
-            {AVIS.map((a, i) => <ReviewCard key={i} a={a} i={i} isGoogle />)}
+            {avisAffiches.map((a, i) => <ReviewCard key={i} a={a} i={i} isGoogle />)}
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <BtnOutline external href="https://www.google.com/search?sa=X&sca_esv=64b268b11d0571a2&rlz=1C5OZZY_enFR1209FR1209&sxsrf=APpeQnt-cjpcJPdAp03pmQAcFrR42w1HOQ:1786358079061&q=Make+Your+Moment+Avis&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxIxNLSwsDQ3MDcys7AwtzQwMjE0s9zAyPiKUdQ3MTtVITK_tEjBNz83Na9EwbEss3gRK3ZxAJ7N6OFLAAAA&rldimm=11889707268879024169&tbm=lcl&hl=fr-FR&ved=2ahUKEwi40vm17pWWAxUNfKQEHQieMNMQ9fQKegQIUxAG&biw=3130&bih=1289&dpr=1#lkt=LocalPoiReviews">

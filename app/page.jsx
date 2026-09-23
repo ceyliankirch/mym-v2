@@ -1,5 +1,6 @@
 // app/page.jsx
 import { prisma } from "@/lib/prisma";
+import { getGoogleReviews } from "@/lib/googleReviews";
 import HomeClient from "./HomeClient"; // 👈 Modifie le chemin si tu as mis HomeClient dans un dossier /components
 
 // ⚡ NE METS PAS "use client" ICI ! C'est un Server Component.
@@ -19,6 +20,9 @@ export default async function Page() {
     take: 30,
   });
 
-  // 3. On passe les données au composant client qui gère l'affichage
-  return <HomeClient sejoursFromDb={sejours} galleryPhotos={galleryPhotos} />;
+  // 3. Note + avis Google réels (retombe sur les avis statiques si non configuré)
+  const googleReviews = await getGoogleReviews();
+
+  // 4. On passe les données au composant client qui gère l'affichage
+  return <HomeClient sejoursFromDb={sejours} galleryPhotos={galleryPhotos} googleReviews={googleReviews} />;
 }
