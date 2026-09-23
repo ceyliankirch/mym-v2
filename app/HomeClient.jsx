@@ -193,6 +193,49 @@ function ReductionTooltip() {
   );
 }
 
+const SKI_NOUVEAUTE_IDS = [
+  "cmuciwyq40000lb04vhq0nevx", // Ski 6/12 ans - 6 au 12 février 2027
+  "cmucmm1oe0005jm044aw0w1iz", // Ski 13/17 ans - 6 au 12 février 2027
+  "cmucnleka0007js047gbbphyq", // Ski 6/12 ans - 13 au 19 février 2027
+  "cmucnpai50004l204rbm61oa3", // Ski 13/17 ans - 13 au 19 février 2027
+];
+
+function NouveauteCard({ s }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link href={`/sejours-enfants-ados/${s.id}`} style={{ textDecoration: "none" }}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+    >
+      <div style={{
+        display: "flex", alignItems: "center", gap: "16px",
+        background: C.white, borderRadius: "18px", padding: "14px 18px",
+        boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        transition: "all .25s ease", minWidth: "260px",
+      }}>
+        <div style={{
+          width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0,
+          background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Snowflake size={20} style={{ color: "#0284c7" }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
+          <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+            Ski {formatAge(s.tranchesAge)}
+          </p>
+          <p style={{ fontSize: "11px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
+            {formatSejourDates(s.dateDebut, s.dateFin)}
+          </p>
+        </div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <p style={{ fontSize: "16px", fontWeight: 900, color: C.saffron, margin: 0 }}>{s.prix}€</p>
+        </div>
+        <ChevronRight size={16} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
+      </div>
+    </Link>
+  );
+}
+
 function SejourCard({ s, idx }) {
   const [hovered, setHovered] = useState(false);
   const { icon: Icon, color: sColor } = getSeasonConfig(s.saison);
@@ -531,8 +574,6 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
     return b.parsedDate - a.parsedDate; 
   });
 
-  const featuredSejours = processedSejours.filter(s => s.enAvant).slice(0, 8);
-
   const matchesActiveFilters = (s) => {
     const passCategory = matchCategory(s, cat);
 
@@ -606,16 +647,6 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .featured-slider {
-          -webkit-mask-image: linear-gradient(to right, black 70%, transparent 96%);
-          mask-image: linear-gradient(to right, black 70%, transparent 96%);
-        }
-
-        .hero-featured-wrap { display: none; }
-        @media (min-width: 1024px) {
-          .hero-featured-wrap { display: flex; }
-        }
-
         .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
         @media (max-width: 768px) {
           .hero-search-wrap { width: calc(100% - 32px) !important; }
@@ -625,12 +656,6 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
           .hero-search-input-row { gap: 8px !important; }
           .hero-search-filters { flex-wrap: wrap; gap: 12px !important; }
           .hero-search-filters > div { flex: 1 1 45%; min-width: 90px; }
-        }
-
-        @media (max-width: 768px) {
-          .hero-title { display: flex !important; flex-direction: column; align-items: flex-start; }
-          .hero-logo-badge { position: static !important; top: auto !important; left: auto !important; margin: 0 0 16px !important; transform: none !important; align-self: center; }
-          .hero-logo-img { transform: none !important; }
         }
 
         @media (max-width: 640px) {
@@ -653,52 +678,51 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
       {/* ── HERO SECTION ────────────────────────────────────────────────── */}
       <section className="hero-bg" style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", padding: "0 32px" }}>
-        <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "1320px", margin: "0 auto", width: "100%", display: "flex", alignItems: "center", gap: "64px", paddingBottom: "100px", paddingTop: "80px" }}>
+        <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "900px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", paddingBottom: "100px", paddingTop: "80px" }}>
 
-          <div style={{ flex: 1, maxWidth: "600px", color: "white" }}>
-            <h1 className="hero-title" style={{ position: "relative", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px" }}>
+          <div style={{ color: "white" }}>
+            <h1 className="hero-title" style={{ position: "relative", fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div className="hero-logo-badge" style={{
-                position: "absolute", top: "-44px", left: "-42px",
-                width: "84px", height: "84px", borderRadius: "50%", background: "white",
+                width: "128px", height: "128px", borderRadius: "50%", background: "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 10px 28px rgba(0,0,0,0.2)", transform: "rotate(-6deg)",
+                boxShadow: "0 10px 28px rgba(0,0,0,0.2)",
+                marginBottom: "16px",
               }}>
-                <img className="hero-logo-img" src="/mym-logo-192.png" alt="Make Your Moment" style={{ width: "74px", height: "74px", borderRadius: "16px", transform: "rotate(-15deg)" }} />
+                <img className="hero-logo-img" src="/mym-logo-192.png" alt="Make Your Moment" style={{ width: "112px", height: "112px", borderRadius: "24px" }} />
               </div>
-              Make your <span style={{ color: C.yellow }}>Moment</span>
+              <span style={{ fontSize: "clamp(1.7rem, 4.5vw, 4.5rem)", whiteSpace: "nowrap" }}>
+                Make your <span style={{ color: C.yellow }}>Moment</span>
+              </span>
             </h1>
-            <p style={{ fontSize: "1.1rem", lineHeight: 1.6, opacity: 0.9, marginBottom: "40px", maxWidth: "500px", fontWeight: 500 }}>
+            <p style={{ fontSize: "1.1rem", lineHeight: 1.6, opacity: 0.9, marginBottom: "40px", maxWidth: "560px", fontWeight: 500, marginLeft: "auto", marginRight: "auto" }}>
               Des colonies de vacances, séjours scolaires et sorties séniors encadrés par des passionnés, pour une aventure humaine inoubliable.
             </p>
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              {/* ⚡ Liens exacts ajoutés avec le flou d'arrière-plan sur "Qui sommes-nous" */}
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
               <Btn large href="/sejours-enfants-ados">Explorer les séjours <ArrowRight size={14} /></Btn>
               <BtnOutline large light href="/qui-sommes-nous">Qui sommes-nous <ChevronRight size={14} /></BtnOutline>
             </div>
           </div>
 
-          {featuredSejours.length > 0 && (
-            <div style={{ flex: 1, position: "relative", minHeight: "460px", alignItems: "center" }} className="hero-featured-wrap">
-              <div
-                className="hide-scroll featured-slider"
-                style={{
-                  display: "flex",
-                  gap: "24px",
-                  overflowX: "auto",
-                  scrollSnapType: "x mandatory",
-                  paddingBottom: "8px",
-                  paddingRight: "140px",
-                  marginRight: "calc(-1 * (((100vw - 1384px) / 2) + 32px))",
-                }}
-              >
-                {featuredSejours.map((s, i) => (
-                  <div key={s.id} style={{ flexShrink: 0, width: "300px", scrollSnapAlign: "start" }}>
-                    <SejourCard s={s} idx={i} />
-                  </div>
-                ))}
+          {/* ── Séjours à l'affiche temporaire : ski ouvert (à remplacer plus tard par les vrais posts à l'affiche) ── */}
+          {(() => {
+            const nouveauteSejours = SKI_NOUVEAUTE_IDS
+              .map(id => processedSejours.find(s => s.id === id))
+              .filter(Boolean);
+            if (nouveauteSejours.length === 0) return null;
+            return (
+              <div style={{ marginTop: "48px", width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", marginBottom: "16px" }}>
+                  <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px", backdropFilter: "blur(4px)" }}>
+                    <Snowflake size={12} /> Nouveauté
+                  </span>
+                  <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
+                </div>
+                <div className="hide-scroll" style={{ display: "flex", gap: "16px", overflowX: "auto", paddingBottom: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+                  {nouveauteSejours.map(s => <NouveauteCard key={s.id} s={s} />)}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         <div className="hero-search-wrap" style={{ position: "absolute", bottom: "0", left: "50%", transform: "translate(-50%, 50%)", width: "calc(100% - 64px)", maxWidth: "1100px", zIndex: 10 }}>

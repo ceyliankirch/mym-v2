@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   MapPin, Calendar, Users, Clock, CreditCard, Award,
   ChevronRight, ArrowRight, ArrowLeft, CheckCircle2,
-  Phone, Mail, Share2, ChevronLeft, HelpCircle, ChevronUp, ChevronDown
+  Phone, Mail, Share2, ChevronLeft, HelpCircle, ChevronUp, ChevronDown, X, Instagram
 } from "lucide-react";
 
 /* ─── PALETTE ─────────────────────────────────────────────────────────────── */
@@ -77,7 +77,7 @@ function FranceMapPin({ imageUrl, lieu }) {
   const coords = getCoordinates(villeCourte);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "480px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "32px", border: `1px solid ${C.lightGray}` }}>
+    <div style={{ position: "relative", width: "100%", height: "600px", background: "#f8fafc", borderRadius: "32px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.lightGray}` }}>
       
       <div style={{ position: "relative", width: "100%", maxWidth: "480px", height: "100%" }}>
         <img src="/france.svg" alt="Carte de la France" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.08, objectFit: "contain", pointerEvents: "none" }} />
@@ -105,35 +105,55 @@ function FranceMapPin({ imageUrl, lieu }) {
   );
 }
 
-/* ─── GALERIE DYNAMIQUE ───────────────────────────────────────────────────── */
+/* ─── GALERIE DYNAMIQUE (grille façon Instagram) ─────────────────────────── */
 function Galerie({ images }) {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(null);
   if (!images || images.length === 0) return null;
+  const visible = images.slice(0, 8);
   return (
-    <div style={{background:C.white, borderRadius:"20px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", marginBottom: "24px"}}>
-      <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"20px"}}>Galerie Photos</h3>
-      
-      <div style={{borderRadius:"16px",overflow:"hidden",height:"400px",marginBottom:"16px",position:"relative", background: C.arctic}}>
-        <img src={images[active]} alt="galerie" style={{width:"100%",height:"100%",objectFit:"contain"}}/>
-        {images.length > 1 && (
-          <>
-            <button onClick={()=>setActive(p=>(p-1+images.length)%images.length)} style={{position:"absolute",left:"16px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.9)",border:"none",borderRadius:"50%",width:"40px",height:"40px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.1)"}}>
-              <ChevronLeft size={20} style={{color:C.teal}}/>
-            </button>
-            <button onClick={()=>setActive(p=>(p+1)%images.length)} style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.9)",border:"none",borderRadius:"50%",width:"40px",height:"40px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.1)"}}>
-              <ChevronRight size={20} style={{color:C.teal}}/>
-            </button>
-          </>
-        )}
+    <div style={{background:C.white, borderRadius:"32px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, height:"600px", display:"flex", flexDirection:"column"}}>
+      <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"16px",flexShrink:0}}>Galerie Photos</h3>
+
+      <a href="https://www.instagram.com/makeyourmoment_mym/" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px",flexShrink:0,textDecoration:"none"}}>
+        <div style={{width:"44px",height:"44px",borderRadius:"50%",flexShrink:0,padding:"2px",background:"linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)"}}>
+          <div style={{width:"100%",height:"100%",borderRadius:"50%",background:C.white,padding:"2px"}}>
+            <img src="/mym-logo-192.png" alt="Make Your Moment" style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover"}} />
+          </div>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <p style={{fontSize:"13px",fontWeight:800,color:C.teal,margin:0}}>makeyourmoment_mym</p>
+          <p style={{fontSize:"11px",fontWeight:600,color:"#8aa",margin:0}}>Voir sur Instagram</p>
+        </div>
+        <span style={{display:"flex",alignItems:"center",gap:"5px",background:C.arctic,borderRadius:"999px",padding:"7px 14px",fontSize:"11px",fontWeight:800,color:C.teal,flexShrink:0}}>
+          <Instagram size={13}/> Suivre
+        </span>
+      </a>
+
+      <div className="hide-scroll" style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",rowGap:"2px",columnGap:"4px",overflowY:"auto",flex:1}}>
+        {visible.map((img,i)=>(
+          <div key={i} onClick={()=>setActive(i)} style={{position:"relative",width:"100%",aspectRatio:"1 / 1",overflow:"hidden",cursor:"pointer",background:C.arctic,borderRadius:"10px"}}>
+            <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s ease"}}
+              onMouseEnter={e=>e.currentTarget.style.transform="scale(1.06)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"} />
+          </div>
+        ))}
       </div>
 
-      {images.length > 1 && (
-        <div style={{display:"flex",gap:"12px",overflowX:"auto",paddingBottom:"8px"}}>
-          {images.map((img,i)=>(
-            <div key={i} onClick={()=>setActive(i)} style={{borderRadius:"12px",overflow:"hidden",height:"72px",width:"108px",flexShrink:0,cursor:"pointer",border:active===i?`3px solid ${C.yellow}`:"3px solid transparent",transition:"border .2s", background: C.arctic}}>
-              <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-            </div>
-          ))}
+      {active !== null && (
+        <div onClick={()=>setActive(null)} style={{position:"fixed",inset:0,background:"rgba(13,50,60,0.92)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"32px"}}>
+          <button onClick={()=>setActive(null)} style={{position:"absolute",top:"24px",right:"24px",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"44px",height:"44px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+            <X size={20} style={{color:"white"}}/>
+          </button>
+          {visible.length > 1 && (
+            <button onClick={e=>{e.stopPropagation();setActive(p=>(p-1+visible.length)%visible.length);}} style={{position:"absolute",left:"24px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+              <ChevronLeft size={22} style={{color:"white"}}/>
+            </button>
+          )}
+          <img src={visible[active]} alt="" onClick={e=>e.stopPropagation()} style={{maxWidth:"90%",maxHeight:"85vh",objectFit:"contain",borderRadius:"12px"}}/>
+          {visible.length > 1 && (
+            <button onClick={e=>{e.stopPropagation();setActive(p=>(p+1)%visible.length);}} style={{position:"absolute",right:"24px",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+              <ChevronRight size={22} style={{color:"white"}}/>
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -205,13 +225,13 @@ function StickySidebar({ sejour, coordonnees = {} }) {
                   )}
                 </div>
               ) : (
-                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"16px",flexWrap:"wrap"}}>
-                  <span style={{fontSize:"2.8rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px"}}>{sejour.prix || 0}€</span>
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"center",gap:"10px",flexWrap:"nowrap"}}>
+                  <span style={{fontSize:"2.2rem",fontWeight:900,color:C.teal,lineHeight:1,marginTop:"9px",whiteSpace:"nowrap"}}>{sejour.prix || 0}€</span>
                   {!estSenior && vdmActif && (
-                    <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 20px",textAlign:"center"}}>
+                    <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 14px",textAlign:"center"}}>
                       <ReductionTooltip />
-                      <p style={{fontSize:"2.8rem",fontWeight:900,color:"#059669",lineHeight:1}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
-                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857"}}>Habitant du Val-de-Marne</p>
+                      <p style={{fontSize:"2.2rem",fontWeight:900,color:"#059669",lineHeight:1,whiteSpace:"nowrap"}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",whiteSpace:"nowrap"}}>Habitant du Val-de-Marne</p>
                     </div>
                   )}
                 </div>
@@ -442,6 +462,9 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
             display: none;
           }
         }
+
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       {/* ── BANNIERE (format 4:2, cadrée sur le point de mise au point choisi en admin) ── */}
@@ -456,7 +479,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
         </div>
 
         <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"28px 32px"}}>
-          <div style={{maxWidth:"1320px",margin:"0 auto"}}>
+          <div style={{maxWidth:"1760px",margin:"0 auto"}}>
             <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
               <div style={{background:"rgba(255,255,255,0.15)",backdropFilter:"blur(6px)",borderRadius:"999px",padding:"5px 14px"}}>
                 <span style={{fontSize:"11px",fontWeight:800,color:"white"}}>{formatAge(sejour.tranchesAge)}</span>
@@ -482,7 +505,7 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
       </section>
 
       {/* ── CONTENT ───────────────────────────────────────────────────────── */}
-      <div style={{maxWidth:"1320px",margin:"0 auto",padding:"48px 32px", paddingBottom: "100px"}}>
+      <div style={{maxWidth:"1760px",margin:"0 auto",padding:"48px 32px", paddingBottom: "100px"}}>
         
         <div className="layout-container">
 
@@ -543,14 +566,12 @@ export default function SejourDetailClient({ sejour, autresSejours, coordonnees 
             {/* CARTE FRANCE */}
             <FranceMapPin imageUrl={sejour.imageUrl} lieu={sejour.lieu} />
 
-            {/* GALERIE PHOTOS */}
-            <Galerie images={sejour.galerie} />
-
           </div>
 
-          {/* ── COL DROITE — SIDEBAR ────────────────────────────────────────── */}
-          <div className="sidebar-wrapper">
+          {/* ── COL DROITE — SIDEBAR + GALERIE ─────────────────────────────── */}
+          <div className="sidebar-wrapper" style={{display:"flex",flexDirection:"column",gap:"24px"}}>
              <StickySidebar sejour={sejour} coordonnees={coordonnees}/>
+             <Galerie images={sejour.galerie} />
           </div>
         </div>
 

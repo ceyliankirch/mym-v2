@@ -26,13 +26,19 @@ export default async function SejourPage({ params }) {
     notFound();
   }
 
-  // 2. Bonus: On cherche 3 autres séjours de la même saison pour la section "Séjours similaires"
+  // 2. Bonus: On cherche 3 autres séjours à venir, de la même saison, réservés aux enfants/ados
   const autresSejours = await prisma.sejour.findMany({
-    where: { 
+    where: {
       statut: "Publié",
       id: { not: id }, // On exclut le séjour actuel
-      saison: sejour.saison // Même saison
+      saison: sejour.saison, // Même saison
+      dateDebut: { gte: new Date() }, // Uniquement les séjours à venir
+      NOT: [
+        { tranchesAge: { contains: "senior", mode: "insensitive" } },
+        { tranchesAge: { contains: "sénior", mode: "insensitive" } },
+      ],
     },
+    orderBy: { dateDebut: "asc" },
     take: 3
   });
 
