@@ -217,20 +217,20 @@ function NouveauteCard({ s }) {
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
-            width: "140px", height: "140px", aspectRatio: "1 / 1", flexShrink: 0,
+            width: "170px", height: "170px", aspectRatio: "1 / 1", flexShrink: 0,
             objectFit: "cover", objectPosition: `${s.imageFocalX ?? 50}% ${s.imageFocalY ?? 50}%`,
             borderRadius: "18px", border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-          <p style={{ fontSize: "28px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: "38px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
             Ski {formatAge(s.tranchesAge)}
           </p>
-          <p style={{ fontSize: "19px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
+          <p style={{ fontSize: "24px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
             {formatSejourDates(s.dateDebut, s.dateFin)}
           </p>
         </div>
-        <ChevronRight size={26} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
+        <ChevronRight size={30} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
       </div>
     </Link>
   );
@@ -723,7 +723,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
                   <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", backdropFilter: "blur(4px)" }}>
                     <Snowflake size={14} /> Nouveauté
                   </span>
-                  <h2 style={{ fontSize: "1.9rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
+                  <h2 style={{ fontSize: "2.3rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
                   {nouveauteSejours.map(s => <NouveauteCard key={s.id} s={s} />)}
