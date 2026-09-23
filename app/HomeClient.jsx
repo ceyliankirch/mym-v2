@@ -208,7 +208,7 @@ function NouveauteCard({ s }) {
     >
       <div className="ski-nouveaute-card" style={{
         display: "flex", alignItems: "center",
-        background: C.white, borderRadius: "18px", padding: "2px",
+        background: C.white, borderRadius: "16px", padding: "10px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all .25s ease", width: "100%",
@@ -231,7 +231,7 @@ function NouveauteCard({ s }) {
             {formatSejourDates(s.dateDebut, s.dateFin)}
           </p>
         </div>
-        <ChevronRight size={30} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
+        <ChevronRight size={18} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
       </div>
     </Link>
   );
@@ -646,31 +646,24 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         .hero-in.show { opacity:1; transform:translateY(0); }
 
         .ski-nouveaute-wrap { width: 100%; }
-        @media (min-width: 768px) {
-          .ski-nouveaute-wrap { width: 90vw; margin-left: calc((900px - 90vw) / 2); margin-right: calc((900px - 90vw) / 2); }
-        }
-        @media (min-width: 2223px) {
-          .ski-nouveaute-wrap { width: 2000px; margin-left: -550px; margin-right: -550px; }
-        }
 
         .ski-nouveaute-heading { font-size: 1.4rem; }
         @media (min-width: 640px) {
-          .ski-nouveaute-heading { font-size: 2.3rem; }
+          .ski-nouveaute-heading { font-size: 1.5rem; }
         }
 
-        .ski-nouveaute-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .ski-nouveaute-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         @media (min-width: 640px) {
-          .ski-nouveaute-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+          .ski-nouveaute-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
         }
         .ski-nouveaute-card { gap: 12px; }
-        .ski-nouveaute-card .ski-nouveaute-img { width: 84px; height: 84px; border-radius: 14px; }
-        .ski-nouveaute-card .ski-nouveaute-title { font-size: 19px; white-space: normal; }
-        .ski-nouveaute-card .ski-nouveaute-dates { font-size: 14px; }
+        .ski-nouveaute-card .ski-nouveaute-img { width: 56px; height: 56px; border-radius: 12px; }
+        .ski-nouveaute-card .ski-nouveaute-title { font-size: 14px; white-space: nowrap; }
+        .ski-nouveaute-card .ski-nouveaute-dates { font-size: 12px; }
         @media (min-width: 640px) {
-          .ski-nouveaute-card { gap: 20px; }
-          .ski-nouveaute-card .ski-nouveaute-img { width: 170px; height: 170px; border-radius: 18px; }
-          .ski-nouveaute-card .ski-nouveaute-title { font-size: 38px; white-space: nowrap; }
-          .ski-nouveaute-card .ski-nouveaute-dates { font-size: 24px; }
+          .ski-nouveaute-card .ski-nouveaute-img { width: 64px; height: 64px; border-radius: 14px; }
+          .ski-nouveaute-card .ski-nouveaute-title { font-size: 15px; }
+          .ski-nouveaute-card .ski-nouveaute-dates { font-size: 12px; }
         }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
