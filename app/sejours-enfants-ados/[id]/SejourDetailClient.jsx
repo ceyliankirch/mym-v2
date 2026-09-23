@@ -109,7 +109,7 @@ function FranceMapPin({ imageUrl, lieu }) {
 function Galerie({ images }) {
   const [active, setActive] = useState(null);
   if (!images || images.length === 0) return null;
-  const visible = images.slice(0, 8);
+  const visible = images.slice(0, 9);
   return (
     <div style={{background:C.white, borderRadius:"32px", padding:"28px", boxShadow:"0 2px 16px rgba(17,76,90,0.06)", border:`1px solid ${C.lightGray}`, height:"600px", display:"flex", flexDirection:"column"}}>
       <h3 style={{fontSize:"18px",fontWeight:900,color:C.teal,marginBottom:"16px",flexShrink:0}}>Galerie Photos</h3>
@@ -129,7 +129,7 @@ function Galerie({ images }) {
         </span>
       </a>
 
-      <div className="hide-scroll" style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",rowGap:"2px",columnGap:"4px",overflowY:"auto",flex:1}}>
+      <div className="hide-scroll" style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gridAutoRows:"min-content",alignContent:"start",rowGap:"2px",columnGap:"4px",overflowY:"auto",flex:1}}>
         {visible.map((img,i)=>(
           <div key={i} onClick={()=>setActive(i)} style={{position:"relative",width:"100%",aspectRatio:"1 / 1",overflow:"hidden",cursor:"pointer",background:C.arctic,borderRadius:"10px"}}>
             <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s ease"}}
