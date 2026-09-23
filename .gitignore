@@ -6,3 +6,5 @@ node_modules/
 /app/generated/prisma
 
 .next/
+.vercel
+.env*
