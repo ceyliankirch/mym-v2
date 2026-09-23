@@ -211,14 +211,15 @@ function NouveauteCard({ s }) {
         background: C.white, borderRadius: "18px", padding: "2px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        transition: "all .25s ease", minWidth: "260px",
+        transition: "all .25s ease", minWidth: "340px",
       }}>
         <img
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
             width: "140px", height: "140px", aspectRatio: "1 / 1", flexShrink: 0,
-            objectFit: "cover", borderRadius: "18px", border: `2px solid ${C.arctic}`,
+            objectFit: "cover", objectPosition: `${s.imageFocalX ?? 50}% ${s.imageFocalY ?? 50}%`,
+            borderRadius: "18px", border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
@@ -645,10 +646,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
         .ski-nouveaute-wrap { width: 100%; }
         @media (min-width: 768px) {
-          .ski-nouveaute-wrap { width: calc(100% + 160px); margin-left: -80px; margin-right: -80px; }
-        }
-        @media (min-width: 1200px) {
-          .ski-nouveaute-wrap { width: calc(100% + 320px); margin-left: -160px; margin-right: -160px; }
+          .ski-nouveaute-wrap { width: 80vw; max-width: 1800px; position: relative; left: 50%; transform: translateX(-50%); }
         }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
