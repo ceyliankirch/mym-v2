@@ -208,7 +208,7 @@ function NouveauteCard({ s }) {
     >
       <div style={{
         display: "flex", alignItems: "center", gap: "16px",
-        background: C.white, borderRadius: "18px", padding: "22px 18px",
+        background: C.white, borderRadius: "18px", padding: "14px 18px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all .25s ease", minWidth: "260px",
@@ -217,8 +217,8 @@ function NouveauteCard({ s }) {
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
-            width: "72px", height: "72px", aspectRatio: "1 / 1", flexShrink: 0,
-            objectFit: "cover", borderRadius: "14px", border: `2px solid ${C.arctic}`,
+            width: "104px", height: "104px", aspectRatio: "1 / 1", flexShrink: 0,
+            objectFit: "cover", borderRadius: "16px", border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
