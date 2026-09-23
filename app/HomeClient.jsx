@@ -207,11 +207,11 @@ function NouveauteCard({ s }) {
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     >
       <div style={{
-        display: "flex", alignItems: "center", gap: "16px",
+        display: "flex", alignItems: "center", gap: "20px",
         background: C.white, borderRadius: "18px", padding: "2px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        transition: "all .25s ease", minWidth: "340px",
+        transition: "all .25s ease", width: "100%",
       }}>
         <img
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
@@ -223,14 +223,14 @@ function NouveauteCard({ s }) {
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-          <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: "20px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
             Ski {formatAge(s.tranchesAge)}
           </p>
-          <p style={{ fontSize: "11px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
+          <p style={{ fontSize: "15px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
             {formatSejourDates(s.dateDebut, s.dateFin)}
           </p>
         </div>
-        <ChevronRight size={16} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
+        <ChevronRight size={22} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
       </div>
     </Link>
   );
@@ -646,7 +646,10 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
 
         .ski-nouveaute-wrap { width: 100%; }
         @media (min-width: 768px) {
-          .ski-nouveaute-wrap { width: 80vw; max-width: 1800px; position: relative; left: 50%; transform: translateX(-50%); }
+          .ski-nouveaute-wrap { width: 90vw; margin-left: calc((900px - 90vw) / 2); margin-right: calc((900px - 90vw) / 2); }
+        }
+        @media (min-width: 2223px) {
+          .ski-nouveaute-wrap { width: 2000px; margin-left: -550px; margin-right: -550px; }
         }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
@@ -716,13 +719,13 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             if (nouveauteSejours.length === 0) return null;
             return (
               <div className="ski-nouveaute-wrap" style={{ marginTop: "48px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", marginBottom: "16px" }}>
-                  <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px", backdropFilter: "blur(4px)" }}>
-                    <Snowflake size={12} /> Nouveauté
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "20px" }}>
+                  <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", backdropFilter: "blur(4px)" }}>
+                    <Snowflake size={14} /> Nouveauté
                   </span>
-                  <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
+                  <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
                 </div>
-                <div className="hide-scroll" style={{ display: "flex", gap: "16px", overflowX: "auto", paddingBottom: "8px", justifyContent: "flex-start", flexWrap: "nowrap" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
                   {nouveauteSejours.map(s => <NouveauteCard key={s.id} s={s} />)}
                 </div>
               </div>
