@@ -217,8 +217,8 @@ function NouveauteCard({ s }) {
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
-            width: "104px", height: "104px", aspectRatio: "1 / 1", flexShrink: 0,
-            objectFit: "cover", borderRadius: "16px", border: `2px solid ${C.arctic}`,
+            width: "140px", height: "140px", aspectRatio: "1 / 1", flexShrink: 0,
+            objectFit: "cover", borderRadius: "18px", border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
@@ -642,6 +642,14 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         }
         .hero-in { opacity:0; transform:translateY(20px); transition:opacity .8s ease,transform .8s ease; }
         .hero-in.show { opacity:1; transform:translateY(0); }
+
+        .ski-nouveaute-wrap { width: 100%; }
+        @media (min-width: 768px) {
+          .ski-nouveaute-wrap { width: calc(100% + 160px); margin-left: -80px; margin-right: -80px; }
+        }
+        @media (min-width: 1200px) {
+          .ski-nouveaute-wrap { width: calc(100% + 320px); margin-left: -160px; margin-right: -160px; }
+        }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -709,7 +717,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
               .filter(Boolean);
             if (nouveauteSejours.length === 0) return null;
             return (
-              <div style={{ marginTop: "48px", width: "100%" }}>
+              <div className="ski-nouveaute-wrap" style={{ marginTop: "48px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center", marginBottom: "16px" }}>
                   <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px", backdropFilter: "blur(4px)" }}>
                     <Snowflake size={12} /> Nouveauté
