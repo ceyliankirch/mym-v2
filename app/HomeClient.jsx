@@ -365,11 +365,16 @@ function GoogleGIcon({ size = 18 }) {
 
 const GOOGLE_YELLOW = "#FBBC04";
 
+const TEXTE_MAX_LENGTH = 220;
+
 function ReviewCard({ a, i, isGoogle }) {
   const [h, setH] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const texteLong = (a.texte || "").length > TEXTE_MAX_LENGTH;
+  const texteAffiche = !texteLong || expanded ? a.texte : `${a.texte.slice(0, TEXTE_MAX_LENGTH).trimEnd()}…`;
   return (
     <div onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ background: C.white, borderRadius: "16px", padding: "24px", transition: "all .3s", transform: h ? "translateY(-4px)" : "none", boxShadow: h ? "0 12px 36px rgba(17,76,90,0.12)" : "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e8eaed" }}>
+      style={{ background: C.white, borderRadius: "16px", padding: "24px", transition: "all .3s", transform: h ? "translateY(-4px)" : "none", boxShadow: h ? "0 12px 36px rgba(17,76,90,0.12)" : "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #e8eaed", minWidth: 0 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {a.photo ? (
@@ -396,7 +401,68 @@ function ReviewCard({ a, i, isGoogle }) {
           </span>
         )}
       </div>
-      <p style={{ fontSize: "13px", color: "#3c4043", lineHeight: 1.7, fontWeight: 400 }}>{a.texte}</p>
+      <p style={{ fontSize: "13px", color: "#3c4043", lineHeight: 1.7, fontWeight: 400, wordBreak: "break-word" }}>
+        {texteAffiche}
+        {texteLong && (
+          <>
+            {" "}
+            <button onClick={() => setExpanded(v => !v)} style={{ display: "inline", background: "none", border: "none", padding: 0, margin: 0, color: C.teal, fontWeight: 800, fontSize: "13px", cursor: "pointer", fontFamily: "var(--font-montserrat), sans-serif" }}>
+              {expanded ? "Lire moins" : "Lire plus"}
+            </button>
+          </>
+        )}
+      </p>
+    </div>
+  );
+}
+
+/* ─── SLIDER D'AVIS (3 par page, défilement horizontal) ──────────────── */
+function ReviewsSlider({ avis }) {
+  const [page, setPage] = useState(0);
+  const perPage = 3;
+  const pages = [];
+  for (let i = 0; i < avis.length; i += perPage) pages.push(avis.slice(i, i + perPage));
+  const pageCount = pages.length;
+
+  if (pageCount === 0) return null;
+
+  const goTo = (p) => setPage((p + pageCount) % pageCount);
+
+  return (
+    <div style={{ marginBottom: "40px" }}>
+      <div style={{ position: "relative" }}>
+        <div className="hide-scroll" style={{ overflow: "hidden", borderRadius: "20px" }}>
+          <div style={{ display: "flex", transform: `translateX(-${page * 100}%)`, transition: "transform .4s ease" }}>
+            {pages.map((groupe, pi) => (
+              <div key={pi} className="avis-page-grid" style={{ paddingRight: "2px" }}>
+                {groupe.map((a, i) => <ReviewCard key={i} a={a} i={i} isGoogle />)}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {pageCount > 1 && (
+          <>
+            <button onClick={() => goTo(page - 1)} aria-label="Avis précédents" style={{ position: "absolute", top: "50%", left: "-18px", transform: "translateY(-50%)", width: "44px", height: "44px", borderRadius: "50%", background: C.white, border: "none", boxShadow: "0 6px 20px rgba(17,76,90,0.15)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }}>
+              <ChevronLeft size={20} style={{ color: C.teal }} />
+            </button>
+            <button onClick={() => goTo(page + 1)} aria-label="Avis suivants" style={{ position: "absolute", top: "50%", right: "-18px", transform: "translateY(-50%)", width: "44px", height: "44px", borderRadius: "50%", background: C.white, border: "none", boxShadow: "0 6px 20px rgba(17,76,90,0.15)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }}>
+              <ChevronRight size={20} style={{ color: C.teal }} />
+            </button>
+          </>
+        )}
+      </div>
+
+      {pageCount > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "28px" }}>
+          {pages.map((_, pi) => (
+            <button key={pi} onClick={() => goTo(pi)} aria-label={`Page d'avis ${pi + 1}`} style={{
+              width: pi === page ? "22px" : "8px", height: "8px", borderRadius: "999px", border: "none", cursor: "pointer",
+              background: pi === page ? C.yellow : "#d7dfe1", transition: "all .25s ease", padding: 0,
+            }} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -671,6 +737,14 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos, googleReviews
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .avis-page-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; min-width: 100%; flex-shrink: 0; }
+        @media (min-width: 700px) {
+          .avis-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+          .avis-page-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
 
         .hero-search-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:6px 6px 6px 32px; }
         @media (max-width: 768px) {
@@ -955,12 +1029,10 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos, googleReviews
               <span style={{ fontSize: "13px", color: "#70757a", fontWeight: 600 }}>/ 5 · {totalAvis} avis Google</span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", marginBottom: "40px" }}>
-            {avisAffiches.map((a, i) => <ReviewCard key={i} a={a} i={i} isGoogle />)}
-          </div>
+          <ReviewsSlider avis={avisAffiches} />
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <BtnOutline external href="https://www.google.com/search?sa=X&sca_esv=64b268b11d0571a2&rlz=1C5OZZY_enFR1209FR1209&sxsrf=APpeQnt-cjpcJPdAp03pmQAcFrR42w1HOQ:1786358079061&q=Make+Your+Moment+Avis&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxIxNLSwsDQ3MDcys7AwtzQwMjE0s9zAyPiKUdQ3MTtVITK_tEjBNz83Na9EwbEss3gRK3ZxAJ7N6OFLAAAA&rldimm=11889707268879024169&tbm=lcl&hl=fr-FR&ved=2ahUKEwi40vm17pWWAxUNfKQEHQieMNMQ9fQKegQIUxAG&biw=3130&bih=1289&dpr=1#lkt=LocalPoiReviews">
-              Voir plus d'avis
+            <BtnOutline external href="https://www.google.com/maps/place/?q=place_id:ChIJs8gGQ3AL5kcRKQDqRMS5AKU">
+              Voir la fiche Google
             </BtnOutline>
           </div>
         </div>
