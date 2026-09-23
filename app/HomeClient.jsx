@@ -217,8 +217,8 @@ function NouveauteCard({ s }) {
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
-            width: "44px", height: "44px", aspectRatio: "1 / 1", flexShrink: 0,
-            objectFit: "cover", borderRadius: "12px", border: `2px solid ${C.arctic}`,
+            width: "72px", height: "72px", aspectRatio: "1 / 1", flexShrink: 0,
+            objectFit: "cover", borderRadius: "14px", border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
@@ -716,7 +716,7 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
                   </span>
                   <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
                 </div>
-                <div className="hide-scroll" style={{ display: "flex", gap: "16px", overflowX: "auto", paddingBottom: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+                <div className="hide-scroll" style={{ display: "flex", gap: "16px", overflowX: "auto", paddingBottom: "8px", justifyContent: "flex-start", flexWrap: "nowrap" }}>
                   {nouveauteSejours.map(s => <NouveauteCard key={s.id} s={s} />)}
                 </div>
               </div>
