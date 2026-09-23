@@ -208,7 +208,7 @@ function NouveauteCard({ s }) {
     >
       <div style={{
         display: "flex", alignItems: "center", gap: "16px",
-        background: C.white, borderRadius: "18px", padding: "14px 18px",
+        background: C.white, borderRadius: "18px", padding: "2px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all .25s ease", minWidth: "260px",
