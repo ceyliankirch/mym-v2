@@ -152,3 +152,12 @@ export async function statsAssociation() {
     evolutionMensuelle: Object.values(parMois),
   };
 }
+
+// 🔌 État de configuration des intégrations Google (pour l'onglet admin "Google") :
+// ne renvoie que des booléens, jamais les valeurs des variables d'env elles-mêmes.
+export async function statutIntegrationsGoogle() {
+  return {
+    gaConfigure: !!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+    avisConfigure: !!(process.env.GOOGLE_PLACES_API_KEY && process.env.GOOGLE_PLACE_ID),
+  };
+}

@@ -4,7 +4,7 @@ import {
   Users, TrendingUp, Repeat, Euro, CheckCircle2, Clock, XCircle,
   Eye, MapPin, ExternalLink, Info, Search,
 } from "lucide-react";
-import { statsAssociation, statsPagesVues, statsSejoursVus } from "@/app/actions/analytics";
+import { statsAssociation, statsPagesVues, statsSejoursVus, statutIntegrationsGoogle } from "@/app/actions/analytics";
 
 const C = {
   yellow: "#FFC801",
@@ -156,64 +156,94 @@ function TraficTab({ pagesVues, sejoursVus }) {
   );
 }
 
+/* ─── PASTILLE DE STATUT (activé / à faire) ──────────────────────────── */
+function StatutBadge({ actif, texteActif = "Activé", texteInactif = "À configurer" }) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 800,
+      textTransform: "uppercase", letterSpacing: "0.5px", borderRadius: "999px", padding: "4px 12px",
+      background: actif ? "#dcfce7" : "#fef3c7", color: actif ? "#15803d" : "#92400e",
+    }}>
+      {actif ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+      {actif ? texteActif : texteInactif}
+    </span>
+  );
+}
+
 /* ─── ONGLET : GOOGLE (Analytics / Search Console / Avis) ────────────── */
-function GoogleTab() {
+function GoogleTab({ googleStatut }) {
+  const gaConfigure = googleStatut?.gaConfigure ?? false;
+  const avisConfigure = googleStatut?.avisConfigure ?? false;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={cardStyle}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-          <TrendingUp size={18} style={{ color: C.saffron }} />
-          <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Google Analytics 4</h3>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <TrendingUp size={18} style={{ color: C.saffron }} />
+            <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Google Analytics 4</h3>
+          </div>
+          <StatutBadge actif={gaConfigure} />
         </div>
-        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
-          Le tracking GA4 est prêt côté code (composant <code>GoogleAnalytics</code>) mais reste inactif tant qu'aucun Measurement ID n'est configuré. Pour l'activer :
-        </p>
-        <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
-          <li>Crée une propriété sur <a href="https://analytics.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>analytics.google.com</a> pour make-your-moment.com</li>
-          <li>Récupère le Measurement ID (format <code>G-XXXXXXXXXX</code>)</li>
-          <li>Ajoute-le en variable d'environnement <code>NEXT_PUBLIC_GA_MEASUREMENT_ID</code> sur Vercel</li>
-        </ol>
-        <p style={{ fontSize: "12px", color: C.gray }}>
-          Une fois actif, les statistiques détaillées (recherches, provenance du trafic, comportement des visiteurs) seront consultables directement sur Google Analytics. Une intégration future pourra les faire remonter ici, mais nécessite un compte de service Google Cloud supplémentaire.
+        {gaConfigure ? (
+          <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
+            Le Measurement ID est configuré : le tracking GA4 est actif sur le site. Les statistiques détaillées (recherches, provenance du trafic, comportement des visiteurs) sont consultables directement sur <a href="https://analytics.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>analytics.google.com</a>.
+          </p>
+        ) : (
+          <>
+            <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
+              Le tracking GA4 est prêt côté code (composant <code>GoogleAnalytics</code>) mais reste inactif tant qu'aucun Measurement ID n'est configuré. Pour l'activer :
+            </p>
+            <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px" }}>
+              <li>Crée une propriété sur <a href="https://analytics.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>analytics.google.com</a> pour make-your-moment.com</li>
+              <li>Récupère le Measurement ID (format <code>G-XXXXXXXXXX</code>)</li>
+              <li>Ajoute-le en variable d'environnement <code>NEXT_PUBLIC_GA_MEASUREMENT_ID</code> sur Vercel, puis redéploie</li>
+            </ol>
+          </>
+        )}
+      </div>
+
+      <div style={cardStyle}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <Search size={18} style={{ color: C.saffron }} />
+            <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Google Search Console</h3>
+          </div>
+          <StatutBadge actif texteActif="Vérifié" />
+        </div>
+        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
+          Le site est vérifié sur <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>Search Console</a> (validation automatique via le domaine mail de l'association). On peut y consulter les recherches qui amènent des visiteurs sur le site (clics, impressions, position moyenne).
         </p>
       </div>
 
       <div style={cardStyle}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-          <Search size={18} style={{ color: C.saffron }} />
-          <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Google Search Console</h3>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <Users size={18} style={{ color: C.saffron }} />
+            <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Avis Google Business</h3>
+          </div>
+          <StatutBadge actif={avisConfigure} texteActif="Connecté" />
         </div>
-        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
-          Le site est prêt à recevoir la vérification par balise HTML (méthode recommandée, sans fichier à héberger). Pour l'activer :
-        </p>
-        <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
-          <li>Ajoute une propriété sur <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>search.google.com/search-console</a> pour make-your-moment.com</li>
-          <li>Choisis la méthode de vérification <strong>« Balise HTML »</strong> et copie le code fourni (le contenu de l'attribut <code>content</code>, sans les guillemets)</li>
-          <li>Ajoute-le en variable d'environnement <code>GOOGLE_SITE_VERIFICATION</code> sur Vercel, puis redéploie</li>
-          <li>Reviens sur Search Console et clique sur « Vérifier »</li>
-        </ol>
-        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
-          Une fois vérifié, on pourra y consulter les recherches qui amènent des visiteurs sur le site (clics, impressions, position moyenne).
-        </p>
-      </div>
-
-      <div style={cardStyle}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-          <Users size={18} style={{ color: C.saffron }} />
-          <h3 style={{ fontSize: "15px", fontWeight: 800, color: C.teal }}>Avis Google Business</h3>
-        </div>
-        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
-          Le site est prêt à afficher la vraie note et les vrais avis Google via l'<strong>API Places</strong> (contrairement à l'API Google Business Profile citée précédemment, celle-ci ne nécessite pas de demande d'accès — juste une clé API). Pour l'activer :
-        </p>
-        <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
-          <li>Crée un projet sur <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>console.cloud.google.com</a>, active la facturation (le crédit gratuit mensuel couvre largement ce volume) et active l'API <strong>« Places API »</strong></li>
-          <li>Crée une clé API (Identifiants → Créer des identifiants → Clé API), et restreins-la à l'API Places</li>
-          <li>Ajoute-la en variable d'environnement <code>GOOGLE_PLACES_API_KEY</code> sur Vercel</li>
-          <li>Ajoute aussi <code>GOOGLE_PLACE_ID</code> avec l'ID de la fiche « Make Your Moment » (récupérable via l'outil de recherche d'ID de lieu de Google), puis redéploie</li>
-        </ol>
-        <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
-          Sans ces deux variables, le site continue d'afficher les avis de secours codés en dur. En attendant, la note et les avis peuvent aussi être consultés directement sur la fiche établissement Google de l'association.
-        </p>
+        {avisConfigure ? (
+          <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
+            La note et les avis affichés sur la page d'accueil (section « Ils nous font confiance ») sont récupérés en direct via l'<strong>API Places</strong> — plus besoin de les mettre à jour à la main. Ils sont mis en cache 24h pour limiter les appels facturés. Fiche consultable sur <a href="https://www.google.com/maps/place/?q=place_id:ChIJs8gGQ3AL5kcRKQDqRMS5AKU" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>Google Maps</a>.
+          </p>
+        ) : (
+          <>
+            <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7, marginBottom: "14px" }}>
+              Le site est prêt à afficher la vraie note et les vrais avis Google via l'<strong>API Places</strong> (contrairement à l'API Google Business Profile, celle-ci ne nécessite pas de demande d'accès — juste une clé API). Pour l'activer :
+            </p>
+            <ol style={{ fontSize: "13px", color: C.teal, lineHeight: 2, paddingLeft: "20px", marginBottom: "14px" }}>
+              <li>Crée un projet sur <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ color: C.teal, fontWeight: 700 }}>console.cloud.google.com</a>, active la facturation et active l'API <strong>« Places API »</strong></li>
+              <li>Crée une clé API (Identifiants → Créer des identifiants → Clé API), et restreins-la à l'API Places</li>
+              <li>Ajoute-la en variable d'environnement <code>GOOGLE_PLACES_API_KEY</code> sur Vercel</li>
+              <li>Ajoute aussi <code>GOOGLE_PLACE_ID</code> avec l'ID de la fiche « Make Your Moment », puis redéploie</li>
+            </ol>
+            <p style={{ fontSize: "13px", color: C.gray, lineHeight: 1.7 }}>
+              Sans ces deux variables, le site continue d'afficher les avis de secours codés en dur.
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -225,18 +255,21 @@ export default function StatistiquesSection() {
   const [assoStats, setAssoStats] = useState(null);
   const [pagesVues, setPagesVues] = useState(null);
   const [sejoursVus, setSejoursVus] = useState(null);
+  const [googleStatut, setGoogleStatut] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [asso, pv, sv] = await Promise.all([
+      const [asso, pv, sv, gs] = await Promise.all([
         statsAssociation(),
         statsPagesVues(30),
         statsSejoursVus(30),
+        statutIntegrationsGoogle(),
       ]);
       setAssoStats(asso);
       setPagesVues(pv);
       setSejoursVus(sv);
+      setGoogleStatut(gs);
       setLoading(false);
     })();
   }, []);
@@ -271,7 +304,7 @@ export default function StatistiquesSection() {
       ) : tab === "trafic" ? (
         <TraficTab pagesVues={pagesVues} sejoursVus={sejoursVus} />
       ) : (
-        <GoogleTab />
+        <GoogleTab googleStatut={googleStatut} />
       )}
     </div>
   );
