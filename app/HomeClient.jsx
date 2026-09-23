@@ -206,27 +206,28 @@ function NouveauteCard({ s }) {
     <Link href={`/sejours-enfants-ados/${s.id}`} style={{ textDecoration: "none" }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     >
-      <div style={{
-        display: "flex", alignItems: "center", gap: "20px",
+      <div className="ski-nouveaute-card" style={{
+        display: "flex", alignItems: "center",
         background: C.white, borderRadius: "18px", padding: "2px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all .25s ease", width: "100%",
       }}>
         <img
+          className="ski-nouveaute-img"
           src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
           alt=""
           style={{
-            width: "170px", height: "170px", aspectRatio: "1 / 1", flexShrink: 0,
+            aspectRatio: "1 / 1", flexShrink: 0,
             objectFit: "cover", objectPosition: `${s.imageFocalX ?? 50}% ${s.imageFocalY ?? 50}%`,
-            borderRadius: "18px", border: `2px solid ${C.arctic}`,
+            border: `2px solid ${C.arctic}`,
           }}
         />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-          <p style={{ fontSize: "38px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+          <p className="ski-nouveaute-title" style={{ fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2 }}>
             Ski {formatAge(s.tranchesAge)}
           </p>
-          <p style={{ fontSize: "24px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
+          <p className="ski-nouveaute-dates" style={{ fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
             {formatSejourDates(s.dateDebut, s.dateFin)}
           </p>
         </div>
@@ -651,6 +652,26 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
         @media (min-width: 2223px) {
           .ski-nouveaute-wrap { width: 2000px; margin-left: -550px; margin-right: -550px; }
         }
+
+        .ski-nouveaute-heading { font-size: 1.4rem; }
+        @media (min-width: 640px) {
+          .ski-nouveaute-heading { font-size: 2.3rem; }
+        }
+
+        .ski-nouveaute-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        @media (min-width: 640px) {
+          .ski-nouveaute-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        }
+        .ski-nouveaute-card { gap: 12px; }
+        .ski-nouveaute-card .ski-nouveaute-img { width: 84px; height: 84px; border-radius: 14px; }
+        .ski-nouveaute-card .ski-nouveaute-title { font-size: 19px; white-space: normal; }
+        .ski-nouveaute-card .ski-nouveaute-dates { font-size: 14px; }
+        @media (min-width: 640px) {
+          .ski-nouveaute-card { gap: 20px; }
+          .ski-nouveaute-card .ski-nouveaute-img { width: 170px; height: 170px; border-radius: 18px; }
+          .ski-nouveaute-card .ski-nouveaute-title { font-size: 38px; white-space: nowrap; }
+          .ski-nouveaute-card .ski-nouveaute-dates { font-size: 24px; }
+        }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -719,13 +740,13 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos }) {
             if (nouveauteSejours.length === 0) return null;
             return (
               <div className="ski-nouveaute-wrap" style={{ marginTop: "48px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "20px" }}>
-                  <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", backdropFilter: "blur(4px)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap", textAlign: "center" }}>
+                  <span style={{ background: "rgba(255,255,255,0.15)", color: "white", fontSize: "13px", fontWeight: 800, textTransform: "uppercase", borderRadius: "999px", padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", backdropFilter: "blur(4px)", flexShrink: 0 }}>
                     <Snowflake size={14} /> Nouveauté
                   </span>
-                  <h2 style={{ fontSize: "2.3rem", fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
+                  <h2 className="ski-nouveaute-heading" style={{ fontWeight: 800, color: "white", letterSpacing: "-0.5px", margin: 0 }}>Séjours au ski ouverts</h2>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
+                <div className="ski-nouveaute-grid">
                   {nouveauteSejours.map(s => <NouveauteCard key={s.id} s={s} />)}
                 </div>
               </div>
