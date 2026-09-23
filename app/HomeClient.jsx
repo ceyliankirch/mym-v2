@@ -208,17 +208,19 @@ function NouveauteCard({ s }) {
     >
       <div style={{
         display: "flex", alignItems: "center", gap: "16px",
-        background: C.white, borderRadius: "18px", padding: "14px 18px",
+        background: C.white, borderRadius: "18px", padding: "22px 18px",
         boxShadow: hovered ? "0 16px 40px rgba(17,76,90,0.12)" : "0 2px 12px rgba(17,76,90,0.06)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all .25s ease", minWidth: "260px",
       }}>
-        <div style={{
-          width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0,
-          background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <Snowflake size={20} style={{ color: "#0284c7" }} />
-        </div>
+        <img
+          src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
+          alt=""
+          style={{
+            width: "44px", height: "44px", aspectRatio: "1 / 1", flexShrink: 0,
+            objectFit: "cover", borderRadius: "12px", border: `2px solid ${C.arctic}`,
+          }}
+        />
         <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
           <p style={{ fontSize: "13px", fontWeight: 800, color: C.teal, margin: 0, lineHeight: 1.2, whiteSpace: "nowrap" }}>
             Ski {formatAge(s.tranchesAge)}
@@ -226,9 +228,6 @@ function NouveauteCard({ s }) {
           <p style={{ fontSize: "11px", fontWeight: 600, color: "#8aaa", margin: 0, lineHeight: 1.2 }}>
             {formatSejourDates(s.dateDebut, s.dateFin)}
           </p>
-        </div>
-        <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <p style={{ fontSize: "16px", fontWeight: 900, color: C.saffron, margin: 0 }}>{s.prix}€</p>
         </div>
         <ChevronRight size={16} style={{ color: hovered ? C.teal : "#ccc", transition: "color .2s", flexShrink: 0 }} />
       </div>
@@ -246,7 +245,7 @@ function SejourCard({ s, idx }) {
     >
       <div style={{
           background: C.white, borderRadius: "24px", cursor: "pointer",
-          boxShadow: hovered ? "0 20px 56px rgba(17,76,90,0.14)" : "0 2px 16px rgba(17,76,90,0.07)", 
+          boxShadow: hovered ? "0 20px 56px rgba(17,76,90,0.14)" : "0 2px 16px rgba(17,76,90,0.07)",
           transition: "all .3s ease",
           animation: `fadeUp .5s ease both`, animationDelay: `${(idx || 0) * 0.05}s`,
           display: "flex", flexDirection: "column", height: "100%",
@@ -258,9 +257,9 @@ function SejourCard({ s, idx }) {
         }}
       >
         <div style={{ position: "relative", height: "180px", overflow: "hidden", borderRadius: "24px 24px 0 0" }}>
-          <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} 
+          <img src={s.imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
                alt={s.titre} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hovered ? "scale(1.05)" : "scale(1)", transition: "transform .5s ease" }} />
-          
+
           <div style={{ position: "absolute", top: "12px", left: "12px", background: s.isPast ? "#e5484d" : "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: "999px", padding: "4px 10px", display: "flex", alignItems: "center", gap: "5px" }}>
             {s.isPast ? (
               <span style={{ fontSize: "10px", fontWeight: 800, color: "white", textTransform: "uppercase" }}>Séjour passé</span>
