@@ -323,7 +323,7 @@ export async function creerInscription(
     // Une notification interne (avec le même PDF) part également à l'organisation.
     let pdfBuffer;
     try {
-      pdfBuffer = await generateInscriptionPdf({ enfant, client, sejour, documentsRequis });
+      pdfBuffer = await generateInscriptionPdf({ enfant, client, sejour, documentsRequis, montantTotal });
     } catch (e) {
       console.error("Erreur génération PDF inscription", e);
     }
