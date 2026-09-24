@@ -16,6 +16,7 @@ import {
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
+import NewsletterModeles from "./NewsletterModeles";
 import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
@@ -52,6 +53,7 @@ const MENU = [
   { id: "inscriptions", label: "Inscriptions", icon: FileText },
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail },
+  { id: "modeles-newsletter", label: "Modèles newsletter", icon: FileText },
   { id: "statistiques", label: "Statistiques", icon: BarChart3 },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
 ];
@@ -3063,6 +3065,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
               {activeTab === "galerie" && "Galerie Photos 📸"}
               {activeTab === "inscriptions" && "Inscriptions 🧒"}
               {activeTab === "newsletter" && "Liste de diffusion 📧"}
+              {activeTab === "modeles-newsletter" && "Modèles newsletter 📰"}
               {activeTab === "statistiques" && "Statistiques 📊"}
               {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
             </h1>
@@ -3326,6 +3329,8 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
           )}
 
           {activeTab === "newsletter" && <NewsletterSection />}
+
+          {activeTab === "modeles-newsletter" && <NewsletterModeles />}
 
           {activeTab === "statistiques" && <StatistiquesSection />}
 
