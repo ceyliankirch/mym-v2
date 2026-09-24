@@ -27,6 +27,15 @@ async function recupererInfosVirement(reponsesFormulaire) {
   };
 }
 
+// 📮 Destinataire des chèques / chèques-vacances : titulaire + adresse de l'association
+async function recupererCourrierPaiement() {
+  const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
+  return {
+    titulaire: parametres?.titulaireIban || "",
+    adresse: [parametres?.adresseRue, parametres?.adresseVille].filter(Boolean).join(", "),
+  };
+}
+
 export async function getOrCreateClientForUser(userId) {
   let client = await prisma.client.findUnique({
     where: { userId },
@@ -315,11 +324,11 @@ export async function creerInscription(
     }
 
     // 📧 Un email part toujours à la soumission, avec un récapitulatif PDF en pièce jointe :
-    // - Carte bancaire : email de "pré-inscription" avec bouton de paiement (bon lien selon le
-    //   tarif choisi) ; l'email "Inscription validée" (avec la fiche sanitaire) part plus tard,
+    // - Email de "pré-inscription" pour tous les moyens de paiement, avec les modalités du moyen
+    //   choisi (carte : bouton de paiement selon le tarif ; virement : IBAN ; chèque, chèques-vacances,
+    //   espèces : instructions). L'email "Inscription validée" (avec la fiche sanitaire) part plus tard,
     //   quand l'admin constate le paiement reçu.
-    // - Autre moyen de paiement : email "Inscription validée" envoyé directement, avec un
-    //   rappel du montant à régler et la fiche sanitaire déjà jointe.
+    // - Liste d'attente chambre double : email "Inscription validée" directement (paiement demandé plus tard).
     // Une notification interne (avec le même PDF) part également à l'organisation.
     let pdfBuffer;
     try {
@@ -333,15 +342,20 @@ export async function creerInscription(
     const virementInfo = await recupererInfosVirement(reponses);
 
     if (client.email) {
-      if (paiementParCarte) {
+      const enListeAttente = reponses?.["Liste d'attente chambre double"] === "Oui";
+      if (!enListeAttente) {
         await sendPreInscriptionEmail({
           to: client.email,
           prenomEnfant: enfant.prenom,
           sejourTitre: sejour.titre,
-          lienPaiement: lienPaiement || sejour.lienPaiementCIC,
+          lienPaiement: paiementParCarte ? lienPaiement || sejour.lienPaiementCIC : undefined,
           montantTotal,
           documentsManquants,
           pdfBuffer,
+          moyenPaiement,
+          virement: virementInfo,
+          courrier: await recupererCourrierPaiement(),
+          nomComplet: [enfant.prenom, enfant.nom].filter(Boolean).join(" "),
         });
       } else {
         await sendInscriptionConfirmationEmail({

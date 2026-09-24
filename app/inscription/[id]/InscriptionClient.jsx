@@ -269,7 +269,12 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
       if (tarifsListe.length > 0 && tarifChoisiIdx != null) {
         const t = tarifsListe[tarifChoisiIdx];
         reponsesFormulaire["Tarif choisi"] = `${t.label || "Tarif"} — ${t.montant} €`;
+      } else if (tarifsListe.length === 0) {
+        // Tarif standard ou "Habitant du Val-de-Marne" : on garde la mention et le prix de base appliqué
+        const vdm = tarifSelectionne === "val_de_marne";
+        reponsesFormulaire["Tarif choisi"] = `${vdm ? "Habitant du Val-de-Marne" : "Tarif standard"} — ${montantBase} €`;
       }
+      reponsesFormulaire["Montant total à régler"] = `${montantTotal.toFixed(2).replace(".", ",")} €`;
       if (listeAttenteChambre) {
         reponsesFormulaire["Liste d'attente chambre double"] = "Oui";
       }
