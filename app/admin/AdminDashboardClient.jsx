@@ -11,7 +11,7 @@ import {
   Leaf, Snowflake, Flower, Sun,
   Eye, EyeOff, Star, Plus, ArrowUp, ArrowDown, Type, AlignLeft, AlignCenter, AlignRight, CheckSquare, Copy, Crop,
   Bold, Italic, Underline, ListOrdered, Archive, AlertTriangle, BarChart3,
-  Baby, Cake, Ruler, Footprints, Weight, QrCode, User, BedDouble, BedSingle
+  Baby, Cake, Ruler, Footprints, Weight, QrCode, User, BedDouble, BedSingle, Repeat
 } from "lucide-react";
 
 import AdminLayout from "./AdminLayout";
@@ -28,7 +28,7 @@ import { creerAnimateur, modifierAnimateur, supprimerAnimateur } from "../action
 // ⚡ IMPORTS DOCUMENTS
 import { validerDocument, rejeterDocument } from "../actions/documents";
 // ⚡ IMPORTS INSCRIPTIONS
-import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription, creerInscriptionAdmin, reattribuerParticipantInscription } from "../actions/inscriptions";
+import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, renvoyerEmailInscription, demanderReinfoInscription, modifierEnfant, modifierReponsesInscription, creerInscriptionAdmin, reattribuerParticipantInscription, changerSejourInscription } from "../actions/inscriptions";
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS PARAMÈTRES (IBAN de l'association pour le paiement par virement)
 import { modifierParametres } from "../actions/parametres";
@@ -2098,6 +2098,60 @@ function ModalCorrigerParticipant({ inscription, autresParticipants = [], onClos
   );
 }
 
+/* ── MODALE : CHANGER LE SÉJOUR D'UNE INSCRIPTION (admin) ── */
+// Cas d'usage : erreur d'inscription, on déplace l'inscription vers le bon séjour.
+function ModalChangerSejour({ inscription, sejours = [], onClose }) {
+  const [sejourId, setSejourId] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const champ = { padding: "10px 12px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "13px", width: "100%", fontFamily: "inherit", boxSizing: "border-box" };
+  const lab = { fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "4px" };
+
+  const autresSejours = sejours.filter((s) => s.id !== inscription.sejourId);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!sejourId) return;
+    setErr("");
+    setSaving(true);
+    const res = await changerSejourInscription(inscription.id, sejourId);
+    setSaving(false);
+    if (res?.error) setErr(res.error);
+    else window.location.reload();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+        <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Changer de séjour</h3>
+        <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
+          Inscription actuellement sur <strong style={{ color: C.teal }}>{inscription.sejour?.titre || "Séjour supprimé"}</strong>. Elle sera déplacée sur le séjour ci-dessous ; les documents déjà déposés ne sont pas touchés.
+        </p>
+
+        {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
+
+        <div>
+          <label style={lab}>Nouveau séjour</label>
+          <select style={champ} value={sejourId} onChange={(e) => setSejourId(e.target.value)} required>
+            <option value="">-- Sélectionner --</option>
+            {autresSejours.map((s) => (
+              <option key={s.id} value={s.id}>{s.titre}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+          <button type="button" onClick={onClose} style={{ flex: 1, padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.white, color: C.teal, fontWeight: 700, cursor: "pointer" }}>Annuler</button>
+          <button type="submit" disabled={saving || !sejourId} style={{ flex: 2, padding: "12px", borderRadius: "12px", border: "none", background: C.yellow, color: C.teal, fontWeight: 800, cursor: saving ? "wait" : "pointer" }}>
+            {saving ? "Changement..." : "Changer de séjour"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /* ── MODALE : ÉDITER LES INFOS D'UNE PERSONNE (admin) ── */
 function ModalEditerInfosEnfant({ enfant, estSenior, onClose }) {
   const [f, setF] = useState({
@@ -2228,10 +2282,11 @@ function ModalEditerReponses({ ins, onClose }) {
 }
 
 /* ── MODALE : FICHE COMPLÈTE D'UN ENFANT ── */
-function ModalFicheEnfant({ enfant, onClose, onDelete }) {
+function ModalFicheEnfant({ enfant, sejours = [], onClose, onDelete }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [editInfos, setEditInfos] = useState(false);
   const [editInscription, setEditInscription] = useState(null);
+  const [changerSejourIns, setChangerSejourIns] = useState(null);
 
   if (!enfant) return null;
 
@@ -2360,6 +2415,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
                       {ins.sejour?.formSchema && (
                         <button onClick={() => setEditInscription(ins)} title="Modifier les réponses" style={{ background: C.white, border: `1px solid ${C.lightGray}`, borderRadius: "8px", padding: "5px 10px", fontSize: "11px", fontWeight: 700, color: C.teal, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "5px" }}><Edit size={12} /> Modifier</button>
                       )}
+                      <button onClick={() => setChangerSejourIns(ins)} title="Changer de séjour" style={{ background: C.white, border: `1px solid ${C.lightGray}`, borderRadius: "8px", padding: "5px 10px", fontSize: "11px", fontWeight: 700, color: C.teal, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "5px" }}><Repeat size={12} /> Changer de séjour</button>
                       <span style={{ background: colors.bg, color: colors.color, padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700 }}>{ins.statut}</span>
                     </div>
                   </div>
@@ -2423,6 +2479,7 @@ function ModalFicheEnfant({ enfant, onClose, onDelete }) {
 
       {editInfos && <ModalEditerInfosEnfant enfant={enfant} estSenior={estSenior} onClose={() => setEditInfos(false)} />}
       {editInscription && <ModalEditerReponses ins={editInscription} onClose={() => setEditInscription(null)} />}
+      {changerSejourIns && <ModalChangerSejour inscription={changerSejourIns} sejours={sejours} onClose={() => setChangerSejourIns(null)} />}
     </div>
   );
 }
@@ -3404,7 +3461,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
       {qrSejour && <ModalQrCode sejour={qrSejour} onClose={() => setQrSejour(null)} />}
       {chambresSejour && <ModalChambres sejour={chambresSejour} inscriptions={inscriptionsVue} onClose={() => setChambresSejour(null)} />}
       {inscriptionManuelleEnCours && <ModalInscriptionManuelle clients={clients} sejours={sejours} onClose={() => setInscriptionManuelleEnCours(false)} />}
-      {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
+      {ficheEnfant && <ModalFicheEnfant enfant={ficheEnfant} sejours={sejours} onClose={() => setFicheEnfantId(null)} onDelete={handleDeleteEnfant} />}
     </AdminLayout>
   );
 }

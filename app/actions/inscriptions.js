@@ -545,6 +545,46 @@ export async function reattribuerParticipantInscription(inscriptionId, data) {
   }
 }
 
+// 🔀 CHANGER LE SÉJOUR D'UNE INSCRIPTION (admin)
+// Cas d'usage : erreur d'inscription, la famille (ou l'admin) s'est trompée de séjour.
+export async function changerSejourInscription(inscriptionId, nouveauSejourId) {
+  if (!inscriptionId || !nouveauSejourId) return { error: "Données incomplètes" };
+
+  try {
+    const inscription = await prisma.inscription.findUnique({ where: { id: inscriptionId } });
+    if (!inscription) return { error: "Inscription introuvable" };
+    if (inscription.sejourId === nouveauSejourId) {
+      return { error: "L'inscription est déjà sur ce séjour." };
+    }
+
+    const nouveauSejour = await prisma.sejour.findUnique({ where: { id: nouveauSejourId } });
+    if (!nouveauSejour) return { error: "Séjour introuvable" };
+
+    await prisma.inscription.update({
+      where: { id: inscriptionId },
+      data: { sejourId: nouveauSejourId },
+    });
+
+    // Documents requis : on (re)crée les lignes "manquant" pour le nouveau séjour,
+    // sans toucher aux documents déjà déposés.
+    for (const docType of nouveauSejour.documentsRequis || []) {
+      const existing = await prisma.document
+        .findUnique({ where: { enfantId_type: { enfantId: inscription.enfantId, type: docType } } })
+        .catch(() => null);
+      if (!existing) {
+        await prisma.document.create({ data: { enfantId: inscription.enfantId, type: docType, statut: "MANQUANT" } });
+      }
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/espace-famille");
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur changement de séjour:", error);
+    return { error: "Erreur lors du changement de séjour" };
+  }
+}
+
 // 🔄 CHANGER L'ÉTAT D'UNE INSCRIPTION (admin)
 export async function changerStatutInscription(id, statut) {
   if (!STATUTS_INSCRIPTION.includes(statut)) {
