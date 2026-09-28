@@ -136,14 +136,15 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
     }
   };
 
-  // 📍 "Obtenir mon code de réduction" : on vérifie que l'adresse saisie contient
-  // un code postal du Val-de-Marne (94xxx) pour appliquer automatiquement le code.
+  // 📍 "Obtenir mon code de réduction" : on vérifie que le code postal saisi
+  // commence bien par 94 (Val-de-Marne) pour appliquer automatiquement le code.
   const [showAdresseForm, setShowAdresseForm] = useState(false);
   const [adresseSaisie, setAdresseSaisie] = useState("");
   const [adresseErreur, setAdresseErreur] = useState("");
 
   const handleVerifierAdresse = () => {
-    const estDansLe94 = /\b94\d{3}\b/.test(adresseSaisie);
+    const codePostal = adresseSaisie.trim();
+    const estDansLe94 = /^94\d{3}$/.test(codePostal);
     if (estDansLe94) {
       setCodePromo("VAL_DE_MARNE_94");
       setPromoAppliquee(true);
@@ -152,7 +153,7 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
       setShowAdresseForm(false);
       setTarifSelectionne("val_de_marne");
     } else {
-      setAdresseErreur("Cette adresse ne semble pas être située dans le Val-de-Marne (94).");
+      setAdresseErreur("Ce code postal ne semble pas être situé dans le Val-de-Marne (94).");
     }
   };
 
@@ -900,17 +901,19 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
                         ) : (
                           <div style={styles.promoAdresseBox}>
                             <label style={styles.promoAdresseLabel}>
-                              Entrez votre adresse pour vérifier votre éligibilité
+                              Entrez votre code postal pour vérifier votre éligibilité
                             </label>
                             <div style={styles.promoInputRow}>
                               <input
                                 type="text"
+                                inputMode="numeric"
+                                maxLength={5}
                                 value={adresseSaisie}
                                 onChange={(e) => {
-                                  setAdresseSaisie(e.target.value);
+                                  setAdresseSaisie(e.target.value.replace(/\D/g, "").slice(0, 5));
                                   if (adresseErreur) setAdresseErreur("");
                                 }}
-                                placeholder="Ex: 12 rue de Paris, 94000 Créteil"
+                                placeholder="Ex: 94000"
                                 style={{ ...styles.promoInput, textTransform: "none" }}
                               />
                               <button type="button" onClick={handleVerifierAdresse} style={styles.promoButton}>
