@@ -61,6 +61,15 @@ model Parametres {
   updatedAt     DateTime @updatedAt
 }
 
+// 🏷️ Codes de réduction "Habitant du Val-de-Marne" générés depuis Admin / Paramètres
+model CodeReduction {
+  id        String   @id @default(cuid())
+  motCle    String   // Mot-clé saisi par l'admin (ex: "Mairie de Sucy")
+  code      String   @unique // Code généré (lettres, chiffres, symbole)
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model Sejour {
   id           String    @id @default(cuid())
   titre        String

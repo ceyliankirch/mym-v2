@@ -63,6 +63,7 @@ export default async function AdminPage() {
     // .catch(() => null) : tant que la migration Prisma n'est pas appliquée en prod,
     // la table peut ne pas exister — on ne veut pas faire planter tout le dashboard pour ça.
     const parametres = await prisma.parametres.findUnique({ where: { id: "main" } }).catch(() => null);
+    const codesReduction = await prisma.codeReduction.findMany({ orderBy: { createdAt: "desc" } }).catch(() => []);
 
     // Calcul des statistiques (KPIs)
     // ⚡ Le CA se base sur le prix du séjour des inscriptions dont le paiement est validé
@@ -90,6 +91,7 @@ export default async function AdminPage() {
         stats={stats}
         adminPrenom={adminPrenom}
         parametres={parametres}
+        codesReduction={codesReduction}
         sejours={sejours}
         inscriptions={inscriptions}
         clients={clients} // ⚡ NOUVEAU : On passe les familles au client

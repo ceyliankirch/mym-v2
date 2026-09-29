@@ -15,6 +15,7 @@ import {
 import AuthModal from "@/components/AuthModal";
 import { useSession } from "next-auth/react";
 import { creerInscription } from "@/app/actions/inscriptions";
+import { verifierCodeReduction } from "@/app/actions/codesReduction";
 
 const C = {
   yellow: "#FFC801",
@@ -125,8 +126,9 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
     }
   };
 
-  const handleAppliquerPromo = () => {
-    if (codePromo.trim().toUpperCase() === "VAL_DE_MARNE_94") {
+  const handleAppliquerPromo = async () => {
+    const { valide } = await verifierCodeReduction(codePromo);
+    if (valide) {
       setPromoAppliquee(true);
       setPromoErreur("");
       setTarifSelectionne("val_de_marne");

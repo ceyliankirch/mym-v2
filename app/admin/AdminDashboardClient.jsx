@@ -32,6 +32,7 @@ import { changerStatutInscription, supprimerInscription, supprimerEnfantAdmin, r
 import { STATUTS_INSCRIPTION } from "@/lib/inscriptions";
 // ⚡ IMPORTS PARAMÈTRES (IBAN de l'association pour le paiement par virement)
 import { modifierParametres } from "../actions/parametres";
+import { genererCodeReduction, toggleCodeReduction, supprimerCodeReduction } from "../actions/codesReduction";
 // ⚡ IMPORTS GALERIE
 import { creerAlbum, modifierAlbum, supprimerAlbum, supprimerPhoto, togglePhotoEnAvant } from "../actions/galerie";
 
@@ -2862,6 +2863,73 @@ function ParametresCoordonneesCard({ parametres }) {
   );
 }
 
+/* Carte "Codes de réduction" (onglet Paramètres) : à partir d'un mot-clé, génère un code
+   (lettres, chiffres, symboles) donnant droit au tarif « Habitant du Val-de-Marne ». */
+function ParametresCodesReductionCard({ codes }) {
+  const [motCle, setMotCle] = useState("");
+  const [liste, setListe] = useState(codes || []);
+  const [erreur, setErreur] = useState("");
+  const [copie, setCopie] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const generer = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErreur("");
+    const res = await genererCodeReduction(motCle);
+    setLoading(false);
+    if (res?.error) return setErreur(res.error);
+    setListe((l) => [res.code, ...l]);
+    setMotCle("");
+  };
+
+  const copier = async (c) => {
+    try { await navigator.clipboard.writeText(c.code); setCopie(c.id); setTimeout(() => setCopie(null), 1500); } catch (err) { console.error(err); }
+  };
+
+  const basculer = async (c) => {
+    setListe((l) => l.map((x) => (x.id === c.id ? { ...x, actif: !x.actif } : x)));
+    await toggleCodeReduction(c.id);
+  };
+
+  const supprimer = async (c) => {
+    if (!confirm(`Supprimer le code ${c.code} ?`)) return;
+    setListe((l) => l.filter((x) => x.id !== c.id));
+    await supprimerCodeReduction(c.id);
+  };
+
+  const champStyle = { flex: "1 1 220px", padding: "12px 14px", borderRadius: "10px", border: `1px solid ${C.lightGray}`, fontSize: "14px", outline: "none", boxSizing: "border-box" };
+  const btn = { border: "none", padding: "8px 12px", borderRadius: "8px", fontWeight: 700, fontSize: "12px", cursor: "pointer" };
+
+  return (
+    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+      <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>🏷️ Codes de réduction Val-de-Marne</h2>
+      <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
+        Entrez un mot-clé (ex : le nom d'un partenaire) : il est transformé en code unique avec lettres, chiffres et symboles. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
+      </p>
+      <form onSubmit={generer} style={{ display: "flex", flexWrap: "wrap", gap: "12px", maxWidth: "620px", marginBottom: "8px" }}>
+        <input style={champStyle} value={motCle} onChange={(e) => setMotCle(e.target.value)} placeholder="Mot-clé (ex : Mairie de Sucy)" />
+        <button type="submit" disabled={loading} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 24px", borderRadius: "12px", fontWeight: 800, cursor: loading ? "wait" : "pointer" }}>
+          {loading ? "Génération..." : "Générer le code"}
+        </button>
+      </form>
+      {erreur && <p style={{ color: "#dc2626", fontSize: "13px", fontWeight: 700, margin: "0 0 12px" }}>{erreur}</p>}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px", maxWidth: "820px" }}>
+        {liste.length === 0 && <p style={{ color: C.gray, fontSize: "13px" }}>Aucun code généré pour le moment.</p>}
+        {liste.map((c) => (
+          <div key={c.id} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", padding: "10px 14px", borderRadius: "12px", background: c.actif ? "#f0fdf4" : "#f3f4f6", opacity: c.actif ? 1 : 0.65 }}>
+            <code style={{ fontSize: "15px", fontWeight: 800, color: C.teal, letterSpacing: "0.5px" }}>{c.code}</code>
+            <span style={{ fontSize: "12px", color: C.gray, flex: 1 }}>{c.motCle}</span>
+            <button type="button" onClick={() => copier(c)} style={{ ...btn, background: C.lightGray, color: C.teal }}>{copie === c.id ? "✓ Copié" : "Copier"}</button>
+            <button type="button" onClick={() => basculer(c)} style={{ ...btn, background: C.lightGray, color: C.teal }}>{c.actif ? "Désactiver" : "Activer"}</button>
+            <button type="button" onClick={() => supprimer(c)} style={{ ...btn, background: "#fee2e2", color: "#dc2626" }}>Supprimer</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* Carte "Paiement par virement" (onglet Paramètres) : configure l'IBAN de l'association.
    Une fois renseigné, il est ajouté automatiquement dans l'email de confirmation d'une
    famille qui choisit "Virement bancaire" comme moyen de paiement dans le formulaire. */
@@ -2933,7 +3001,7 @@ function ParametresVirementCard({ parametres }) {
   );
 }
 
-export default function AdminDashboardClient({ stats, adminPrenom, parametres, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts, clients }) {
+export default function AdminDashboardClient({ stats, adminPrenom, parametres, inscriptions, sejours, enfants, animateurs, albums, prochainsDeparts, clients, codesReduction }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -3395,6 +3463,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
             <div>
               <ParametresCoordonneesCard parametres={parametres} />
               <ParametresVirementCard parametres={parametres} />
+              <ParametresCodesReductionCard codes={codesReduction} />
               <QrCodeCard
                 titre="📱 QR code — Page d'accueil"
                 description="Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé."
