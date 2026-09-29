@@ -1,20 +1,11 @@
 "use server";
 
-import { randomInt } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 // 🏷️ Codes donnant accès au tarif « Habitant du Val-de-Marne ».
 // Le code historique VAL_DE_MARNE_94 (appliqué via le code postal) reste toujours valide.
 const CODE_HISTORIQUE = "VAL_DE_MARNE_94";
-const SYMBOLES = "!@#$%&*+?";
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-
-const tirer = (chars, n) => Array.from({ length: n }, () => chars[randomInt(chars.length)]).join("");
-
-// Mot-clé → base sans accents ni espaces (ex: "Mairie de Sucy" → "MAIRIEDESUCY"), 12 car. max
-const baseDepuisMotCle = (motCle) =>
-  motCle.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 12);
 
 export async function getCodesReduction() {
   try {
@@ -25,25 +16,20 @@ export async function getCodesReduction() {
   }
 }
 
-export async function genererCodeReduction(motCle) {
-  const mot = (motCle || "").toString().trim();
-  if (!mot) return { error: "Entrez un mot-clé" };
-  const base = baseDepuisMotCle(mot);
-  if (!base) return { error: "Le mot-clé doit contenir des lettres ou des chiffres" };
+export async function genererCodeReduction(saisie) {
+  // Le code est exactement ce que l'admin a saisi (seuls les espaces autour sont retirés)
+  const code = (saisie || "").toString().trim();
+  if (!code) return { error: "Entrez un code" };
 
   try {
-    for (let i = 0; i < 5; i++) {
-      const code = `${base}${tirer(SYMBOLES, 1)}${tirer(ALPHABET, 3)}${tirer("23456789", 2)}${tirer(SYMBOLES, 1)}`;
-      const existant = await prisma.codeReduction.findUnique({ where: { code } });
-      if (existant) continue;
-      const cree = await prisma.codeReduction.create({ data: { motCle: mot, code } });
-      revalidatePath("/admin");
-      return { success: true, code: cree };
-    }
-    return { error: "Impossible de générer un code unique, réessayez" };
+    const existant = await prisma.codeReduction.findUnique({ where: { code } });
+    if (existant) return { error: "Ce code existe déjà" };
+    const cree = await prisma.codeReduction.create({ data: { motCle: code, code } });
+    revalidatePath("/admin");
+    return { success: true, code: cree };
   } catch (error) {
-    console.error("Erreur génération code :", error);
-    return { error: "Erreur lors de la génération" };
+    console.error("Erreur création code :", error);
+    return { error: "Erreur lors de la création" };
   }
 }
 
