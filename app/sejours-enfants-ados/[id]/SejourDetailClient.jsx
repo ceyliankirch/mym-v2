@@ -41,8 +41,8 @@ const formatSejourDates = (startStr, endStr) => {
   const endDay = end.getDate(), endMonth = mois[end.getMonth()], endYear = end.getFullYear();
 
   if (startYear !== endYear) return `Du ${startDay} ${startMonth} ${startYear} au ${endDay} ${endMonth} ${endYear}`;
-  if (startMonth !== endMonth) return `Du ${startDay} ${startMonth} au ${endDay} ${endMonth}`;
-  return `Du ${startDay} au ${endDay} ${startMonth}`;
+  if (startMonth !== endMonth) return `Du ${startDay} ${startMonth} au ${endDay} ${endMonth} ${endYear}`;
+  return `Du ${startDay} au ${endDay} ${startMonth} ${startYear}`;
 };
 
 const getDuree = (startStr, endStr) => {
