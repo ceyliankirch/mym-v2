@@ -19,6 +19,7 @@ import NewsletterSection from "./NewsletterSection";
 import NewsletterModeles from "./NewsletterModeles";
 import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
+import SejourSelect from "./SejourSelect";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -755,12 +756,7 @@ function ModalInscriptionManuelle({ clients, sejours, onClose }) {
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
             <label style={lab}>Séjour</label>
-            <select style={champ} value={sejourId} onChange={(e) => setSejourId(e.target.value)} required>
-              <option value="">-- Choisir un séjour --</option>
-              {(sejours || []).map((s) => (
-                <option key={s.id} value={s.id}>{s.titre}</option>
-              ))}
-            </select>
+            <SejourSelect sejours={sejours || []} value={sejourId} onChange={setSejourId} placeholder="-- Choisir un séjour --" required />
           </div>
 
           <div>
@@ -1764,6 +1760,7 @@ function ModalAnimateur({ data, setEdition, isSubmitting, setIsSubmitting }) {
 /* ── MODALE : ALBUM PHOTO (GALERIE) ── */
 function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIsSubmitting }) {
   const isEditing = albumData !== "nouveau";
+  const [albumSejourId, setAlbumSejourId] = useState(isEditing ? (albumData.sejourId || "") : "");
   const [existingPhotos, setExistingPhotos] = useState(isEditing ? (albumData.photos || []) : []);
   const [newPreviews, setNewPreviews] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
@@ -1825,12 +1822,7 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Séjour lié (optionnel)</label>
-            <select name="sejourId" defaultValue={isEditing ? (albumData.sejourId || "") : ""} style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, background: C.arctic, color: C.teal, fontWeight: 600 }}>
-              <option value="">Aucun séjour lié</option>
-              {sejours?.map((s) => (
-                <option key={s.id} value={s.id}>{s.titre}</option>
-              ))}
-            </select>
+            <SejourSelect name="sejourId" sejours={sejours || []} value={albumSejourId} onChange={setAlbumSejourId} emptyLabel="Aucun séjour lié" placeholder="Aucun séjour lié" style={{ padding: "12px", borderRadius: "12px", background: C.arctic }} />
           </div>
 
           {existingPhotos.length > 0 && (
@@ -2134,12 +2126,7 @@ function ModalChangerSejour({ inscription, sejours = [], onClose }) {
 
         <div>
           <label style={lab}>Nouveau séjour</label>
-          <select style={champ} value={sejourId} onChange={(e) => setSejourId(e.target.value)} required>
-            <option value="">-- Sélectionner --</option>
-            {autresSejours.map((s) => (
-              <option key={s.id} value={s.id}>{s.titre}</option>
-            ))}
-          </select>
+          <SejourSelect sejours={autresSejours} value={sejourId} onChange={setSejourId} required />
         </div>
 
         <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>

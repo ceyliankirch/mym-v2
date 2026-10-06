@@ -4,6 +4,7 @@ import {
   Megaphone, Image as ImageIcon, Upload, Download, Trash2, Loader,
   Instagram, FileText, Calendar, Clock, MapPin, Users, Phone, Mail,
 } from "lucide-react";
+import SejourSelect from "./SejourSelect";
 import {
   listerFichiersCommunication, enregistrerVisuelCommunication,
   importerFichierCommunication, supprimerFichierCommunication, renommerFichierCommunication,
@@ -312,13 +313,7 @@ function Generateur({ sejours, onSaved }) {
         </h3>
 
         <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Séjour</label>
-        <select
-          value={sejourId}
-          onChange={(e) => { setSejourId(e.target.value); setSansImage(false); setMsg(""); }}
-          style={{ width: "100%", padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, fontSize: "13px", marginBottom: "16px", background: C.white, color: C.teal, fontWeight: 600 }}
-        >
-          {sejours.map((s) => <option key={s.id} value={s.id}>{s.titre}</option>)}
-        </select>
+        <div style={{ marginBottom: "16px" }}><SejourSelect sejours={sejours} value={sejourId} onChange={(id) => { setSejourId(id); setSansImage(false); setMsg(""); }} /></div>
 
         <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Format</label>
         <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
