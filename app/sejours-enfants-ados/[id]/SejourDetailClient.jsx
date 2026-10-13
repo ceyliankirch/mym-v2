@@ -220,7 +220,7 @@ function StickySidebar({ sejour, coordonnees = {} }) {
                     <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"14px",padding:"10px 18px",textAlign:"center"}}>
                       <ReductionTooltip />
                       <p style={{fontSize:"1.9rem",fontWeight:900,color:"#059669",lineHeight:1,margin:0}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
-                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",margin:"3px 0 0"}}>Habitant du Val-de-Marne</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",margin:"3px 0 0"}}>Habitant du Val-de-Marne &amp; partenaires CSE</p>
                     </div>
                   )}
                 </div>
@@ -231,7 +231,7 @@ function StickySidebar({ sejour, coordonnees = {} }) {
                     <div style={{position:"relative",background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:"12px",padding:"8px 14px",textAlign:"center"}}>
                       <ReductionTooltip />
                       <p style={{fontSize:"2.2rem",fontWeight:900,color:"#059669",lineHeight:1,whiteSpace:"nowrap"}}>{prixVdm.toFixed(2).replace(/\.00$/,"")}€</p>
-                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",whiteSpace:"nowrap"}}>Habitant du Val-de-Marne</p>
+                      <p style={{fontSize:"10px",fontWeight:700,color:"#047857",maxWidth:"150px"}}>Habitant du Val-de-Marne &amp; partenaires CSE</p>
                     </div>
                   )}
                 </div>

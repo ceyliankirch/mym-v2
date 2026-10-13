@@ -102,7 +102,7 @@ function PrixBloc({ sejour, compact }) {
           {!estSenior && sejour.prix > 100 && (
             <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: compact ? "14px 22px" : "16px 28px", minWidth: 200 }}>
               <div style={{ fontSize: compact ? 50 : 58, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
-              <div style={{ fontSize: 19, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
+              <div style={{ fontSize: 19, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne &amp; partenaires CSE</div>
             </div>
           )}
         </div>
@@ -112,7 +112,7 @@ function PrixBloc({ sejour, compact }) {
           {!estSenior && sejour.prix > 100 && (
             <div style={{ position: "relative", background: "#ECFDF3", border: "2px solid #A7F3D0", borderRadius: 22, padding: "12px 26px" }}>
               <div style={{ fontSize: compact ? 52 : 60, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sejour.prix - 100}€</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: C.green, marginTop: 4 }}>Habitant du Val-de-Marne &amp; partenaires CSE</div>
               <div style={{ position: "absolute", top: -16, right: -16, width: 38, height: 38, borderRadius: "50%", background: "#fff", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 21, fontWeight: 800, color: C.gray }}>?</div>
             </div>
           )}
