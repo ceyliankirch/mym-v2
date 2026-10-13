@@ -114,17 +114,6 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
   const [codePromo, setCodePromo] = useState("");
   const [promoAppliquee, setPromoAppliquee] = useState(false);
   const [promoErreur, setPromoErreur] = useState("");
-  const [showCodeInput, setShowCodeInput] = useState(false);
-
-  const handleClicPrixBase = () => setTarifSelectionne("standard");
-
-  const handleClicValDeMarne = () => {
-    if (promoAppliquee) {
-      setTarifSelectionne("val_de_marne");
-    } else {
-      setShowCodeInput(true);
-    }
-  };
 
   const handleAppliquerPromo = async () => {
     const { valide } = await verifierCodeReduction(codePromo);
@@ -275,7 +264,7 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
       } else if (tarifsListe.length === 0) {
         // Tarif standard ou "Habitant du Val-de-Marne" : on garde la mention et le prix de base appliqué
         const vdm = tarifSelectionne === "val_de_marne";
-        reponsesFormulaire["Tarif choisi"] = `${vdm ? "Habitant du Val-de-Marne" : "Tarif standard"} — ${montantBase} €`;
+        reponsesFormulaire["Tarif choisi"] = `${vdm ? "Habitant du Val-de-Marne & partenaires CSE" : "Tarif standard"} — ${montantBase} €`;
       }
       reponsesFormulaire["Montant total à régler"] = `${montantTotal.toFixed(2).replace(".", ",")} €`;
       if (listeAttenteChambre) {
@@ -834,44 +823,7 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
                       )
                     ) : (
                     <>
-                    <div style={styles.priceBoxesRow}>
-                      <div
-                        onClick={handleClicPrixBase}
-                        style={{
-                          ...styles.priceBox,
-                          ...(tarifSelectionne === "standard" ? styles.priceBoxActive : {}),
-                        }}
-                      >
-                        <p style={styles.priceBoxLabel}>Prix de base</p>
-                        <p style={styles.priceBoxAmount}>
-                          {(sejour.prix + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
-                        </p>
-                      </div>
-                      {vdmDisponible && (
-                        <div
-                          onClick={handleClicValDeMarne}
-                          style={{
-                            ...styles.priceBox,
-                            ...(tarifSelectionne === "val_de_marne"
-                              ? styles.priceBoxActive
-                              : !promoAppliquee
-                              ? styles.priceBoxDisabled
-                              : {}),
-                          }}
-                        >
-                          <p style={styles.priceBoxLabel}>
-                            <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
-                            Habitant du Val-de-Marne
-                          </p>
-                          <p style={styles.priceBoxAmount}>
-                            {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - reductionVdm(sejour.prix)).toFixed(2)} €
-                          </p>
-                          {!promoAppliquee && <p style={styles.priceBoxHint}>Cliquez pour entrer un code</p>}
-                        </div>
-                      )}
-                    </div>
-
-                    {showCodeInput && !promoAppliquee && (
+                    {vdmDisponible && !promoAppliquee && (
                       <div style={styles.promoBanner} onClick={(e) => e.stopPropagation()}>
                         <div style={styles.promoBannerText}>
                           <Tag size={18} color={C.saffron} style={{ flexShrink: 0, marginTop: "2px" }} />
@@ -933,6 +885,40 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
                         <CheckCircle2 size={14} /> Code appliqué : le tarif Val-de-Marne est débloqué
                       </p>
                     )}
+                    <div style={styles.priceBoxesRow}>
+                      <div
+                        style={{
+                          ...styles.priceBox,
+                          ...(tarifSelectionne === "standard" ? styles.priceBoxActive : {}),
+                        }}
+                      >
+                        <p style={styles.priceBoxLabel}>Prix de base</p>
+                        <p style={styles.priceBoxAmount}>
+                          {(sejour.prix + (assuranceSouscrite ? montantAssurance : 0)).toFixed(2)} €
+                        </p>
+                      </div>
+                      {vdmDisponible && (
+                        <div
+                          style={{
+                            ...styles.priceBox,
+                            ...(tarifSelectionne === "val_de_marne"
+                              ? styles.priceBoxActive
+                              : !promoAppliquee
+                              ? styles.priceBoxDisabled
+                              : {}),
+                          }}
+                        >
+                          <p style={styles.priceBoxLabel}>
+                            <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
+                            Habitant du Val-de-Marne &amp; partenaires CSE
+                          </p>
+                          <p style={styles.priceBoxAmount}>
+                            {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - reductionVdm(sejour.prix)).toFixed(2)} €
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
                     </>
                     )}
 
@@ -1333,7 +1319,7 @@ const styles = {
     border: `2px solid ${C.lightGray}`,
     background: C.white,
     transition: "all 0.2s",
-    cursor: "pointer",
+    cursor: "default",
   },
   priceBoxActive: {
     border: `2px solid ${C.teal}`,
