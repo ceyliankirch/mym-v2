@@ -20,6 +20,7 @@ import NewsletterModeles from "./NewsletterModeles";
 import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
 import SejourSelect from "./SejourSelect";
+import PagePleine from "./PagePleine";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -598,9 +599,8 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
   const btn = (bg, color) => ({ padding: "8px 12px", borderRadius: "10px", border: "none", background: bg, color, fontSize: "12px", fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" });
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "920px", maxHeight: "88vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
+    <PagePleine onClose={onClose} z={9999}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "920px", borderRadius: "24px", padding: "32px", position: "relative" }} onClick={(e) => e.stopPropagation()}>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>🛏️ Chambres — {sejour.titre}</h2>
         <p style={{ fontSize: "13px", color: C.gray, marginBottom: "16px", maxWidth: "640px" }}>
@@ -681,7 +681,7 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
           </Zone>
         </div>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -744,8 +744,8 @@ function ModalInscriptionManuelle({ clients, sejours, onClose }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "560px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+    <PagePleine onClose={onClose} z={10000}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "20px", padding: "28px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Inscription manuelle</h3>
         <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
           Pour les personnes sans email ou sans accès à internet : aucun compte n'est créé côté famille et aucun email n'est envoyé, le dossier est juste enregistré directement.
@@ -829,7 +829,7 @@ function ModalInscriptionManuelle({ clients, sejours, onClose }) {
           </button>
         </div>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -1025,7 +1025,7 @@ function ImageCropModal({ src, ratio = 2, onCancel, onConfirm }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(17,76,90,0.75)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+    <PagePleine onClose={onCancel} z={10000}>
       <div style={{ background: C.white, borderRadius: "20px", padding: "20px", display: "flex", flexDirection: "column", gap: "14px", maxWidth: "calc(100vw - 40px)" }}>
         <p style={{ fontSize: "14px", fontWeight: 800, color: C.teal }}>Rogner l'image de couverture</p>
         <div
@@ -1055,7 +1055,7 @@ function ImageCropModal({ src, ratio = 2, onCancel, onConfirm }) {
           <button type="button" onClick={handleConfirm} disabled={!natural} style={{ background: C.yellow, color: C.teal, border: "none", borderRadius: "12px", padding: "10px 20px", fontWeight: 800, cursor: "pointer" }}>Valider le rognage</button>
         </div>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -1437,10 +1437,9 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
   };
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)" }}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "750px", maxHeight: "90vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
+    <PagePleine onClose={() => setSejourEnEdition(null)} z={9999}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
         
-        <button onClick={() => setSejourEnEdition(null)} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
         
         <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal, marginBottom: "20px" }}>
           {isEditing ? "Modifier le séjour" : (sejourData === "nouveau-senior" ? "Créer une sortie Sénior" : "Créer un nouveau séjour")}
@@ -1522,7 +1521,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px" }}>
               <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
                 <input type="checkbox" name="reductionVdmActive" checked={vdmActive} onChange={(e) => setVdmActive(e.target.checked)} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
-                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne »</span>
+                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne &amp; partenaires CSE »</span>
               </label>
               <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Désactivé par défaut : les anciens séjours n'affichent pas ce tarif. À activer séjour par séjour.</p>
 
@@ -1555,6 +1554,11 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
                 <span style={{ display: "block", fontSize: "11px", color: C.gray, marginTop: "2px" }}>Ajoute le PDF de la fiche sanitaire en pièce jointe (et la mention associée) dans l'email « Inscription validée ». À décocher pour les séjours qui n'en ont pas besoin (ex : séniors).</span>
               </span>
             </label>
+            {isEditing && sejourData?.id && (
+              <a href={`/api/sejours/${sejourData.id}/fiche-sanitaire`} download style={{ alignSelf: "flex-start", display: "inline-block", padding: "10px 16px", borderRadius: "12px", background: C.arctic, color: C.teal, fontSize: "12px", fontWeight: 800, textDecoration: "none" }}>
+                📥 Télécharger la fiche sanitaire du séjour
+              </a>
+            )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxWidth: "260px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Montant assurance annulation (€)</label>
@@ -1579,7 +1583,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement — Tarif Habitant du Val-de-Marne</label>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement — Tarif Habitant du Val-de-Marne &amp; partenaires CSE</label>
               <input type="url" name="lienPaiementCICValDeMarne" defaultValue={isEditing ? sejourData.lienPaiementCICValDeMarne : ""} placeholder="https://..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <p style={{ fontSize: "11px", color: C.gray }}>Lien utilisé quand la famille sélectionne le tarif réduit réservé aux habitants du Val-de-Marne (uniquement si le tarif ci-dessus est activé).</p>
             </div>
@@ -1715,7 +1719,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
 
         </form>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -1725,9 +1729,8 @@ function ModalAnimateur({ data, setEdition, isSubmitting, setIsSubmitting }) {
   const [compressedImage, setCompressedImage] = useState(null);
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.4)", backdropFilter: "blur(4px)" }}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "500px", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}>
-        <button onClick={() => setEdition(null)} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
+    <PagePleine onClose={() => setEdition(null)} z={9999}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "24px" }}>{isEditing ? "Modifier le membre" : "Ajouter à l'équipe"}</h2>
         
         <form action={async (formData) => {
@@ -1753,7 +1756,7 @@ function ModalAnimateur({ data, setEdition, isSubmitting, setIsSubmitting }) {
           </div>
         </form>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -1801,9 +1804,8 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
   };
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)" }}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
-        <button onClick={() => setAlbumEnEdition(null)} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16}/></button>
+    <PagePleine onClose={() => setAlbumEnEdition(null)} z={9999}>
+      <div style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
         <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal, marginBottom: "24px" }}>{isEditing ? "Modifier l'album" : "Créer un album photo"}</h2>
 
         <form action={async (formData) => {
@@ -1865,7 +1867,7 @@ function ModalAlbum({ albumData, setAlbumEnEdition, sejours, isSubmitting, setIs
           </div>
         </form>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -1922,9 +1924,8 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
   const inscrits = (inscriptions || []).filter((ins) => ins.sejourId === sejour.id);
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "700px", maxHeight: "85vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+    <PagePleine onClose={onClose} z={9999}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>{sejour.titre}</h2>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "24px" }}>
@@ -2001,7 +2002,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
           </div>
         )}
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2034,8 +2035,8 @@ function ModalCorrigerParticipant({ inscription, autresParticipants = [], onClos
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+    <PagePleine onClose={onClose} z={10001}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "20px", padding: "28px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Corriger le participant</h3>
         <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
           Inscription actuellement au nom de <strong style={{ color: C.teal }}>{inscription.enfant?.prenom} {inscription.enfant?.nom}</strong>
@@ -2087,7 +2088,7 @@ function ModalCorrigerParticipant({ inscription, autresParticipants = [], onClos
           </button>
         </div>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2115,8 +2116,8 @@ function ModalChangerSejour({ inscription, sejours = [], onClose }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+    <PagePleine onClose={onClose} z={10001}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "20px", padding: "28px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Changer de séjour</h3>
         <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px", lineHeight: 1.5 }}>
           Inscription actuellement sur <strong style={{ color: C.teal }}>{inscription.sejour?.titre || "Séjour supprimé"}</strong>. Elle sera déplacée sur le séjour ci-dessous ; les documents déjà déposés ne sont pas touchés.
@@ -2136,7 +2137,7 @@ function ModalChangerSejour({ inscription, sejours = [], onClose }) {
           </button>
         </div>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2168,8 +2169,8 @@ function ModalEditerInfosEnfant({ enfant, estSenior, onClose }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
-      <form onClick={(e) => { e.stopPropagation(); }} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "480px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+    <PagePleine onClose={onClose} z={10000}>
+      <form onClick={(e) => { e.stopPropagation(); }} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "20px", padding: "28px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "16px" }}>Modifier {estSenior ? "le participant" : "l'enfant"}</h3>
         {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -2200,7 +2201,7 @@ function ModalEditerInfosEnfant({ enfant, estSenior, onClose }) {
           <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 22px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>{saving ? "Enregistrement..." : "Enregistrer"}</button>
         </div>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2223,8 +2224,8 @@ function ModalEditerReponses({ ins, onClose }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={(e) => { e.stopPropagation(); onClose(); }}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "560px", borderRadius: "20px", padding: "28px", maxHeight: "88vh", overflowY: "auto" }}>
+    <PagePleine onClose={onClose} z={10000}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); save(); }} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "20px", padding: "28px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "17px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>Modifier les réponses au formulaire</h3>
         <p style={{ fontSize: "12px", color: C.gray, marginBottom: "16px" }}>{ins.sejour?.titre}</p>
         {err && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 12px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>{err}</div>}
@@ -2265,7 +2266,7 @@ function ModalEditerReponses({ ins, onClose }) {
           <button type="submit" disabled={saving} style={{ background: C.yellow, color: C.teal, border: "none", padding: "12px 22px", borderRadius: "10px", fontWeight: 800, fontSize: "13px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>{saving ? "Enregistrement..." : "Enregistrer"}</button>
         </div>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2304,9 +2305,8 @@ function ModalFicheEnfant({ enfant, sejours = [], onClose, onDelete }) {
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "720px", maxHeight: "88vh", overflowY: "auto", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: "24px", right: "24px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+    <PagePleine onClose={onClose} z={9999}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
 
         {/* En-tête */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
@@ -2468,7 +2468,7 @@ function ModalFicheEnfant({ enfant, sejours = [], onClose, onDelete }) {
       {editInfos && <ModalEditerInfosEnfant enfant={enfant} estSenior={estSenior} onClose={() => setEditInfos(false)} />}
       {editInscription && <ModalEditerReponses ins={editInscription} onClose={() => setEditInscription(null)} />}
       {changerSejourIns && <ModalChangerSejour inscription={changerSejourIns} sejours={sejours} onClose={() => setChangerSejourIns(null)} />}
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2533,9 +2533,8 @@ function ModalQrCode({ sejour, onClose }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17, 76, 90, 0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "420px", borderRadius: "24px", padding: "32px", position: "relative", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)", textAlign: "center" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: "20px", right: "20px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+    <PagePleine onClose={onClose} z={9999}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative", textAlign: "center" }}>
 
         <h2 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>QR code du séjour</h2>
         <p style={{ fontSize: "13px", color: C.gray, marginBottom: "20px" }}>{sejour.titre}</p>
@@ -2561,7 +2560,7 @@ function ModalQrCode({ sejour, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </PagePleine>
   );
 }
 
@@ -2851,7 +2850,7 @@ function ParametresCoordonneesCard({ parametres }) {
 }
 
 /* Carte "Codes de réduction" (onglet Paramètres) : à partir d'un mot-clé, génère un code
-   (lettres, chiffres, symboles) donnant droit au tarif « Habitant du Val-de-Marne ». */
+   (lettres, chiffres, symboles) donnant droit au tarif « Habitant du Val-de-Marne & partenaires CSE ». */
 function ParametresCodesReductionCard({ codes }) {
   const [motCle, setMotCle] = useState("");
   const [liste, setListe] = useState(codes || []);
@@ -2892,7 +2891,7 @@ function ParametresCodesReductionCard({ codes }) {
     <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>🏷️ Codes de réduction Val-de-Marne</h2>
       <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
-        Entrez le code exact souhaité (lettres, chiffres, symboles) : il est créé tel quel, en respectant majuscules et minuscules. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
+        Entrez le code exact souhaité (lettres, chiffres, symboles) : il est créé tel quel, en respectant majuscules et minuscules. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne &amp; partenaires CSE » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
       </p>
       <form onSubmit={generer} style={{ display: "flex", flexWrap: "wrap", gap: "12px", maxWidth: "620px", marginBottom: "8px" }}>
         <input style={champStyle} value={motCle} onChange={(e) => setMotCle(e.target.value)} placeholder="Code (ex : SUCY#2027!)" />
