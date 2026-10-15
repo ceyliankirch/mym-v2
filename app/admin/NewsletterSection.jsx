@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import PagePleine from "./PagePleine";
 import {
   Mail, Users, Plus, Trash2, Edit, Download, Upload, X,
   Search, Loader,
@@ -58,9 +59,8 @@ function ContactModal({ contact, onClose, onSaved }) {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(17,76,90,0.6)", backdropFilter: "blur(4px)", padding: "20px" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: C.white, width: "100%", maxWidth: "440px", borderRadius: "24px", padding: "28px", position: "relative" }}>
-        <button type="button" onClick={onClose} style={{ position: "absolute", top: "20px", right: "20px", background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>
+    <PagePleine onClose={onClose} z={9999}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "28px", position: "relative" }}>
         <h2 style={{ fontSize: "18px", fontWeight: 900, color: C.teal, marginBottom: "20px" }}>{isEditing ? "Modifier le contact" : "Ajouter un contact"}</h2>
 
         {error && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "10px 14px", borderRadius: "10px", fontSize: "12px", fontWeight: 600, marginBottom: "14px" }}>{error}</div>}
@@ -96,7 +96,7 @@ function ContactModal({ contact, onClose, onSaved }) {
           {isSubmitting ? "Enregistrement..." : isEditing ? "Enregistrer" : "Ajouter le contact"}
         </button>
       </form>
-    </div>
+    </PagePleine>
   );
 }
 
