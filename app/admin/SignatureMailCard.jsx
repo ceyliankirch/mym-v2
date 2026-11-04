@@ -46,15 +46,19 @@ function Signature({ f, innerRef }) {
         <img src={LOGO_SRC} alt="" crossOrigin="anonymous" style={{ width: 150, height: 150, objectFit: "contain", flexShrink: 0 }} />
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 26, fontWeight: 900, color: C.teal, lineHeight: 1.05, letterSpacing: -0.3 }}>
-            {nomComplet || "Prénom Nom"}
+          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 10px" }}>
+            <span style={{ fontSize: 26, fontWeight: 900, color: C.teal, lineHeight: 1.05, letterSpacing: -0.3 }}>
+              {nomComplet || "Prénom Nom"}
+            </span>
+            {f.fonction && (
+              <span style={{ background: "#E8EEEC", color: C.teal, fontSize: 12, fontWeight: 800, padding: "4px 12px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                {f.fonction}
+              </span>
+            )}
           </div>
           <div style={{ display: "inline-block", marginTop: 8, background: C.yellow, color: C.teal, fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.8, padding: "5px 14px", borderRadius: 999 }}>
             Make Your Moment
           </div>
-          {f.fonction && (
-            <div style={{ marginTop: 7, color: C.teal, fontSize: 13, fontWeight: 700 }}>{f.fonction}</div>
-          )}
 
           <div style={{ marginTop: 10 }}>
             <Ligne icon={Phone}>{f.telephone}</Ligne>
