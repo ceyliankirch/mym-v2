@@ -21,6 +21,7 @@ import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
 import SejourSelect from "./SejourSelect";
 import PagePleine from "./PagePleine";
+import SignatureMailCard from "./SignatureMailCard";
 import { CATALOGUE_DOCUMENTS } from "@/lib/documents";
 
 // ⚡ IMPORTS SEJOURS
@@ -3450,6 +3451,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
               <ParametresCoordonneesCard parametres={parametres} />
               <ParametresVirementCard parametres={parametres} />
               <ParametresCodesReductionCard codes={codesReduction} />
+              <SignatureMailCard parametres={parametres} />
               <QrCodeCard
                 titre="📱 QR code — Page d'accueil"
                 description="Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé."
