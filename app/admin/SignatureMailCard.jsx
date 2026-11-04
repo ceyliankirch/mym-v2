@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import { Phone, Mail, Globe, MapPin, Download, Copy, Loader } from "lucide-react";
+import { enregistrerVisuelCommunication } from "@/app/actions/communication";
 
 const C = {
   yellow: "#FFC801",
@@ -48,10 +49,11 @@ function Signature({ f, innerRef }) {
           <div style={{ fontSize: 26, fontWeight: 900, color: C.teal, lineHeight: 1.05, letterSpacing: -0.3 }}>
             {nomComplet || "Prénom Nom"}
           </div>
+          <div style={{ display: "inline-block", marginTop: 8, background: C.yellow, color: C.teal, fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.8, padding: "5px 14px", borderRadius: 999 }}>
+            Make Your Moment
+          </div>
           {f.fonction && (
-            <div style={{ display: "inline-block", marginTop: 8, background: C.yellow, color: C.teal, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.8, padding: "4px 12px", borderRadius: 999 }}>
-              {f.fonction}
-            </div>
+            <div style={{ marginTop: 7, color: C.teal, fontSize: 13, fontWeight: 700 }}>{f.fonction}</div>
           )}
 
           <div style={{ marginTop: 10 }}>
@@ -63,9 +65,11 @@ function Signature({ f, innerRef }) {
         </div>
       </div>
 
-      <div style={{ background: C.teal, color: "#fff", padding: "9px 24px", fontSize: 12, fontWeight: 700, textAlign: "center", letterSpacing: 0.3 }}>
-        <span style={{ color: C.yellow, fontWeight: 900 }}>MAKE YOUR MOMENT</span>
-        {"  ·  "}Colonies de vacances, séjours &amp; sorties · Encadrement par des enseignants et éducateurs diplômés
+      <div style={{ padding: "0 24px 8px", textAlign: "center", color: "#64748b", fontSize: 12, fontWeight: 600 }}>
+        Colonies de vacances, séjours &amp; sorties
+      </div>
+      <div style={{ background: `linear-gradient(90deg, ${C.yellow}, ${C.saffron})`, color: C.teal, padding: "10px 24px", fontSize: 12, fontWeight: 800, textAlign: "center", letterSpacing: 0.3 }}>
+        Encadrement de qualité par des enseignants et éducateurs diplômés
       </div>
     </div>
   );
@@ -95,6 +99,24 @@ export default function SignatureMailCard({ parametres }) {
     return mod.toPng(sigRef.current, { pixelRatio: 3, cacheBust: true, backgroundColor: "#ffffff" });
   };
 
+  // Enregistre la signature générée dans la bibliothèque de communication (échec non bloquant)
+  const archiver = async (dataUrl) => {
+    try {
+      const nomComplet = `${form.prenom} ${form.nom}`.trim() || "Sans nom";
+      const res = await enregistrerVisuelCommunication({
+        dataUrl,
+        type: "signature",
+        nom: `Signature — ${nomComplet}`,
+        largeur: SIG_W * 3,
+        hauteur: sigRef.current?.offsetHeight ? sigRef.current.offsetHeight * 3 : null,
+      });
+      return !res?.error;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
   const nomFichier = () => {
     const base = `signature-${form.prenom}-${form.nom}`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return `${base || "signature-mym"}.png`;
@@ -109,7 +131,8 @@ export default function SignatureMailCard({ parametres }) {
       a.href = dataUrl;
       a.download = nomFichier();
       a.click();
-      setMsg("Signature téléchargée ✅");
+      const ok = await archiver(dataUrl);
+      setMsg(ok ? "Signature téléchargée et enregistrée dans Communication → Bibliothèque ✅" : "Signature téléchargée (enregistrement dans la bibliothèque impossible)");
     } catch (e) {
       console.error(e);
       setMsg("Erreur lors de la génération de l'image.");
@@ -125,7 +148,8 @@ export default function SignatureMailCard({ parametres }) {
       const dataUrl = await generer();
       const blob = await (await fetch(dataUrl)).blob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      setMsg("Image copiée : collez-la (Cmd/Ctrl+V) dans votre signature ✅");
+      const ok = await archiver(dataUrl);
+      setMsg(ok ? "Image copiée (et enregistrée dans la bibliothèque) : collez-la avec Cmd/Ctrl+V ✅" : "Image copiée : collez-la avec Cmd/Ctrl+V ✅");
     } catch (e) {
       console.error(e);
       setMsg("Copie impossible sur ce navigateur : utilisez le téléchargement.");

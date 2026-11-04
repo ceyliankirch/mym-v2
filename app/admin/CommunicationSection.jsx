@@ -400,6 +400,7 @@ function Bibliotheque({ fichiers, onRefresh }) {
     const map = {
       flyer: { bg: "#e0f2fe", fg: "#075985", label: "Flyer" },
       instagram: { bg: "#fce7f3", fg: "#be185d", label: "Instagram" },
+      signature: { bg: "#fef3c7", fg: "#92400e", label: "Signature" },
       import: { bg: C.arctic, fg: C.gray, label: "Import" },
     };
     const b = map[type] || map.import;
@@ -431,7 +432,7 @@ function Bibliotheque({ fichiers, onRefresh }) {
               <div key={f.id} style={{ background: C.white, borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 12px rgba(17,76,90,0.04)", display: "flex", flexDirection: "column" }}>
                 <div style={{ aspectRatio: "1 / 1", background: C.arctic, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                   {estImage
-                    ? <img src={f.url} alt={f.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ? <img src={f.url} alt={f.nom} style={{ width: "100%", height: "100%", objectFit: f.type === "signature" ? "contain" : "cover", background: "#fff" }} />
                     : <FileText size={40} color={C.gray} />}
                 </div>
                 <div style={{ padding: "12px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
