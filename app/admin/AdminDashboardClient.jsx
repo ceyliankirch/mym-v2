@@ -1397,6 +1397,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
     { id: "4", type: "email", label: "Adresse Email", required: true },
     { id: "5", type: "tel", label: "Téléphone n°1", required: true },
     { id: "6", type: "tel", label: "Téléphone n°2", required: false },
+    { id: "28", type: "text", label: "Adresse postale (rue, code postal, ville)", required: true },
     { id: "7", type: "text", label: "N° de Sécurité Sociale", required: true },
     { id: "8", type: "text", label: "N° de Police d'assurance", required: true },
     { id: "9", type: "text", label: "Compagnie d'assurance", required: true },
