@@ -52,15 +52,27 @@ const C = {
 };
 
 const MENU = [
-  { id: "dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { id: "sejours", label: "Séjours", icon: Map },
-  { id: "inscriptions", label: "Inscriptions", icon: FileText },
-  { id: "galerie", label: "Galerie Photos", icon: ImageIcon },
-  { id: "newsletter", label: "Liste de diffusion", icon: Mail },
-  { id: "modeles-newsletter", label: "Modèles newsletter", icon: FileText },
-  { id: "statistiques", label: "Statistiques", icon: BarChart3 },
-  { id: "settings", label: "Paramètres (Équipe)", icon: Settings },
+  { id: "dashboard", label: "Vue d'ensemble", icon: LayoutDashboard, group: "Principal" },
+  { id: "sejours", label: "Séjours", icon: Map, group: "Principal" },
+  { id: "inscriptions", label: "Inscriptions", icon: FileText, group: "Principal" },
+  { id: "statistiques", label: "Statistiques", icon: BarChart3, group: "Principal" },
+  { id: "galerie", label: "Galerie Photos", icon: ImageIcon, group: "Contenu & communication" },
+  { id: "newsletter", label: "Liste de diffusion", icon: Mail, group: "Contenu & communication" },
+  { id: "modeles-newsletter", label: "Modèles newsletter", icon: FileText, group: "Contenu & communication" },
+  { id: "settings", label: "Paramètres (Équipe)", icon: Settings, group: "Réglages" },
 ];
+
+// Sous-titre affiché sous le titre de chaque page de l'admin
+const SOUS_TITRES = {
+  dashboard: "Un coup d'œil sur l'activité de l'association.",
+  sejours: "Créez, publiez et suivez vos séjours et sorties.",
+  inscriptions: "Toutes les inscriptions, avec leur statut et l'adresse des familles.",
+  galerie: "Albums et photos affichés sur le site.",
+  newsletter: "Les contacts qui reçoivent vos newsletters.",
+  "modeles-newsletter": "Les modèles de mails prêts à envoyer.",
+  statistiques: "Fréquentation, origine des familles et chiffres clés.",
+  settings: "Coordonnées, paiement, codes de réduction et équipe d'encadrants.",
+};
 
 const STATUT_INSCRIPTION_COLORS = {
   "Inscription envoyée": { bg: "#e0f2fe", color: "#075985" },
@@ -616,7 +628,7 @@ function ModalChambres({ sejour, inscriptions, onClose }) {
 
   return (
     <PagePleine onClose={onClose} z={9999}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "920px", borderRadius: "24px", padding: "32px", position: "relative" }} onClick={(e) => e.stopPropagation()}>
+      <div className="pp-wide" style={{ background: C.white, width: "100%", borderRadius: "24px", padding: "32px", position: "relative" }} onClick={(e) => e.stopPropagation()}>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>🛏️ Chambres — {sejour.titre}</h2>
         <p style={{ fontSize: "13px", color: C.gray, marginBottom: "16px", maxWidth: "640px" }}>
@@ -904,16 +916,14 @@ const compressToWebP = (file, maxWidth = 1200, quality = 0.8) => {
 /* ── COMPOSANTS UI ── */
 function StatCard({ title, value, icon: Icon, color }) {
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "24px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", display: "flex", flexDirection: "column", gap: "16px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div style={{ width: "48px", height: "48px", borderRadius: "16px", background: color + "20", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon size={24} style={{ color: color }} />
+    <div style={{ background: C.white, borderRadius: "16px", padding: "20px 22px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", display: "flex", flexDirection: "column", gap: "14px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+        <p style={{ fontSize: "13px", fontWeight: 600, color: C.gray, margin: 0 }}>{title}</p>
+        <div style={{ width: "34px", height: "34px", borderRadius: "10px", background: color + "20", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={17} style={{ color: color }} />
         </div>
       </div>
-      <div>
-        <p style={{ fontSize: "13px", fontWeight: 700, color: C.gray, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>{title}</p>
-        <h3 style={{ fontSize: "28px", fontWeight: 900, color: C.teal, lineHeight: 1 }}>{value}</h3>
-      </div>
+      <h3 style={{ fontSize: "30px", fontWeight: 900, color: C.teal, lineHeight: 1, margin: 0 }}>{value}</h3>
     </div>
   );
 }
@@ -1455,7 +1465,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
 
   return (
     <PagePleine onClose={() => setSejourEnEdition(null)} z={9999}>
-      <div style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
+      <div className="pp-wide" style={{ background: C.white, width: "100%", borderRadius: "24px", padding: "32px", position: "relative" }}>
         
         
         <h2 style={{ fontSize: "22px", fontWeight: 900, color: C.teal, marginBottom: "20px" }}>
@@ -1507,7 +1517,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
         }} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           
           {/* ── ONGLET 1 : INFOS DE BASE ── */}
-          <div style={{ display: tab === "infos" ? "flex" : "none", flexDirection: "column", gap: "20px" }}>
+          <div className="cols-2 stack20" style={{ display: tab === "infos" ? "block" : "none" }}>
             <ImageUpload defaultValue={isEditing ? sejourData.imageUrl : null} onImageCompressed={setCompressedImage} showFocalPoint focalDefault={{ x: isEditing ? (sejourData.imageFocalX ?? 50) : 50, y: isEditing ? (sejourData.imageFocalY ?? 50) : 50 }} />
 
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
@@ -1607,7 +1617,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           </div>
 
           {/* ── ONGLET 2 : DÉTAILS ET GALERIE ── */}
-          <div style={{ display: tab === "details" ? "flex" : "none", flexDirection: "column", gap: "20px" }}>
+          <div className="cols-2 stack20" style={{ display: tab === "details" ? "block" : "none" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Résumé rapide (En bref)</label>
               <textarea name="shortDescription" defaultValue={isEditing ? sejourData.shortDescription : ""} rows="2" placeholder="Une phrase d'accroche pour décrire l'ambiance du séjour..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}`, resize: "none", fontFamily: "inherit" }} />
@@ -1631,7 +1641,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
           </div>
 
           {/* ── ONGLET 3 : ÉDITEUR DE FORMULAIRE D'INSCRIPTION ── */}
-          <div style={{ display: tab === "form" ? "flex" : "none", flexDirection: "column", gap: "16px" }}>
+          <div className="form-narrow" style={{ display: tab === "form" ? "flex" : "none", flexDirection: "column", gap: "16px" }}>
             <div style={{ background: C.arctic, padding: "16px", borderRadius: "16px", marginBottom: "8px" }}>
               <h4 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, marginBottom: "4px" }}>Générateur de formulaire</h4>
               <p style={{ fontSize: "12px", color: C.gray, lineHeight: 1.5 }}>
@@ -1698,7 +1708,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             </div>
           </div>
 
-          <div style={{ display: tab === "documents" ? "flex" : "none", flexDirection: "column", gap: "16px" }}>
+          <div className="form-narrow" style={{ display: tab === "documents" ? "flex" : "none", flexDirection: "column", gap: "16px" }}>
             <div style={{ background: C.arctic, padding: "16px", borderRadius: "16px", marginBottom: "8px" }}>
               <h4 style={{ fontSize: "14px", fontWeight: 800, color: C.teal, marginBottom: "4px" }}>Documents requis</h4>
               <p style={{ fontSize: "12px", color: C.gray, lineHeight: 1.5 }}>
@@ -1942,7 +1952,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
 
   return (
     <PagePleine onClose={onClose} z={9999}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
+      <div className="pp-wide" onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", borderRadius: "24px", padding: "32px", position: "relative" }}>
 
         <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "4px" }}>{sejour.titre}</h2>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "24px" }}>
@@ -1960,7 +1970,7 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
             <p>Aucune inscription pour ce séjour pour le moment.</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="wide-grid">
             {inscrits.map((ins) => {
               const docsManquants = (ins.enfant?.documents || []).filter((d) => d.statut === "MANQUANT").length;
               const dotColor = ins.enfant?.sexe === "M" ? "#3b82f6" : ins.enfant?.sexe === "F" ? "#ec4899" : C.gray;
@@ -2325,8 +2335,8 @@ function ModalFicheEnfant({ enfant, sejours = [], onClose, onDelete }) {
   ];
 
   return (
-    <PagePleine onClose={onClose} z={9999}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: C.white, width: "100%", maxWidth: "760px", borderRadius: "24px", padding: "32px", position: "relative" }}>
+    <PagePleine onClose={onClose} z={9999} variant="drawer">
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", position: "relative" }}>
 
         {/* En-tête */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
@@ -2588,7 +2598,7 @@ function ModalQrCode({ sejour, onClose }) {
 function TableInscriptions({ data, onFicheEnfant, onChangerStatut }) {
   const recent = (data || []).slice(0, 8);
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+    <div style={{ background: C.white, borderRadius: "18px", padding: "32px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)" }}>
       <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "24px" }}>Dernières Inscriptions</h2>
       {recent.length === 0 ? (
         <p style={{ fontSize: "13px", color: C.gray }}>Aucune inscription pour le moment.</p>
@@ -2634,7 +2644,7 @@ function TableSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant,
   const actionBtnStyle = { background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.teal, transition: "background 0.2s" };
 
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", overflowX: "auto" }}>
+    <div style={{ background: C.white, borderRadius: "18px", padding: "32px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", overflowX: "auto" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "800px" }}>
         <thead>
           <tr style={{ borderBottom: `2px solid ${C.arctic}`, textAlign: "left" }}>
@@ -2715,7 +2725,7 @@ function GridSejours({ data, onEdit, onDelete, onToggleStatut, onToggleEnAvant, 
         const isEnAvant = s.enAvant;
 
         return (
-          <div key={s.id} className="hover-row" style={{ background: isPublie ? C.white : "#f8fafc", borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column", opacity: isPublie ? 1 : 0.6, transition: "all 0.2s" }}>
+          <div key={s.id} className="hover-row" style={{ background: isPublie ? C.white : "#f8fafc", borderRadius: "20px", overflow: "hidden", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column", opacity: isPublie ? 1 : 0.6, transition: "all 0.2s" }}>
             <div style={{ height: "130px", background: C.arctic, position: "relative", overflow: "hidden" }}>
               {s.imageUrl ? <img src={s.imageUrl} style={{width:'100%', height:'100%', objectFit:'cover', filter: isPublie ? "none" : "grayscale(100%)"}} /> : <ImageIcon size={32} color={C.gray} style={{opacity:0.3, position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)'}} />}
               <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: "8px" }}>
@@ -2771,7 +2781,7 @@ function GridAlbums({ data, onEdit, onDelete }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "20px" }}>
       {data.map((album) => (
-        <div key={album.id} style={{ background: C.white, borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column" }}>
+        <div key={album.id} style={{ background: C.white, borderRadius: "20px", overflow: "hidden", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", border: `1px solid ${C.lightGray}`, display: "flex", flexDirection: "column" }}>
           <div style={{ height: "150px", background: C.arctic, position: "relative", overflow: "hidden" }}>
             {album.photos?.[0] ? <img src={album.photos[0].url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <ImageIcon size={32} color={C.gray} style={{ opacity: 0.3, position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />}
             <div style={{ position: "absolute", top: "12px", right: "12px", background: C.white, padding: "6px 10px", borderRadius: "10px", fontSize: "12px", fontWeight: 800, color: C.teal, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>{album.photos?.length || 0} photo{(album.photos?.length || 0) > 1 ? "s" : ""}</div>
@@ -2836,7 +2846,7 @@ function ParametresCoordonneesCard({ parametres }) {
   const labelStyle = { display: "block", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: C.gray, marginBottom: "6px" };
 
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+    <div style={{ background: C.white, borderRadius: "18px", padding: "28px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>📇 Coordonnées de l'association</h2>
       <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
         Email, téléphone et adresse affichés sur tout le site : page Contact, mentions légales, pied de page, fiches séjours… Un changement ici se répercute partout, sans avoir à modifier chaque page.
@@ -2908,7 +2918,7 @@ function ParametresCodesReductionCard({ codes }) {
   const btn = { border: "none", padding: "8px 12px", borderRadius: "8px", fontWeight: 700, fontSize: "12px", cursor: "pointer" };
 
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+    <div style={{ background: C.white, borderRadius: "18px", padding: "28px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>🏷️ Codes de réduction Val-de-Marne</h2>
       <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
         Entrez le code exact souhaité (lettres, chiffres, symboles) : il est créé tel quel, en respectant majuscules et minuscules. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne &amp; partenaires CSE » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
@@ -2978,7 +2988,7 @@ function ParametresVirementCard({ parametres }) {
   const labelStyle = { display: "block", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: C.gray, marginBottom: "6px" };
 
   return (
-    <div style={{ background: C.white, borderRadius: "24px", padding: "28px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
+    <div style={{ background: C.white, borderRadius: "18px", padding: "28px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>💳 Paiement par virement</h2>
       <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
         Renseignez l'IBAN de l'association. Quand une famille choisit « Virement bancaire » comme moyen de paiement dans le formulaire d'inscription, ces informations sont ajoutées automatiquement dans son email de confirmation, sous forme d'un bloc avec les instructions de paiement.
@@ -3177,18 +3187,43 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
   });
 
   return (
-    <AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} activeTab={activeTab} setActiveTab={setActiveTab} MENU={MENU} C={C}>
+    <AdminLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} activeTab={activeTab} setActiveTab={setActiveTab} MENU={MENU} C={C} adminPrenom={adminPrenom} recherche={rechercheEnfant} onRecherche={(v) => { setRechercheEnfant(v); if (v.trim() && activeTab !== "inscriptions") setActiveTab("inscriptions"); }}>
       
       <style>{`
         .extra-actions { opacity: 0; transform: translateX(10px); transition: all 0.2s ease; }
         .hover-row:hover .extra-actions { opacity: 1; transform: translateX(0); }
+
+        /* 🖥️ Grands écrans (ultrawide) : on exploite la largeur au lieu de laisser du vide */
+        .admin-content table thead tr { background: #f6f9f8; }
+        .admin-content table thead th { font-size: 11px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.6px; }
+        .admin-content table thead th:first-child { border-radius: 10px 0 0 10px; }
+        .admin-content table thead th:last-child { border-radius: 0 10px 10px 0; }
+        .admin-content table tbody tr:hover { background: #f8fbfa; }
+        .pp-wide { max-width: 760px; }
+        .pp-mid { max-width: 760px; }
+        .stack20 > * { margin-bottom: 20px; break-inside: avoid; }
+        @media (min-width: 1200px) {
+          .pp-wide, .pp-mid { max-width: 1100px; }
+          .cols-2 { column-count: 2; column-gap: 48px; }
+          .form-narrow { max-width: 900px; margin: 0 auto; width: 100%; }
+        }
+        @media (min-width: 1800px) {
+          .pp-wide { max-width: 1560px; }
+          .cols-3 { column-count: 3 !important; }
+        }
+        .wide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr)); gap: 12px; align-items: start; }
+        @media (min-width: 1700px) {
+          .dash-cols { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); align-items: start; }
+          .admin-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; align-items: start; }
+          .admin-cards > .span-all { grid-column: 1 / -1; }
+        }
       `}</style>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "40px 32px" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div className="admin-content" style={{ flex: 1, overflowY: "auto", padding: "32px 32px 40px" }}>
+        <div style={{ maxWidth: "2400px", margin: "0 auto" }}>
           
-          <div style={{ marginBottom: "40px" }}>
-            <h1 style={{ fontSize: "32px", fontWeight: 900, color: C.teal }}>
+          <div style={{ marginBottom: "28px" }}>
+            <h1 style={{ fontSize: "26px", fontWeight: 900, color: C.teal, margin: 0 }}>
               {activeTab === "dashboard" && (
                 <>Salut <span style={{ color: C.saffron }}>{adminPrenom || "l'équipe"}</span> 👋🏻</>
               )}
@@ -3200,6 +3235,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
               {activeTab === "statistiques" && "Statistiques 📊"}
               {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
             </h1>
+            {SOUS_TITRES[activeTab] && <p style={{ fontSize: "14px", color: C.gray, margin: "6px 0 0" }}>{SOUS_TITRES[activeTab]}</p>}
           </div>
 
           {activeTab === "dashboard" && (
@@ -3212,8 +3248,8 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
                 <StatCard title="Docs manquants" value={stats?.documentsManquants || 0} icon={AlertTriangle} color={"#ef4444"} />
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                <div style={{ background: C.white, borderRadius: "24px", padding: "32px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+              <div className="dash-cols" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div style={{ background: C.white, borderRadius: "18px", padding: "32px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)" }}>
                   <h2 style={{ fontSize: "18px", fontWeight: 800, color: C.teal, marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}><CalendarDays size={18} color={C.saffron} /> Prochains départs</h2>
                   {(!prochainsDeparts || prochainsDeparts.length === 0) ? (
                     <p style={{ fontSize: "13px", color: C.gray }}>Aucun départ à venir.</p>
@@ -3357,7 +3393,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
                   <p>Aucune inscription ne correspond à ces critères.</p>
                 </div>
               ) : (
-                <div style={{ background: C.white, borderRadius: "20px", overflow: "hidden", boxShadow: "0 4px 16px rgba(17,76,90,0.04)" }}>
+                <div style={{ background: C.white, borderRadius: "20px", overflow: "hidden", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)" }}>
                   {inscriptionsFiltrees.map((ins, idx) => {
                     const col = couleurSejour(ins.sejourId);
                     const docs = ins.enfant?.documents || [];
@@ -3468,16 +3504,18 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
 
           {activeTab === "settings" && (
             <div>
+              <div className="admin-cards">
               <ParametresCoordonneesCard parametres={parametres} />
               <ParametresVirementCard parametres={parametres} />
               <ParametresCodesReductionCard codes={codesReduction} />
-              <SignatureMailCard parametres={parametres} />
+              <div className="span-all"><SignatureMailCard parametres={parametres} /></div>
               <QrCodeCard
                 titre="📱 QR code — Page d'accueil"
                 description="Un QR code vers la page d'accueil du site, à utiliser sur vos flyers, affiches ou tout autre support imprimé."
                 path=""
                 fileName="qr-make-your-moment-accueil"
               />
+              </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
                 <div>
@@ -3491,7 +3529,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "24px" }}>
                 {animateurs?.map(anim => (
-                  <div key={anim.id} style={{ background: C.white, borderRadius: "24px", padding: "24px", boxShadow: "0 4px 16px rgba(17,76,90,0.04)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
+                  <div key={anim.id} style={{ background: C.white, borderRadius: "24px", padding: "24px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative" }}>
                     
                     <div style={{ position: "absolute", top: "16px", right: "16px", display: "flex", gap: "8px" }}>
                       <button onClick={() => setAnimEnEdition(anim)} style={{ background: C.arctic, border: "none", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", color: C.teal, display: "flex", alignItems: "center", justifyContent: "center" }}><Edit size={14}/></button>

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Le site est conçu en clair : on empêche un navigateur en mode sombre de peindre
+   un fond noir derrière les éléments transparents (ex. la navbar avant scroll). */
+html {
+  color-scheme: light;
+  background: #ffffff;
+}
+
 /* On définit la police sur TOUS les éléments */
 * {
   font-family: var(--font-montserrat), sans-serif !important;
