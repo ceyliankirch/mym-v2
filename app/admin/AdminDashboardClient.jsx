@@ -308,6 +308,21 @@ function construireReponsesFiche(ins) {
   return nettoye.some((x) => x.type === "field") ? nettoye : [];
 }
 
+// 📍 Retrouve l'adresse du représentant dans les réponses au formulaire d'inscription
+// (le libellé du champ est libre : "Adresse", "Code postal", "Ville"…). On ignore les
+// adresses email. Renvoie une chaîne prête à afficher, ou "".
+function trouverAdresseInscription(ins) {
+  const rep = ins?.reponsesFormulaire;
+  if (!rep || typeof rep !== "object") return "";
+  const parts = [];
+  Object.entries(rep).forEach(([k, v]) => {
+    if (typeof v !== "string" || !v.trim()) return;
+    if (/mail|courriel/i.test(k)) return;
+    if (/adresse|code\s*postal|\bcp\b|ville|commune/i.test(k)) parts.push(v.trim());
+  });
+  return parts.join(", ");
+}
+
 // 🛏️ Déduit le type de chambre (simple/double), le binôme déclaré et le statut "liste
 // d'attente" d'une inscription, à partir des réponses au formulaire d'inscription.
 function deriveChambreInfo(ins) {
@@ -1963,6 +1978,9 @@ function ModalInscrits({ sejour, inscriptions, onClose, onChangerStatut, onDelet
                       <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>
                         Parent : {ins.client?.prenom} {ins.client?.nom} {ins.client?.email ? `· ${ins.client.email}` : ""} {ins.client?.telephone ? `· ${ins.client.telephone}` : ""}
                       </p>
+                      {trouverAdresseInscription(ins) && (
+                        <p style={{ fontSize: "12px", color: C.gray, marginTop: "2px" }}>📍 {trouverAdresseInscription(ins)}</p>
+                      )}
                       {docsManquants > 0 && (
                         <p style={{ fontSize: "11px", color: "#ef4444", fontWeight: 700, marginTop: "4px" }}>{docsManquants} document(s) manquant(s)</p>
                       )}
@@ -3366,6 +3384,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
                               {ins.sejour?.titre || "Séjour supprimé"}
                             </span>
                             <span>· {ins.client?.prenom} {ins.client?.nom}</span>
+                            {trouverAdresseInscription(ins) && <span>· 📍 {trouverAdresseInscription(ins)}</span>}
                           </p>
                         </div>
 
