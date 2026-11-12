@@ -326,8 +326,8 @@ export async function creerInscription(
     // 📧 Un email part toujours à la soumission, avec un récapitulatif PDF en pièce jointe :
     // - Email de "pré-inscription" pour tous les moyens de paiement, avec les modalités du moyen
     //   choisi (carte : bouton de paiement selon le tarif ; virement : IBAN ; chèque, chèques-vacances,
-    //   espèces : instructions). L'email "Inscription validée" (avec la fiche sanitaire) part plus tard,
-    //   quand l'admin constate le paiement reçu.
+    //   espèces : instructions), avec la fiche sanitaire en pièce jointe (si activée sur le séjour).
+    //   L'email "Inscription validée" part plus tard, quand l'admin constate le paiement reçu.
     // - Liste d'attente chambre double : email "Inscription validée" directement (paiement demandé plus tard).
     // Une notification interne (avec le même PDF) part également à l'organisation.
     let pdfBuffer;
@@ -356,6 +356,8 @@ export async function creerInscription(
           virement: virementInfo,
           courrier: await recupererCourrierPaiement(),
           nomComplet: [enfant.prenom, enfant.nom].filter(Boolean).join(" "),
+          dateDebut: sejour.dateDebut,
+          inclureFicheSanitaire: sejour.ficheSanitaireActive !== false,
         });
       } else {
         await sendInscriptionConfirmationEmail({
