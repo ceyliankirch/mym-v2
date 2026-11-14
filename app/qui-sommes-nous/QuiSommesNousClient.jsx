@@ -8,6 +8,16 @@ import {
 
 const ANIMATEURS_PAR_PAGE = 12;
 
+// Couleurs de fond des pastilles de l'équipe (pastels, attribuées à tour de rôle)
+const COULEURS_EQUIPE = [
+  { fond: "#FFE08A" },
+  { fond: "#FFB8CE" },
+  { fond: "#A8E6CB" },
+  { fond: "#B9C7FF" },
+  { fond: "#FFC9A3" },
+  { fond: "#DDBFF2" },
+];
+
 export default function QuiSommesNousClient({ equipe }) {
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil((equipe?.length || 0) / ANIMATEURS_PAR_PAGE));
@@ -21,53 +31,39 @@ export default function QuiSommesNousClient({ equipe }) {
     <div className="min-h-screen bg-[#F1F6F4] text-[#114C5A] font-sans overflow-x-hidden selection:bg-[#FFC801] selection:text-[#114C5A]">
 
       {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
-      <section className="relative px-8 pt-24 pb-20 max-w-[1320px] mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-        <div className="flex-1 w-full animate-[fadeUp_0.8s_ease_both]">
-          <div className="inline-flex items-center gap-2 bg-[#9c0039] rounded-full px-4 py-2 mb-8">
-            <span className="w-2 h-2 rounded-full bg-[#FFC801] shrink-0" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">Notre association</span>
-          </div>
-          <h1 className="font-black leading-[1.1] tracking-tight mb-6 text-5xl lg:text-7xl text-[#114C5A]">
-            Qui sommes-<span className="text-[#FFC801]">nous</span> ?
-          </h1>
-          <div className="flex flex-wrap gap-6 items-center">
-            <div className="flex -space-x-3">
-              {/* ⚡ BOUCLE DYNAMIQUE SUR L'ÉQUIPE NEON */}
-              {equipe && equipe.length > 0 ? (
-                <>
-                  {equipe.slice(0, 3).map((anim, i) => (
-                    <img key={i} className="w-12 h-12 rounded-full border-2 border-[#F1F6F4] object-cover bg-[#e2e8f0]" 
-                         src={anim.imageUrl || "https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=100&q=80"} 
-                         alt={anim.nom} />
-                  ))}
-                  {equipe.length > 3 && (
-                    <div className="w-12 h-12 rounded-full border-2 border-[#F1F6F4] bg-[#FFC801] flex items-center justify-center text-[#114C5A] font-bold text-xs z-10">
-                      +{equipe.length - 3}
-                    </div>
-                  )}
-                </>
-              ) : (
-                /* Fallback de sécurité si la BDD est vide */
-                <>
-                  <img className="w-12 h-12 rounded-full border-2 border-[#F1F6F4] object-cover" src="/QSN/QSN-02.webp" alt="Team" />
-                  <img className="w-12 h-12 rounded-full border-2 border-[#F1F6F4] object-cover" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80" alt="Team" />
-                  <img className="w-12 h-12 rounded-full border-2 border-[#F1F6F4] object-cover" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Team" />
-                </>
-              )}
-            </div>
-            <p className="text-sm font-bold text-[#114C5A] leading-tight">
-              Une équipe d'encadrants<br/><span className="text-[#8aaa] font-semibold">passionnés & diplômés</span>
-            </p>
-          </div>
-        </div>
+      <section className="relative overflow-hidden bg-[#F1F6F4]">
+        {/* Décors : gribouillis et étoile */}
+        <svg aria-hidden viewBox="0 0 300 400" className="hidden md:block absolute right-0 top-0 h-[75%] opacity-90" fill="none" stroke="#FFB8CE" strokeWidth="24" strokeLinecap="round">
+          <path d="M260 10 C 150 40, 300 120, 190 170 S 120 290, 230 380" />
+        </svg>
+        <svg aria-hidden viewBox="0 0 40 40" className="absolute left-[48%] top-[46%] w-14 hidden lg:block" fill="#C6F000">
+          <path d="M20 0l4 14 14-4-10 10 10 10-14-4-4 14-4-14-14 4 10-10L2 10l14 4z" />
+        </svg>
 
-        <div className="flex-1 w-full relative h-[400px] lg:h-[600px] animate-[fadeUp_0.8s_ease_0.2s_both]">
-          <div className="absolute top-0 right-0 w-[80%] h-[85%] rounded-[32px] overflow-hidden shadow-2xl shadow-[#114c5a20]">
-            <img src="/QSN/QSN-01.webp" alt="Colonie de vacances" className="w-full h-full object-cover" />
+        <div className="relative max-w-[1320px] mx-auto px-8 pt-14 lg:pt-16 lg:h-[440px]">
+          <div className="animate-[fadeUp_0.8s_ease_both] max-w-[720px]">
+            <p className="text-sm lg:text-base font-bold text-[#114C5A] mb-4">
+              Des enseignants et des éducateurs diplômés, passionnés par les vacances des enfants
+            </p>
+            <h1 className="font-black leading-[0.95] tracking-tight text-[clamp(2.4rem,4.6vw,4.6rem)]">
+              <span className="block text-[#114C5A] whitespace-nowrap">Qui sommes-</span>
+              <span className="block text-[#C6F000]">nous ?</span>
+            </h1>
+            <p className="mt-6 text-[#41545c] max-w-md leading-relaxed">
+              Une équipe soudée, des séjours pensés pour que chaque enfant vive de vrais moments.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="/sejours-enfants-ados" className="bg-[#C6F000] text-[#114C5A] font-extrabold text-sm px-7 py-3 rounded-full hover:-translate-y-0.5 transition-transform">Nos séjours</a>
+              <a href="#equipe" className="bg-[#FFC801] text-[#114C5A] font-extrabold text-sm px-7 py-3 rounded-full hover:-translate-y-0.5 transition-transform">Rencontrer l&apos;équipe</a>
+            </div>
           </div>
-          <div className="absolute bottom-0 left-0 w-[55%] h-[45%] rounded-[24px] overflow-hidden border-8 border-[#F1F6F4] shadow-xl shadow-[#114c5a15]">
-            <img src="QSN/QSN-03.webp" alt="Activités enfants" className="w-full h-full object-cover" />
-          </div>
+
+          {/* L'équipe détourée, sur le côté */}
+          <img
+            src="/QSN/QSN-equipe-detoure.webp"
+            alt="L'équipe Make Your Moment, bonnets jaune fluo"
+            className="relative lg:absolute lg:right-0 lg:bottom-0 lg:h-full lg:w-auto lg:max-w-[64%] lg:object-contain lg:object-right-bottom w-full max-w-full mt-8 lg:mt-0 mx-auto animate-[fadeUp_0.8s_ease_0.2s_both] z-10"
+          />
         </div>
       </section>
 
@@ -115,8 +111,14 @@ export default function QuiSommesNousClient({ equipe }) {
       </section>
 
       {/* ── SECTION : L'ÉQUIPE (DATA DEPUIS NEON) ────────────────── */}
-      <section className="bg-[#F1F6F4] py-24 px-8">
-        <div className="max-w-[1320px] mx-auto">
+      <section id="equipe" className="relative overflow-hidden bg-[#F1F6F4] py-24 px-8 scroll-mt-24">
+        {/* Points décoratifs */}
+        <span aria-hidden className="hidden md:block absolute top-24 left-[6%] w-6 h-6 rounded-full bg-[#FFB3D1]" />
+        <span aria-hidden className="hidden md:block absolute top-[38%] right-[4%] w-7 h-7 rounded-full bg-[#d9dee2]" />
+        <span aria-hidden className="hidden md:block absolute top-[55%] left-[3%] w-5 h-5 rounded-full bg-[#d9dee2]" />
+        <span aria-hidden className="hidden md:block absolute bottom-32 right-[10%] w-6 h-6 rounded-full bg-[#7fdcc0]" />
+        <span aria-hidden className="hidden md:block absolute bottom-16 left-[12%] w-7 h-7 rounded-full bg-[#d9dee2]" />
+        <div className="relative max-w-[1320px] mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-bold text-[#FFC801] uppercase tracking-widest mb-3">Rencontrez-nous</p>
             <h2 className="text-3xl lg:text-5xl font-black text-[#114C5A] tracking-tight">Tous enseignants & des éducateurs diplômés</h2>
@@ -125,23 +127,32 @@ export default function QuiSommesNousClient({ equipe }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-14 pb-8">
             {equipe && equipe.length > 0 ? (
-              equipePage.map(anim => (
-                <div key={anim.id} className="bg-white rounded-[24px] overflow-hidden shadow-lg shadow-[#114c5a08] transition-transform hover:-translate-y-2 duration-300 group">
-                  <div className="h-[280px] bg-[#e2e8f0] relative overflow-hidden">
-                    {anim.imageUrl ? (
-                      <img src={anim.imageUrl} alt={anim.nom} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#8aaa] bg-[#F1F6F4]">
-                        <Users size={40} className="opacity-20" />
-                      </div>
-                    )}
+              equipePage.map((anim, i) => (
+                <div key={anim.id} className="group flex flex-col items-center text-center lg:[&:nth-child(even)]:translate-y-10">
+                  <div className="relative">
+                    {/* Pastille de couleur : la photo détourée (PNG/WebP transparent) s'y pose */}
+                    <div
+                      className="w-36 h-36 sm:w-44 sm:h-44 lg:w-52 lg:h-52 rounded-full overflow-hidden relative transition-transform duration-300 group-hover:scale-105"
+                      style={{ background: COULEURS_EQUIPE[i % COULEURS_EQUIPE.length].fond }}
+                    >
+                      {anim.imageUrl ? (
+                        <img src={anim.imageUrl} alt={anim.nom} className="absolute inset-0 w-full h-full object-contain object-bottom" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Users size={40} className="text-white/70" />
+                        </div>
+                      )}
+                    </div>
+                    {/* Étiquette du prénom */}
+                    <span
+                      className={`absolute top-1 ${i % 2 === 0 ? "-left-3 sm:-left-5" : "-right-3 sm:-right-5"} bg-[#e9ecef] text-[#114C5A] font-black text-sm sm:text-base px-4 py-1.5 rounded-2xl shadow-sm whitespace-nowrap -rotate-3`}
+                    >
+                      {anim.nom}
+                    </span>
                   </div>
-                  <div className="p-6 text-center">
-                    <h3 className="text-lg font-black text-[#114C5A] mb-1">{anim.nom}</h3>
-                    <p className="text-[10px] font-bold text-[#FF9932] uppercase tracking-widest">{anim.role}</p>
-                  </div>
+                  <p className="mt-5 text-[10px] font-bold text-[#FF9932] uppercase tracking-widest">{anim.role}</p>
                 </div>
               ))
             ) : (
