@@ -779,6 +779,16 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos, googleReviews
       <section className="hero-bg" style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "center", padding: "0 32px" }}>
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "900px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", paddingBottom: "100px", paddingTop: "80px" }}>
 
+          <Link href="/patinoire" style={{
+            display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "28px",
+            background: "#1E88E5", color: "white", borderRadius: "999px", padding: "10px 20px",
+            fontSize: "13px", fontWeight: 800, textDecoration: "none", boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+          }}>
+            <Snowflake size={16} />
+            Soirée patinoire · 11 déc. — Inscrivez-vous !
+            <ArrowRight size={16} />
+          </Link>
+
           <div style={{ color: "white" }}>
             <h1 className="hero-title" style={{ position: "relative", fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: "24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div className="hero-logo-badge" style={{
