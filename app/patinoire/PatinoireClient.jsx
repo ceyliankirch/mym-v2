@@ -75,14 +75,17 @@ export default function PatinoireClient() {
   return (
     <div style={{ background: C.arctic, color: C.teal, overflowX: "hidden" }}>
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section style={{ position: "relative", minHeight: 460, display: "flex", alignItems: "center", background: C.teal }}>
+      <section style={{ position: "relative", minHeight: 560, display: "flex", alignItems: "center", background: C.teal }}>
+        {/* Photo calée à droite (les enfants restent entiers, quelle que soit la largeur d'écran) */}
+        <style>{`@media (max-width: 767px) { .patinoire-hero-photo { width: 100% !important; } .patinoire-hero-fade { width: 100% !important; background: rgba(17,76,90,0.72) !important; } }`}</style>
         <div
+          className="patinoire-hero-photo"
           style={{
-            position: "absolute", inset: 0,
-            backgroundImage: "url(/patinoire/patinoire-1.jpg)", backgroundSize: "cover", backgroundPosition: "center 60%",
+            position: "absolute", top: 0, right: 0, bottom: 0, width: "min(65%, 1250px)",
+            backgroundImage: "url(/patinoire/patinoire-1.jpg)", backgroundSize: "cover", backgroundPosition: "60% 35%",
           }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(17,76,90,0.94) 0%, rgba(17,76,90,0.75) 55%, rgba(17,76,90,0.25) 100%)" }} />
+        <div className="patinoire-hero-fade" style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: "min(65%, 1250px)", background: "linear-gradient(90deg, #114C5A 0%, rgba(17,76,90,0.55) 30%, rgba(17,76,90,0) 70%)" }} />
         <div style={{ position: "relative", maxWidth: 1320, width: "100%", margin: "0 auto", padding: "80px 32px", ...fade() }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.yellow, borderRadius: 999, padding: "8px 16px", marginBottom: 24 }}>
             <Snowflake size={14} style={{ color: C.teal }} />

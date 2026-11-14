@@ -16,6 +16,7 @@ import {
 
 import AdminLayout from "./AdminLayout";
 import NewsletterSection from "./NewsletterSection";
+import PatinoireSection from "./PatinoireSection";
 import NewsletterModeles from "./NewsletterModeles";
 import QrCodeCard from "@/components/QrCodeCard";
 import StatistiquesSection from "./StatistiquesSection";
@@ -59,7 +60,7 @@ const MENU = [
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon, group: "Contenu & communication" },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail, group: "Contenu & communication" },
   { id: "modeles-newsletter", label: "Modèles newsletter", icon: FileText, group: "Contenu & communication" },
-  { id: "patinoire", label: "Soirée patinoire", icon: Snowflake, group: "Contenu & communication", href: "/admin/patinoire" },
+  { id: "patinoire", label: "Soirée patinoire", icon: Snowflake, group: "Contenu & communication" },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings, group: "Réglages" },
 ];
 
@@ -71,6 +72,7 @@ const SOUS_TITRES = {
   galerie: "Albums et photos affichés sur le site.",
   newsletter: "Les contacts qui reçoivent vos newsletters.",
   "modeles-newsletter": "Les modèles de mails prêts à envoyer.",
+  patinoire: "Les inscrits à la soirée patinoire du 11 décembre.",
   statistiques: "Fréquentation, origine des familles et chiffres clés.",
   settings: "Coordonnées, paiement, codes de réduction et équipe d'encadrants.",
 };
@@ -3233,6 +3235,7 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
               {activeTab === "inscriptions" && "Inscriptions 🧒"}
               {activeTab === "newsletter" && "Liste de diffusion 📧"}
               {activeTab === "modeles-newsletter" && "Modèles newsletter 📰"}
+              {activeTab === "patinoire" && "Soirée patinoire ⛸️"}
               {activeTab === "statistiques" && "Statistiques 📊"}
               {activeTab === "settings" && "Paramètres & Équipe ⚙️"}
             </h1>
@@ -3500,6 +3503,8 @@ export default function AdminDashboardClient({ stats, adminPrenom, parametres, i
           {activeTab === "newsletter" && <NewsletterSection />}
 
           {activeTab === "modeles-newsletter" && <NewsletterModeles />}
+
+          {activeTab === "patinoire" && <PatinoireSection />}
 
           {activeTab === "statistiques" && <StatistiquesSection />}
 
