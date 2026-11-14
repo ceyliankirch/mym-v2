@@ -8,14 +8,14 @@ import {
 
 const ANIMATEURS_PAR_PAGE = 12;
 
-// Couleurs de fond des pastilles de l'équipe (pastels, attribuées à tour de rôle)
+// Pastilles de l'équipe : fond pastel + couleur (vive) des étiquettes de prénom, attribuées à tour de rôle
 const COULEURS_EQUIPE = [
-  { fond: "#FFE08A" },
-  { fond: "#FFB8CE" },
-  { fond: "#A8E6CB" },
-  { fond: "#B9C7FF" },
-  { fond: "#FFC9A3" },
-  { fond: "#DDBFF2" },
+  { fond: "#FFE08A", etiquette: "#FFC801", texte: "#114C5A" },
+  { fond: "#FFB8CE", etiquette: "#FF3D7F", texte: "#ffffff" },
+  { fond: "#A8E6CB", etiquette: "#12C57F", texte: "#04342C" },
+  { fond: "#B9C7FF", etiquette: "#2F5BFF", texte: "#ffffff" },
+  { fond: "#FFC9A3", etiquette: "#FF7A2F", texte: "#ffffff" },
+  { fond: "#DDBFF2", etiquette: "#B75CE0", texte: "#ffffff" },
 ];
 
 export default function QuiSommesNousClient({ equipe }) {
@@ -147,7 +147,8 @@ export default function QuiSommesNousClient({ equipe }) {
                     </div>
                     {/* Étiquette du prénom */}
                     <span
-                      className={`absolute top-1 ${i % 2 === 0 ? "-left-3 sm:-left-5" : "-right-3 sm:-right-5"} bg-[#e9ecef] text-[#114C5A] font-black text-sm sm:text-base px-4 py-1.5 rounded-2xl shadow-sm whitespace-nowrap -rotate-3`}
+                      className={`absolute top-1 ${i % 2 === 0 ? "-left-3 sm:-left-5" : "-right-3 sm:-right-5"} font-black text-sm sm:text-base px-4 py-1.5 rounded-2xl shadow-sm whitespace-nowrap -rotate-3`}
+                      style={{ background: COULEURS_EQUIPE[(i + 3) % COULEURS_EQUIPE.length].etiquette, color: COULEURS_EQUIPE[(i + 3) % COULEURS_EQUIPE.length].texte }}
                     >
                       {anim.nom}
                     </span>
