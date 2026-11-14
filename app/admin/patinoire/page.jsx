@@ -20,7 +20,8 @@ export default async function AdminPatinoirePage() {
   return (
     <div style={{ background: C.arctic, minHeight: "70vh", padding: "48px 24px", color: C.teal }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 28, fontWeight: 900, margin: "0 0 8px" }}>Soirée patinoire · 11 décembre</h1>
+        <a href="/admin" style={{ fontSize: 13, fontWeight: 700, color: C.teal, textDecoration: "none" }}>← Retour à l&apos;admin</a>
+        <h1 style={{ fontSize: 28, fontWeight: 900, margin: "12px 0 8px" }}>Soirée patinoire · 11 décembre</h1>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", margin: "20px 0 28px" }}>
           <div style={{ background: "#fff", borderRadius: 20, padding: "18px 28px" }}>
             <p style={{ margin: 0, fontSize: 32, fontWeight: 900 }}>{totalPatineurs}</p>

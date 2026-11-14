@@ -59,6 +59,7 @@ const MENU = [
   { id: "galerie", label: "Galerie Photos", icon: ImageIcon, group: "Contenu & communication" },
   { id: "newsletter", label: "Liste de diffusion", icon: Mail, group: "Contenu & communication" },
   { id: "modeles-newsletter", label: "Modèles newsletter", icon: FileText, group: "Contenu & communication" },
+  { id: "patinoire", label: "Soirée patinoire", icon: Snowflake, group: "Contenu & communication", href: "/admin/patinoire" },
   { id: "settings", label: "Paramètres (Équipe)", icon: Settings, group: "Réglages" },
 ];
 

@@ -136,7 +136,7 @@ export default function AdminLayout({
                   ? <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "1px", textTransform: "uppercase", color: "#a5bcc2", padding: i === 0 ? "4px 12px 8px" : "18px 12px 8px" }}>{item.group}</div>
                   : (i > 0 && <div style={{ width: "28px", height: "1px", background: C.lightGray, margin: "10px 0" }} />))}
                 <button
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => (item.href ? (window.location.href = item.href) : setActiveTab(item.id))}
                   title={!sidebarOpen ? item.label : ""}
                   style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: sidebarOpen ? "flex-start" : "center", gap: "12px", padding: sidebarOpen ? "10px 12px" : "0", borderRadius: "12px", border: "none", cursor: "pointer", background: actif ? "rgba(255,200,1,0.2)" : "transparent", color: actif ? C.teal : C.gray, transition: "all 0.15s", width: sidebarOpen ? "100%" : "48px", height: sidebarOpen ? "auto" : "48px" }}
                   onMouseOver={(e) => { if (!actif) e.currentTarget.style.background = "rgba(17,76,90,0.05)"; }}
@@ -174,7 +174,7 @@ export default function AdminLayout({
         {MENU.map((item) => (
           <button 
             key={item.id} 
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => (item.href ? (window.location.href = item.href) : setActiveTab(item.id))}
             className={`mobile-nav-item ${activeTab === item.id ? 'active' : ''}`}
             aria-label={item.label}
           >
