@@ -36,6 +36,18 @@ model NewsletterContact {
   updatedAt DateTime @updatedAt
 }
 
+// ⛸️ Inscriptions à la soirée patinoire (page publique /patinoire)
+model PatinoireInscription {
+  id        String   @id @default(cuid())
+  nom       String
+  prenom    String
+  email     String?  // facultatif : sert uniquement à envoyer une confirmation
+  patineurs Int      @default(1) // nombre de personnes qui chausseront les patins
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model NewsletterCampagne {
   id                 String    @id @default(cuid())
   sujet              String
