@@ -23,7 +23,7 @@ export async function inscrirePatinoire({ nom, prenom, email, patineurs }) {
   const nb = parseInt(patineurs, 10);
 
   if (!nomClean || !prenomClean) return { error: "Merci d'indiquer votre nom et votre prénom." };
-  if (emailClean && !EMAIL_REGEX.test(emailClean)) return { error: "Merci de saisir une adresse email valide." };
+  if (!emailClean || !EMAIL_REGEX.test(emailClean)) return { error: "Merci de saisir une adresse email valide." };
   if (!Number.isInteger(nb) || nb < 1 || nb > MAX_PATINEURS) {
     return { error: `Le nombre de patineurs doit être compris entre 1 et ${MAX_PATINEURS}.` };
   }

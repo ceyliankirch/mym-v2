@@ -20,12 +20,6 @@ const INFOS = [
   { Icon: Ticket, label: "Tarif", valeur: "Gratuit" },
 ];
 
-const PHOTOS = [
-  { src: "/patinoire/patinoire-3.jpg", alt: "Deux enfants avec leur casque sur la patinoire" },
-  { src: "/patinoire/patinoire-2.jpg", alt: "Un enfant pousse un déambulateur sur la glace" },
-  { src: "/patinoire/patinoire-4.jpg", alt: "La patinoire au coucher du soleil, remplie de familles" },
-];
-
 const label = { fontSize: 11, fontWeight: 700, color: C.teal, textTransform: "uppercase", letterSpacing: 1 };
 const champ = {
   width: "100%", background: C.arctic, border: "2px solid transparent", borderRadius: 14,
@@ -76,16 +70,14 @@ export default function PatinoireClient() {
     <div style={{ background: C.arctic, color: C.teal, overflowX: "hidden" }}>
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section style={{ position: "relative", minHeight: 560, display: "flex", alignItems: "center", background: C.teal }}>
-        {/* Photo calée à droite (les enfants restent entiers, quelle que soit la largeur d'écran) */}
-        <style>{`@media (max-width: 767px) { .patinoire-hero-photo { width: 100% !important; } .patinoire-hero-fade { width: 100% !important; background: rgba(17,76,90,0.72) !important; } }`}</style>
+        {/* Photo plein cadre + dégradé teal à gauche pour la lisibilité du texte */}
         <div
-          className="patinoire-hero-photo"
           style={{
-            position: "absolute", top: 0, right: 0, bottom: 0, width: "min(65%, 1250px)",
-            backgroundImage: "url(/patinoire/patinoire-1.jpg)", backgroundSize: "cover", backgroundPosition: "60% 35%",
+            position: "absolute", inset: 0,
+            backgroundImage: "url(/patinoire/patinoire-hero.jpg)", backgroundSize: "cover", backgroundPosition: "center 60%",
           }}
         />
-        <div className="patinoire-hero-fade" style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: "min(65%, 1250px)", background: "linear-gradient(90deg, #114C5A 0%, rgba(17,76,90,0.55) 30%, rgba(17,76,90,0) 70%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(17,76,90,0.92) 0%, rgba(17,76,90,0.7) 40%, rgba(17,76,90,0.25) 100%)" }} />
         <div style={{ position: "relative", maxWidth: 1320, width: "100%", margin: "0 auto", padding: "80px 32px", ...fade() }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.yellow, borderRadius: 999, padding: "8px 16px", marginBottom: 24 }}>
             <Snowflake size={14} style={{ color: C.teal }} />
@@ -141,12 +133,6 @@ export default function PatinoireClient() {
               <p style={{ margin: 0, fontWeight: 800, color: C.teal }}>Nous espérons vous retrouver nombreux et nombreuses !</p>
             </div>
 
-            {/* Photos */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 36 }}>
-              <img src={PHOTOS[2].src} alt={PHOTOS[2].alt} style={{ gridColumn: "1 / -1", width: "100%", height: 220, objectFit: "cover", borderRadius: 24 }} />
-              <img src={PHOTOS[0].src} alt={PHOTOS[0].alt} style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 24 }} />
-              <img src={PHOTOS[1].src} alt={PHOTOS[1].alt} style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 24 }} />
-            </div>
           </div>
 
           {/* Formulaire */}
@@ -201,8 +187,8 @@ export default function PatinoireClient() {
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <label htmlFor="email" style={label}>Email (facultatif)</label>
-                  <input id="email" name="email" type="email" autoComplete="email" placeholder="Pour recevoir une confirmation" maxLength={200} style={champ} {...focus} />
+                  <label htmlFor="email" style={label}>Email</label>
+                  <input id="email" name="email" type="email" required autoComplete="email" placeholder="Pour recevoir une confirmation" maxLength={200} style={champ} {...focus} />
                 </div>
 
                 {erreur && (
