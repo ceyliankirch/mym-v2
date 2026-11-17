@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CalendarDays, Clock, MapPin, Ticket, CheckCircle2, Snowflake, Minus, Plus } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Ticket, CheckCircle2, Snowflake, Minus, Plus, Info } from "lucide-react";
 import { inscrirePatinoire } from "@/app/actions/patinoire";
 
 /* ─── PALETTE ────────────────────────────────────────────────────────────── */
@@ -132,6 +132,12 @@ export default function PatinoireClient() {
                 Pour nous aider à organiser cet événement, merci de remplir le formulaire en indiquant vos nom et prénom, ainsi que le nombre de personnes qui chausseront les patins.
               </p>
               <p style={{ margin: 0, fontWeight: 800, color: C.teal }}>Nous espérons vous retrouver nombreux et nombreuses !</p>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, background: C.saffron, color: C.teal, borderRadius: 20, padding: "18px 22px", marginTop: 4 }}>
+                <Info size={22} style={{ flexShrink: 0, marginTop: 2 }} />
+                <p style={{ margin: 0, fontSize: 15, fontWeight: 800, lineHeight: 1.6 }}>
+                  Les jeunes de moins de 18 ans restent sous la responsabilité de leurs parents ou de leur représentant légal pendant toute la soirée.
+                </p>
+              </div>
             </div>
 
           </div>
