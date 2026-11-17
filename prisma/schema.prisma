@@ -43,6 +43,8 @@ model PatinoireInscription {
   prenom    String
   email     String?  // facultatif : sert uniquement à envoyer une confirmation
   patineurs Int      @default(1) // nombre de personnes qui chausseront les patins
+  // Détail des participants : [{ prenom, nom, naissance (YYYY-MM-DD), role: "patineur" | "accompagnant", responsable }]
+  participants Json?
   createdAt DateTime @default(now())
 
   @@index([createdAt])

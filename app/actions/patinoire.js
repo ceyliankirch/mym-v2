@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { sendPatinoireInscriptionEmail, sendPatinoireNotificationEmail } from "@/lib/email";
+import { validerParticipants } from "@/lib/patinoire";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_PATINEURS = 3;
 
 async function estAdmin() {
   const session = await auth();
@@ -16,21 +16,20 @@ async function estAdmin() {
 
 // ⛸️ Inscription publique à la soirée patinoire (page /patinoire).
 // Renvoie { success } ou { error } — le formulaire est géré côté client.
-export async function inscrirePatinoire({ nom, prenom, email, patineurs }) {
+export async function inscrirePatinoire({ nom, prenom, email, participants: participantsBruts }) {
   const nomClean = (nom || "").toString().trim().slice(0, 100);
   const prenomClean = (prenom || "").toString().trim().slice(0, 100);
   const emailClean = (email || "").toString().trim().toLowerCase().slice(0, 200) || null;
-  const nb = parseInt(patineurs, 10);
 
   if (!nomClean || !prenomClean) return { error: "Merci d'indiquer votre nom et votre prénom." };
   if (!emailClean || !EMAIL_REGEX.test(emailClean)) return { error: "Merci de saisir une adresse email valide." };
-  if (!Number.isInteger(nb) || nb < 1 || nb > MAX_PATINEURS) {
-    return { error: `Le nombre de patineurs doit être compris entre 1 et ${MAX_PATINEURS}.` };
-  }
+  const validation = validerParticipants(participantsBruts);
+  if (validation.error) return { error: validation.error };
+  const { participants, patineurs: nb } = validation;
 
   try {
     await prisma.patinoireInscription.create({
-      data: { nom: nomClean, prenom: prenomClean, email: emailClean, patineurs: nb },
+      data: { nom: nomClean, prenom: prenomClean, email: emailClean, patineurs: nb, participants },
     });
   } catch (error) {
     console.error("Erreur inscription patinoire :", error);
@@ -43,13 +42,14 @@ export async function inscrirePatinoire({ nom, prenom, email, patineurs }) {
     const agregat = await prisma.patinoireInscription.aggregate({ _count: true, _sum: { patineurs: true } });
     await Promise.allSettled([
       emailClean
-        ? sendPatinoireInscriptionEmail({ to: emailClean, prenom: prenomClean, patineurs: nb })
+        ? sendPatinoireInscriptionEmail({ to: emailClean, prenom: prenomClean, patineurs: nb, participants })
         : Promise.resolve(),
       sendPatinoireNotificationEmail({
         prenom: prenomClean,
         nom: nomClean,
         email: emailClean,
         patineurs: nb,
+        participants,
         totalInscriptions: agregat._count,
         totalPatineurs: agregat._sum.patineurs || 0,
       }),

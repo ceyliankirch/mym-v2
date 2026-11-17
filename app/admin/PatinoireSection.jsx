@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Trash2, Download, Loader, Snowflake, Users, ExternalLink } from "lucide-react";
 import { listerInscriptionsPatinoire, supprimerInscriptionPatinoire } from "@/app/actions/patinoire";
+import { ageALaSoiree } from "@/lib/patinoire";
 
 const C = {
   yellow: "#FFC801",
@@ -15,6 +16,11 @@ const C = {
 const th = { textAlign: "left", padding: "12px 16px", fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: C.gray, fontWeight: 700 };
 const td = { padding: "12px 16px", fontSize: 14, borderTop: `1px solid ${C.arctic}`, color: C.teal };
 const btnGhost = { background: C.arctic, color: C.teal, border: "none", padding: "10px 18px", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" };
+
+const descriptionParticipant = (p) => {
+  const age = ageALaSoiree(p.naissance);
+  return `${p.prenom} ${p.nom} (${age ?? "?"} ans, ${p.role === "accompagnant" ? "accompagnant" : "patineur"}${p.responsable ? ", responsable" : ""})`;
+};
 
 const formatDate = (iso) => new Date(iso).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
 
@@ -52,8 +58,8 @@ export default function PatinoireSection() {
 
   const exporterCSV = () => {
     const echap = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lignes = [["Nom", "Prénom", "Email", "Patineurs", "Inscrit le"].map(echap).join(";")];
-    inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, formatDate(i.createdAt)].map(echap).join(";")));
+    const lignes = [["Nom", "Prénom", "Email", "Patineurs", "Participants", "Inscrit le"].map(echap).join(";")];
+    inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, (i.participants || []).map(descriptionParticipant).join(" | "), formatDate(i.createdAt)].map(echap).join(";")));
     const blob = new Blob(["﻿" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -101,16 +107,16 @@ export default function PatinoireSection() {
       {erreur && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "12px 16px", borderRadius: 12, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>{erreur}</div>}
 
       <div style={{ background: C.white, borderRadius: 24, overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
           <thead>
-            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Patineurs</th><th style={th}>Inscrit le</th><th style={th} /></tr>
+            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Patineurs</th><th style={th}>Participants</th><th style={th}>Inscrit le</th><th style={th} /></tr>
           </thead>
           <tbody>
             {loading && (
-              <tr><td colSpan={6} style={{ ...td, textAlign: "center", color: C.gray }}><Loader size={16} style={{ verticalAlign: "middle" }} /> Chargement…</td></tr>
+              <tr><td colSpan={7} style={{ ...td, textAlign: "center", color: C.gray }}><Loader size={16} style={{ verticalAlign: "middle" }} /> Chargement…</td></tr>
             )}
             {!loading && filtrees.length === 0 && (
-              <tr><td colSpan={6} style={{ ...td, textAlign: "center", color: C.gray }}>{inscriptions.length === 0 ? "Aucune inscription pour le moment." : "Aucun résultat."}</td></tr>
+              <tr><td colSpan={7} style={{ ...td, textAlign: "center", color: C.gray }}>{inscriptions.length === 0 ? "Aucune inscription pour le moment." : "Aucun résultat."}</td></tr>
             )}
             {filtrees.map((i) => (
               <tr key={i.id}>
@@ -118,6 +124,9 @@ export default function PatinoireSection() {
                 <td style={td}>{i.prenom}</td>
                 <td style={td}>{i.email || "—"}</td>
                 <td style={{ ...td, fontWeight: 800 }}>{i.patineurs}</td>
+                <td style={{ ...td, fontSize: 12, lineHeight: 1.6 }}>
+                  {(i.participants || []).length === 0 ? "—" : i.participants.map((p, k) => <div key={k}>{descriptionParticipant(p)}</div>)}
+                </td>
                 <td style={td}>{formatDate(i.createdAt)}</td>
                 <td style={{ ...td, textAlign: "right" }}>
                   <button onClick={() => supprimer(i)} aria-label={`Supprimer ${i.prenom} ${i.nom}`} title="Supprimer"
