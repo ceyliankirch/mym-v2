@@ -173,15 +173,15 @@ export default function PatinoireClient() {
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <span style={label}>Nombre de personnes qui chausseront les patins *</span>
+                  <span style={label}>Nombre de personnes qui chausseront les patins (3 maximum) *</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                     <button type="button" aria-label="Retirer une personne" onClick={() => setPatineurs((n) => Math.max(1, n - 1))}
                       style={{ width: 48, height: 48, borderRadius: 14, border: "none", background: C.arctic, color: C.teal, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <Minus size={18} />
                     </button>
                     <span aria-live="polite" style={{ minWidth: 40, textAlign: "center", fontSize: 28, fontWeight: 900 }}>{patineurs}</span>
-                    <button type="button" aria-label="Ajouter une personne" onClick={() => setPatineurs((n) => Math.min(20, n + 1))}
-                      style={{ width: 48, height: 48, borderRadius: 14, border: "none", background: C.yellow, color: C.teal, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <button type="button" aria-label="Ajouter une personne" onClick={() => setPatineurs((n) => Math.min(3, n + 1))} disabled={patineurs >= 3}
+                      style={{ width: 48, height: 48, borderRadius: 14, border: "none", background: C.yellow, color: C.teal, cursor: patineurs >= 3 ? "not-allowed" : "pointer", opacity: patineurs >= 3 ? 0.4 : 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <Plus size={18} />
                     </button>
                   </div>

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { sendPatinoireInscriptionEmail, sendPatinoireNotificationEmail } from "@/lib/email";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_PATINEURS = 20;
+const MAX_PATINEURS = 3;
 
 async function estAdmin() {
   const session = await auth();
