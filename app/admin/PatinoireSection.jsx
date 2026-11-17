@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Trash2, Download, Loader, Snowflake, Users, ExternalLink } from "lucide-react";
 import { listerInscriptionsPatinoire, supprimerInscriptionPatinoire } from "@/app/actions/patinoire";
-import { ageALaSoiree } from "@/lib/patinoire";
 
 const C = {
   yellow: "#FFC801",
@@ -17,10 +16,8 @@ const th = { textAlign: "left", padding: "12px 16px", fontSize: 11, textTransfor
 const td = { padding: "12px 16px", fontSize: 14, borderTop: `1px solid ${C.arctic}`, color: C.teal };
 const btnGhost = { background: C.arctic, color: C.teal, border: "none", padding: "10px 18px", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" };
 
-const descriptionParticipant = (p) => {
-  const age = ageALaSoiree(p.naissance);
-  return `${p.prenom} ${p.nom} (${age ?? "?"} ans, ${p.role === "accompagnant" ? "accompagnant" : "patineur"}${p.responsable ? ", responsable" : ""})`;
-};
+const descriptionParticipant = (p) =>
+  `${p.prenom} ${p.nom} (${p.role === "accompagnant" ? "accompagnant" : "invité"}${p.email ? `, ${p.email}` : ""})`;
 
 const formatDate = (iso) => new Date(iso).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
 
@@ -58,7 +55,7 @@ export default function PatinoireSection() {
 
   const exporterCSV = () => {
     const echap = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lignes = [["Nom", "Prénom", "Email", "Patineurs", "Participants", "Inscrit le"].map(echap).join(";")];
+    const lignes = [["Nom", "Prénom", "Email", "Invités", "Participants", "Inscrit le"].map(echap).join(";")];
     inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, (i.participants || []).map(descriptionParticipant).join(" | "), formatDate(i.createdAt)].map(echap).join(";")));
     const blob = new Blob(["﻿" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -73,7 +70,7 @@ export default function PatinoireSection() {
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24, marginBottom: 24 }}>
         {[
-          { label: "Patineurs au total", valeur: totalPatineurs, Icon: Snowflake },
+          { label: "Invités au total", valeur: totalPatineurs, Icon: Snowflake },
           { label: "Inscriptions", valeur: inscriptions.length, Icon: Users },
         ].map(({ label, valeur, Icon }) => (
           <div key={label} style={{ background: C.white, borderRadius: 24, padding: "24px 28px", display: "flex", alignItems: "center", gap: 18 }}>
@@ -109,7 +106,7 @@ export default function PatinoireSection() {
       <div style={{ background: C.white, borderRadius: 24, overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
           <thead>
-            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Patineurs</th><th style={th}>Participants</th><th style={th}>Inscrit le</th><th style={th} /></tr>
+            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Invités</th><th style={th}>Participants</th><th style={th}>Inscrit le</th><th style={th} /></tr>
           </thead>
           <tbody>
             {loading && (

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { CalendarDays, Clock, MapPin, Ticket, CheckCircle2, Snowflake, Plus, Info, X } from "lucide-react";
 import { inscrirePatinoire } from "@/app/actions/patinoire";
-import { ageALaSoiree, validerParticipants, MAX_PATINEURS, MAX_ACCOMPAGNANTS } from "@/lib/patinoire";
+import { validerParticipants, MAX_INVITES, MAX_ACCOMPAGNANTS } from "@/lib/patinoire";
 
 /* ─── PALETTE ────────────────────────────────────────────────────────────── */
 const C = {
@@ -30,13 +30,13 @@ const champ = {
 const focus = { onFocus: (e) => (e.target.style.borderColor = C.yellow), onBlur: (e) => (e.target.style.borderColor = "transparent") };
 
 let prochainId = 1;
-const nouveauParticipant = (role) => ({ id: prochainId++, prenom: "", nom: "", naissance: "", role, responsable: false });
+const nouveauParticipant = (role) => ({ id: prochainId++, prenom: "", nom: "", email: "", role });
 
 export default function PatinoireClient() {
   const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | submitting | success
   const [erreur, setErreur] = useState("");
-  const [participants, setParticipants] = useState(() => [nouveauParticipant("patineur")]);
+  const [participants, setParticipants] = useState(() => [nouveauParticipant("invite")]);
   const [prenomConfirme, setPrenomConfirme] = useState("");
 
   useEffect(() => {
@@ -66,12 +66,11 @@ export default function PatinoireClient() {
     }
   };
 
-  const nbPatineurs = participants.filter((p) => p.role === "patineur").length;
-  const nbAccompagnants = participants.length - nbPatineurs;
+  const nbInvites = participants.filter((p) => p.role === "invite").length;
+  const nbAccompagnants = participants.length - nbInvites;
   const modifier = (id, champs) => setParticipants((l) => l.map((p) => (p.id === id ? { ...p, ...champs } : p)));
   const ajouter = (role) => setParticipants((l) => [...l, nouveauParticipant(role)]);
   const retirer = (id) => setParticipants((l) => l.filter((p) => p.id !== id));
-  const aMineur = participants.some((p) => { const a = ageALaSoiree(p.naissance); return a !== null && a < 18; });
 
   const fade = (delay = 0) => ({
     opacity: visible ? 1 : 0,
@@ -142,7 +141,7 @@ export default function PatinoireClient() {
                 <strong>Make Your Moment a privatisé la patinoire pour l&apos;occasion.</strong> La soirée est gratuite et chaque participant peut inviter un ou deux amis !
               </p>
               <p style={{ margin: 0 }}>
-                Pour nous aider à organiser cet événement, merci de remplir le formulaire en indiquant vos coordonnées, puis le prénom, le nom et la date de naissance de chaque participant (patineurs et, si besoin, accompagnant).
+                Pour nous aider à organiser cet événement, merci de remplir le formulaire en indiquant vos coordonnées, puis le prénom, le nom et l&apos;email de chaque invité (et d&apos;un accompagnant si besoin).
               </p>
               <p style={{ margin: 0, fontWeight: 800, color: C.teal }}>Nous espérons vous retrouver nombreux et nombreuses !</p>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, background: C.saffron, color: C.teal, borderRadius: 20, padding: "18px 22px", marginTop: 4 }}>
@@ -167,7 +166,7 @@ export default function PatinoireClient() {
                   Votre inscription à la soirée patinoire du vendredi 11 décembre est bien enregistrée. À très vite sur la glace !
                 </p>
                 <button
-                  onClick={() => { setStatus("idle"); setParticipants([nouveauParticipant("patineur")]); }}
+                  onClick={() => { setStatus("idle"); setParticipants([nouveauParticipant("invite")]); }}
                   style={{ background: C.arctic, color: C.teal, border: "none", padding: "14px 28px", borderRadius: 999, fontSize: 12, fontWeight: 800, cursor: "pointer" }}
                 >
                   Inscrire une autre famille
@@ -195,19 +194,17 @@ export default function PatinoireClient() {
                   <div>
                     <span style={label}>Qui vient ? *</span>
                     <p style={{ fontSize: 12, color: "#8aa", margin: "6px 0 0", lineHeight: 1.5 }}>
-                      Ajoutez chaque patineur ({MAX_PATINEURS} maximum) et, si besoin, un accompagnant qui ne patine pas.
+                      Ajoutez chaque invité ({MAX_INVITES} maximum) et, si besoin, un accompagnant.
                     </p>
                   </div>
 
                   {participants.map((p, i) => {
-                    const age = ageALaSoiree(p.naissance);
-                    const majeur = age !== null && age >= 18;
                     const estAccompagnant = p.role === "accompagnant";
                     return (
                       <div key={p.id} style={{ background: C.arctic, borderRadius: 20, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                           <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, background: estAccompagnant ? C.lilac : C.yellow, color: C.teal, borderRadius: 999, padding: "5px 12px" }}>
-                            {estAccompagnant ? "Accompagnant · ne patine pas" : `Patineur ${participants.slice(0, i + 1).filter((x) => x.role === "patineur").length}`}
+                            {estAccompagnant ? "Accompagnant" : `Invité ${participants.slice(0, i + 1).filter((x) => x.role === "invite").length}`}
                           </span>
                           {participants.length > 1 && (
                             <button type="button" onClick={() => retirer(p.id)} aria-label="Retirer ce participant"
@@ -224,51 +221,23 @@ export default function PatinoireClient() {
                             onChange={(e) => modifier(p.id, { nom: e.target.value })}
                             style={{ ...champ, background: C.white, flex: "1 1 140px", width: "auto" }} {...focus} />
                         </div>
-                        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: "1 1 180px" }}>
-                            <label style={{ ...label, fontSize: 10 }}>Date de naissance</label>
-                            <input type="date" required value={p.naissance} max="2026-12-11" min="1900-01-01"
-                              onChange={(e) => {
-                                const naissance = e.target.value;
-                                const a = ageALaSoiree(naissance);
-                                modifier(p.id, { naissance, ...(a !== null && a < 18 ? { responsable: false } : {}) });
-                              }}
-                              style={{ ...champ, background: C.white, width: "auto" }} {...focus} />
-                          </div>
-                          <div style={{ minWidth: 72, textAlign: "center", paddingTop: 18 }}>
-                            <span style={{ fontSize: 20, fontWeight: 900 }}>{age !== null ? age : "–"}</span>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#5a7a84" }}> ans</span>
-                          </div>
-                        </div>
-                        {majeur && (
-                          <label style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                            <input type="checkbox" checked={p.responsable} onChange={(e) => modifier(p.id, { responsable: e.target.checked })}
-                              style={{ width: 18, height: 18, accentColor: C.teal }} />
-                            Responsable des mineurs (accompagnant)
-                          </label>
-                        )}
-                        {estAccompagnant && age !== null && age < 18 && (
-                          <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "#991b1b" }}>Un accompagnant doit être majeur.</p>
-                        )}
+                        <input type="email" aria-label="Email du participant" placeholder="Email" maxLength={200} value={p.email}
+                          onChange={(e) => modifier(p.id, { email: e.target.value })}
+                          style={{ ...champ, background: C.white }} {...focus} />
                       </div>
                     );
                   })}
 
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    <button type="button" onClick={() => ajouter("patineur")} disabled={nbPatineurs >= MAX_PATINEURS}
-                      style={{ display: "flex", alignItems: "center", gap: 6, border: "none", borderRadius: 999, background: C.yellow, color: C.teal, fontWeight: 800, fontSize: 12, padding: "11px 18px", cursor: nbPatineurs >= MAX_PATINEURS ? "not-allowed" : "pointer", opacity: nbPatineurs >= MAX_PATINEURS ? 0.4 : 1 }}>
-                      <Plus size={15} />Ajouter un patineur
+                    <button type="button" onClick={() => ajouter("invite")} disabled={nbInvites >= MAX_INVITES}
+                      style={{ display: "flex", alignItems: "center", gap: 6, border: "none", borderRadius: 999, background: C.yellow, color: C.teal, fontWeight: 800, fontSize: 12, padding: "11px 18px", cursor: nbInvites >= MAX_INVITES ? "not-allowed" : "pointer", opacity: nbInvites >= MAX_INVITES ? 0.4 : 1 }}>
+                      <Plus size={15} />Ajouter un invité
                     </button>
                     <button type="button" onClick={() => ajouter("accompagnant")} disabled={nbAccompagnants >= MAX_ACCOMPAGNANTS}
                       style={{ display: "flex", alignItems: "center", gap: 6, border: "none", borderRadius: 999, background: C.lilac, color: C.teal, fontWeight: 800, fontSize: 12, padding: "11px 18px", cursor: nbAccompagnants >= MAX_ACCOMPAGNANTS ? "not-allowed" : "pointer", opacity: nbAccompagnants >= MAX_ACCOMPAGNANTS ? 0.4 : 1 }}>
                       <Plus size={15} />Ajouter un accompagnant
                     </button>
                   </div>
-                  {aMineur && (
-                    <p style={{ margin: 0, fontSize: 12, color: "#5a7a84", lineHeight: 1.5 }}>
-                      Des mineurs participent : cochez « Responsable des mineurs » sur au moins un adulte (accompagnant ou patineur).
-                    </p>
-                  )}
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

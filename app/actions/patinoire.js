@@ -25,7 +25,7 @@ export async function inscrirePatinoire({ nom, prenom, email, participants: part
   if (!emailClean || !EMAIL_REGEX.test(emailClean)) return { error: "Merci de saisir une adresse email valide." };
   const validation = validerParticipants(participantsBruts);
   if (validation.error) return { error: validation.error };
-  const { participants, patineurs: nb } = validation;
+  const { participants, invites: nb } = validation;
 
   try {
     await prisma.patinoireInscription.create({
