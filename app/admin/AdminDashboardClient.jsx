@@ -1551,7 +1551,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: C.arctic, borderRadius: "12px", padding: "14px 16px" }}>
               <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
                 <input type="checkbox" name="reductionVdmActive" checked={vdmActive} onChange={(e) => setVdmActive(e.target.checked)} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
-                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne &amp; partenaires CSE »</span>
+                <span style={{ fontSize: "13px", fontWeight: 800, color: C.teal }}>🏷️ Activer le tarif « Habitant du Val-de-Marne &amp; partenaires »</span>
               </label>
               <p style={{ fontSize: "11px", color: C.gray, margin: 0 }}>Désactivé par défaut : les anciens séjours n'affichent pas ce tarif. À activer séjour par séjour.</p>
 
@@ -1613,7 +1613,7 @@ function ModalSejour({ sejourData, setSejourEnEdition, isSubmitting, setIsSubmit
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement — Tarif Habitant du Val-de-Marne &amp; partenaires CSE</label>
+              <label style={{ fontSize: "11px", fontWeight: 700, color: C.gray, textTransform: "uppercase" }}>Lien de paiement — Tarif Habitant du Val-de-Marne &amp; partenaires</label>
               <input type="url" name="lienPaiementCICValDeMarne" defaultValue={isEditing ? sejourData.lienPaiementCICValDeMarne : ""} placeholder="https://..." style={{ padding: "12px", borderRadius: "12px", border: `1px solid ${C.lightGray}` }} />
               <p style={{ fontSize: "11px", color: C.gray }}>Lien utilisé quand la famille sélectionne le tarif réduit réservé aux habitants du Val-de-Marne (uniquement si le tarif ci-dessus est activé).</p>
             </div>
@@ -2883,7 +2883,7 @@ function ParametresCoordonneesCard({ parametres }) {
 }
 
 /* Carte "Codes de réduction" (onglet Paramètres) : à partir d'un mot-clé, génère un code
-   (lettres, chiffres, symboles) donnant droit au tarif « Habitant du Val-de-Marne & partenaires CSE ». */
+   (lettres, chiffres, symboles) donnant droit au tarif « Habitant du Val-de-Marne & partenaires ». */
 function ParametresCodesReductionCard({ codes }) {
   const [motCle, setMotCle] = useState("");
   const [liste, setListe] = useState(codes || []);
@@ -2924,7 +2924,7 @@ function ParametresCodesReductionCard({ codes }) {
     <div style={{ background: C.white, borderRadius: "18px", padding: "28px", border: "1px solid #e6edef", boxShadow: "0 1px 2px rgba(17,76,90,0.04)", marginBottom: "32px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: 900, color: C.teal, marginBottom: "6px" }}>🏷️ Codes de réduction Val-de-Marne</h2>
       <p style={{ color: C.gray, fontSize: "14px", marginBottom: "20px", maxWidth: "680px", lineHeight: 1.6 }}>
-        Entrez le code exact souhaité (lettres, chiffres, symboles) : il est créé tel quel, en respectant majuscules et minuscules. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne &amp; partenaires CSE » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
+        Entrez le code exact souhaité (lettres, chiffres, symboles) : il est créé tel quel, en respectant majuscules et minuscules. Ce code donne la même réduction que le tarif « Habitant du Val-de-Marne &amp; partenaires » dans le formulaire d'inscription. Désactivez-le pour l'invalider.
       </p>
       <form onSubmit={generer} style={{ display: "flex", flexWrap: "wrap", gap: "12px", maxWidth: "620px", marginBottom: "8px" }}>
         <input style={champStyle} value={motCle} onChange={(e) => setMotCle(e.target.value)} placeholder="Code (ex : SUCY#2027!)" />

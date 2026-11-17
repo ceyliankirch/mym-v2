@@ -264,7 +264,7 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
       } else if (tarifsListe.length === 0) {
         // Tarif standard ou "Habitant du Val-de-Marne" : on garde la mention et le prix de base appliqué
         const vdm = tarifSelectionne === "val_de_marne";
-        reponsesFormulaire["Tarif choisi"] = `${vdm ? "Habitant du Val-de-Marne & partenaires CSE" : "Tarif standard"} — ${montantBase} €`;
+        reponsesFormulaire["Tarif choisi"] = `${vdm ? "Habitant du Val-de-Marne & partenaires" : "Tarif standard"} — ${montantBase} €`;
       }
       reponsesFormulaire["Montant total à régler"] = `${montantTotal.toFixed(2).replace(".", ",")} €`;
       if (listeAttenteChambre) {
@@ -910,7 +910,7 @@ export default function InscriptionClient({ sejour, enfants = [], coordonnees = 
                         >
                           <p style={styles.priceBoxLabel}>
                             <Tag size={11} style={{ marginRight: "4px", verticalAlign: "-1px" }} />
-                            Habitant du Val-de-Marne &amp; partenaires CSE
+                            Habitant du Val-de-Marne &amp; partenaires
                           </p>
                           <p style={styles.priceBoxAmount}>
                             {Math.max(0, sejour.prix + (assuranceSouscrite ? montantAssurance : 0) - reductionVdm(sejour.prix)).toFixed(2)} €
