@@ -16,7 +16,7 @@ const C = {
 const INFOS = [
   { Icon: CalendarDays, label: "Date", valeur: "Vendredi 11 décembre" },
   { Icon: Clock, label: "Horaires", valeur: "19 h 30 – 23 h" },
-  { Icon: MapPin, label: "Lieu", valeur: "Patinoire de Sucy-en-Brie" },
+  { Icon: MapPin, label: "Lieu", valeur: "Patinoire de Sucy-en-Brie", detail: "Avenue Winston Churchill, parc Chaumoncel" },
   { Icon: Ticket, label: "Tarif", valeur: "Gratuit" },
 ];
 
@@ -87,7 +87,7 @@ export default function PatinoireClient() {
             Soirée à la <span style={{ color: C.yellow }}>patinoire</span>
           </h1>
           <p style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.9)", maxWidth: 560, lineHeight: 1.6, margin: "0 0 32px" }}>
-            Vendredi 11 décembre, de 19 h 30 à 23 h, à Sucy-en-Brie. Gratuit, privatisé pour nous.
+            Vendredi 11 décembre, de 19 h 30 à 23 h, à la patinoire de Sucy-en-Brie (parc Chaumoncel). Gratuit, privatisé pour nous.
           </p>
           <a href="#inscription" style={{ display: "inline-block", background: C.yellow, color: C.teal, fontWeight: 800, fontSize: 14, padding: "16px 32px", borderRadius: 999, textDecoration: "none", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
             Je m&apos;inscris
@@ -98,7 +98,7 @@ export default function PatinoireClient() {
       {/* ── INFOS CLÉS ───────────────────────────────────────────────────── */}
       <section style={{ padding: "0 32px", marginTop: -40, position: "relative" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, ...fade(0.15) }}>
-          {INFOS.map(({ Icon, label: l, valeur }) => (
+          {INFOS.map(({ Icon, label: l, valeur, detail }) => (
             <div key={l} style={{ background: C.white, borderRadius: 24, padding: "22px 24px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 12px 32px rgba(17,76,90,0.08)" }}>
               <div style={{ width: 48, height: 48, borderRadius: 16, background: C.yellow + "30", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Icon size={22} style={{ color: C.teal }} />
@@ -106,6 +106,7 @@ export default function PatinoireClient() {
               <div>
                 <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: "#8aa", textTransform: "uppercase", letterSpacing: 1 }}>{l}</p>
                 <p style={{ margin: "2px 0 0", fontSize: 15, fontWeight: 800 }}>{valeur}</p>
+                {detail && <p style={{ margin: "2px 0 0", fontSize: 12, fontWeight: 600, color: "#5a7a84", lineHeight: 1.4 }}>{detail}</p>}
               </div>
             </div>
           ))}
@@ -122,10 +123,10 @@ export default function PatinoireClient() {
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 16, fontSize: 16, color: "#41545c", lineHeight: 1.8 }}>
               <p style={{ margin: 0 }}>
-                Afin de nous retrouver tous ensemble avant les fêtes de fin d&apos;année, nous proposons aux participants de nos différents séjours une soirée à la patinoire de Sucy-en-Brie, de 19 h 30 à 23 h.
+                Afin de nous retrouver tous ensemble avant les fêtes de fin d&apos;année, nous proposons aux participants de nos différents séjours, à leurs parents et à nos partenaires une soirée à la patinoire de Sucy-en-Brie, de 19 h 30 à 23 h.
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Make Your Moment a privatisé la patinoire pour l&apos;occasion.</strong> La soirée est gratuite et réservée aux participants des séjours organisés par l&apos;association.
+                <strong>Make Your Moment a privatisé la patinoire pour l&apos;occasion.</strong> La soirée est gratuite et chaque participant peut inviter un ou deux amis !
               </p>
               <p style={{ margin: 0 }}>
                 Pour nous aider à organiser cet événement, merci de remplir le formulaire en indiquant vos nom et prénom, ainsi que le nombre de personnes qui chausseront les patins.
@@ -157,7 +158,7 @@ export default function PatinoireClient() {
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.5px", margin: "0 0 6px" }}>Je m&apos;inscris</h3>
-                  <p style={{ fontSize: 13, color: "#8aa", margin: 0 }}>Gratuit · réservé aux participants de nos séjours</p>
+                  <p style={{ fontSize: 13, color: "#8aa", margin: 0 }}>Gratuit · participants, parents, partenaires et leurs invités</p>
                 </div>
 
                 <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>

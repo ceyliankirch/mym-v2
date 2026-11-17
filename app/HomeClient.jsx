@@ -780,13 +780,13 @@ export default function HomeClient({ sejoursFromDb, galleryPhotos, googleReviews
         <div className={`hero-in ${visible ? "show" : ""}`} style={{ maxWidth: "900px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", paddingBottom: "100px", paddingTop: "80px" }}>
 
           <Link href="/patinoire" style={{
-            display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "28px",
-            background: "#1E88E5", color: "white", borderRadius: "999px", padding: "10px 20px",
-            fontSize: "13px", fontWeight: 800, textDecoration: "none", boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+            display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "32px",
+            background: "#1E88E5", color: "white", borderRadius: "999px", padding: "14px 28px",
+            fontSize: "17px", fontWeight: 800, textDecoration: "none", boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
           }}>
-            <Snowflake size={16} />
+            <Snowflake size={22} />
             Soirée patinoire · 11 déc. — Inscrivez-vous !
-            <ArrowRight size={16} />
+            <ArrowRight size={22} />
           </Link>
 
           <div style={{ color: "white" }}>
