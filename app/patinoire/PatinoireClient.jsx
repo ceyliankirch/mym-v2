@@ -16,7 +16,7 @@ const C = {
 
 const INFOS = [
   { Icon: CalendarDays, label: "Date", valeur: "Vendredi 11 décembre" },
-  { Icon: Clock, label: "Horaires", valeur: "19 h 30 – 23 h" },
+  { Icon: Clock, label: "Horaires", valeur: "19 h 30 – 22 h" },
   { Icon: MapPin, label: "Lieu", valeur: "Patinoire de Sucy-en-Brie", detail: "Avenue Winston Churchill, parc Chaumoncel" },
   { Icon: Ticket, label: "Tarif", valeur: "Gratuit" },
 ];
@@ -36,7 +36,7 @@ export default function PatinoireClient() {
   const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | submitting | success
   const [erreur, setErreur] = useState("");
-  const [participants, setParticipants] = useState(() => [nouveauParticipant("invite")]);
+  const [participants, setParticipants] = useState([]);
   const [prenomConfirme, setPrenomConfirme] = useState("");
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function PatinoireClient() {
             Soirée à la <span style={{ color: C.yellow }}>patinoire</span>
           </h1>
           <p style={{ fontSize: 18, fontWeight: 600, color: "rgba(255,255,255,0.9)", maxWidth: 560, lineHeight: 1.6, margin: "0 0 32px" }}>
-            Vendredi 11 décembre, de 19 h 30 à 23 h, à la patinoire de Sucy-en-Brie (parc Chaumoncel). Gratuit, privatisé pour nous.
+            Vendredi 11 décembre, de 19 h 30 à 22 h, à la patinoire de Sucy-en-Brie (parc Chaumoncel). Gratuit, privatisé pour nous.
           </p>
           <a href="#inscription" style={{ display: "inline-block", background: C.yellow, color: C.teal, fontWeight: 800, fontSize: 14, padding: "16px 32px", borderRadius: 999, textDecoration: "none", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
             Je m&apos;inscris
@@ -135,7 +135,7 @@ export default function PatinoireClient() {
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 16, fontSize: 16, color: "#41545c", lineHeight: 1.8 }}>
               <p style={{ margin: 0 }}>
-                Afin de nous retrouver tous ensemble avant les fêtes de fin d&apos;année, nous proposons aux participants de nos différents séjours, à leurs parents et à nos partenaires une soirée à la patinoire de Sucy-en-Brie, de 19 h 30 à 23 h.
+                Afin de nous retrouver tous ensemble avant les fêtes de fin d&apos;année, nous proposons aux participants de nos différents séjours, à leurs parents et à nos partenaires une soirée à la patinoire de Sucy-en-Brie, de 19 h 30 à 22 h.
               </p>
               <p style={{ margin: 0 }}>
                 <strong>Make Your Moment a privatisé la patinoire pour l&apos;occasion.</strong> La soirée est gratuite et chaque participant peut inviter un ou deux amis !
@@ -166,7 +166,7 @@ export default function PatinoireClient() {
                   Votre inscription à la soirée patinoire du vendredi 11 décembre est bien enregistrée. À très vite sur la glace !
                 </p>
                 <button
-                  onClick={() => { setStatus("idle"); setParticipants([nouveauParticipant("invite")]); }}
+                  onClick={() => { setStatus("idle"); setParticipants([]); }}
                   style={{ background: C.arctic, color: C.teal, border: "none", padding: "14px 28px", borderRadius: 999, fontSize: 12, fontWeight: 800, cursor: "pointer" }}
                 >
                   Inscrire une autre famille
@@ -192,9 +192,9 @@ export default function PatinoireClient() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div>
-                    <span style={label}>Qui vient ? *</span>
+                    <span style={label}>Venir avec d&apos;autres personnes ? (facultatif)</span>
                     <p style={{ fontSize: 12, color: "#8aa", margin: "6px 0 0", lineHeight: 1.5 }}>
-                      Ajoutez chaque invité ({MAX_INVITES} maximum) et, si besoin, un accompagnant.
+                      Vous pouvez vous inscrire seul(e). Sinon, ajoutez jusqu&apos;à {MAX_INVITES} invités (3 personnes par inscription, vous compris) et, si besoin, un accompagnant.
                     </p>
                   </div>
 
@@ -206,12 +206,10 @@ export default function PatinoireClient() {
                           <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, background: estAccompagnant ? C.lilac : C.yellow, color: C.teal, borderRadius: 999, padding: "5px 12px" }}>
                             {estAccompagnant ? "Accompagnant" : `Invité ${participants.slice(0, i + 1).filter((x) => x.role === "invite").length}`}
                           </span>
-                          {participants.length > 1 && (
-                            <button type="button" onClick={() => retirer(p.id)} aria-label="Retirer ce participant"
-                              style={{ background: "transparent", border: "none", color: C.teal, cursor: "pointer", padding: 4, display: "flex" }}>
-                              <X size={18} />
-                            </button>
-                          )}
+                          <button type="button" onClick={() => retirer(p.id)} aria-label="Retirer ce participant"
+                            style={{ background: "transparent", border: "none", color: C.teal, cursor: "pointer", padding: 4, display: "flex" }}>
+                            <X size={18} />
+                          </button>
                         </div>
                         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                           <input aria-label="Prénom du participant" placeholder="Prénom" required maxLength={100} value={p.prenom}

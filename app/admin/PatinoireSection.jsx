@@ -55,7 +55,7 @@ export default function PatinoireSection() {
 
   const exporterCSV = () => {
     const echap = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lignes = [["Nom", "Prénom", "Email", "Invités", "Participants", "Inscrit le"].map(echap).join(";")];
+    const lignes = [["Nom", "Prénom", "Email", "Personnes", "Invités / accompagnants", "Inscrit le"].map(echap).join(";")];
     inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, (i.participants || []).map(descriptionParticipant).join(" | "), formatDate(i.createdAt)].map(echap).join(";")));
     const blob = new Blob(["﻿" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -70,7 +70,7 @@ export default function PatinoireSection() {
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24, marginBottom: 24 }}>
         {[
-          { label: "Invités au total", valeur: totalPatineurs, Icon: Snowflake },
+          { label: "Personnes au total", valeur: totalPatineurs, Icon: Snowflake },
           { label: "Inscriptions", valeur: inscriptions.length, Icon: Users },
         ].map(({ label, valeur, Icon }) => (
           <div key={label} style={{ background: C.white, borderRadius: 24, padding: "24px 28px", display: "flex", alignItems: "center", gap: 18 }}>
@@ -106,7 +106,7 @@ export default function PatinoireSection() {
       <div style={{ background: C.white, borderRadius: 24, overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
           <thead>
-            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Invités</th><th style={th}>Participants</th><th style={th}>Inscrit le</th><th style={th} /></tr>
+            <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Email</th><th style={th}>Personnes</th><th style={th}>Invités / accompagnants</th><th style={th}>Inscrit le</th><th style={th} /></tr>
           </thead>
           <tbody>
             {loading && (
