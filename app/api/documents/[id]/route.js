@@ -17,7 +17,7 @@ export async function GET(_request, { params }) {
   });
   if (!document?.url) return new Response("Introuvable", { status: 404 });
 
-  const estAdmin = session.user.role === "ADMIN";
+  const estAdmin = String(session.user.role || "").toUpperCase() === "ADMIN";
   const estProprietaire = document.enfant?.client?.userId === session.user.id;
   if (!estAdmin && !estProprietaire) return new Response("Interdit", { status: 403 });
 

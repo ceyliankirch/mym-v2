@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(_request, { params }) {
   const { id } = await params;
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return new Response("Non autorisé", { status: 401 });
+  if (String(session?.user?.role || "").toUpperCase() !== "ADMIN") return new Response("Non autorisé", { status: 401 });
 
   const sejour = await prisma.sejour.findUnique({ where: { id }, select: { dateDebut: true } });
   if (!sejour) return new Response("Introuvable", { status: 404 });

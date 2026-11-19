@@ -10,7 +10,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function estAdmin() {
   const session = await auth();
-  const role = session?.user?.role;
+  const role = String(session?.user?.role || "").toUpperCase();
   return role === "ADMIN" || role === "ADMINISTRATEUR";
 }
 
