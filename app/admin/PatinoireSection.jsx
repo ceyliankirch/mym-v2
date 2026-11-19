@@ -26,6 +26,7 @@ export default function PatinoireSection() {
   const [loading, setLoading] = useState(true);
   const [erreur, setErreur] = useState("");
   const [recherche, setRecherche] = useState("");
+  const [vue, setVue] = useState("inscriptions"); // inscriptions | personnes
 
   useEffect(() => {
     let annule = false;
@@ -46,6 +47,22 @@ export default function PatinoireSection() {
     return inscriptions.filter((i) => `${i.prenom} ${i.nom} ${i.email || ""}`.toLowerCase().includes(q));
   }, [inscriptions, recherche]);
 
+  // Vue « Personnes » : une ligne par personne attendue (l'inscrit(e) + ses invités / accompagnants)
+  const personnes = useMemo(() => {
+    const q = recherche.trim().toLowerCase();
+    const lignes = [];
+    inscriptions.forEach((i) => {
+      const parts = Array.isArray(i.participants) ? i.participants : [];
+      const memeNom = (p) => p.prenom.trim().toLowerCase() === i.prenom.trim().toLowerCase() && p.nom.trim().toLowerCase() === i.nom.trim().toLowerCase();
+      if (!parts.some(memeNom)) lignes.push({ cle: `${i.id}-inscrit`, nom: i.nom, prenom: i.prenom, role: "Inscrit(e)", email: i.email, inscritPar: null, createdAt: i.createdAt });
+      parts.forEach((p, k) => lignes.push({
+        cle: `${i.id}-${k}`, nom: p.nom, prenom: p.prenom, role: p.role === "accompagnant" ? "Accompagnant" : "Invité",
+        email: p.email || null, inscritPar: `${i.prenom} ${i.nom}`, createdAt: i.createdAt,
+      }));
+    });
+    return q ? lignes.filter((l) => `${l.prenom} ${l.nom} ${l.email || ""} ${l.inscritPar || ""}`.toLowerCase().includes(q)) : lignes;
+  }, [inscriptions, recherche]);
+
   const supprimer = async (i) => {
     if (!window.confirm(`Supprimer l'inscription de ${i.prenom} ${i.nom} ?`)) return;
     const res = await supprimerInscriptionPatinoire(i.id);
@@ -55,13 +72,16 @@ export default function PatinoireSection() {
 
   const exporterCSV = () => {
     const echap = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lignes = [["Nom", "Prénom", "Email", "Personnes", "Invités / accompagnants", "Inscrit le"].map(echap).join(";")];
-    inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, (i.participants || []).map(descriptionParticipant).join(" | "), formatDate(i.createdAt)].map(echap).join(";")));
+    const lignes = vue === "personnes"
+      ? [["Nom", "Prénom", "Rôle", "Email", "Inscrit par", "Inscrit le"].map(echap).join(";")]
+      : [["Nom", "Prénom", "Email", "Personnes", "Invités / accompagnants", "Inscrit le"].map(echap).join(";")];
+    if (vue === "personnes") personnes.forEach((l) => lignes.push([l.nom, l.prenom, l.role, l.email, l.inscritPar, formatDate(l.createdAt)].map(echap).join(";")));
+    else inscriptions.forEach((i) => lignes.push([i.nom, i.prenom, i.email, i.patineurs, (i.participants || []).map(descriptionParticipant).join(" | "), formatDate(i.createdAt)].map(echap).join(";")));
     const blob = new Blob(["﻿" + lignes.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "inscrits-soiree-patinoire.csv";
+    a.download = vue === "personnes" ? "personnes-soiree-patinoire.csv" : "inscrits-soiree-patinoire.csv";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -93,6 +113,14 @@ export default function PatinoireSection() {
             style={{ width: "100%", boxSizing: "border-box", padding: "10px 14px 10px 40px", borderRadius: 999, border: `1px solid ${C.lightGray}`, background: C.white, fontSize: 13, color: C.teal, outline: "none", fontFamily: "inherit" }}
           />
         </div>
+        <div style={{ display: "flex", gap: 6, background: C.white, borderRadius: 999, padding: 4 }}>
+          {[["inscriptions", "Inscriptions"], ["personnes", "Toutes les personnes"]].map(([id, texte]) => (
+            <button key={id} onClick={() => setVue(id)}
+              style={{ border: "none", borderRadius: 999, padding: "8px 16px", fontSize: 12, fontWeight: 800, cursor: "pointer", background: vue === id ? C.yellow : "transparent", color: C.teal }}>
+              {texte}
+            </button>
+          ))}
+        </div>
         <div style={{ display: "flex", gap: 12, marginLeft: "auto" }}>
           <a href="/patinoire" target="_blank" rel="noreferrer" style={btnGhost}><ExternalLink size={15} />Voir la page</a>
           <button onClick={exporterCSV} disabled={inscriptions.length === 0} style={{ ...btnGhost, opacity: inscriptions.length === 0 ? 0.5 : 1 }}>
@@ -103,6 +131,28 @@ export default function PatinoireSection() {
 
       {erreur && <div style={{ background: "#fef2f2", color: "#991b1b", padding: "12px 16px", borderRadius: 12, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>{erreur}</div>}
 
+      {vue === "personnes" ? (
+        <div style={{ background: C.white, borderRadius: 24, overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
+            <thead>
+              <tr><th style={th}>Nom</th><th style={th}>Prénom</th><th style={th}>Rôle</th><th style={th}>Email</th><th style={th}>Inscrit par</th></tr>
+            </thead>
+            <tbody>
+              {loading && <tr><td colSpan={5} style={{ ...td, textAlign: "center", color: C.gray }}><Loader size={16} style={{ verticalAlign: "middle" }} /> Chargement…</td></tr>}
+              {!loading && personnes.length === 0 && <tr><td colSpan={5} style={{ ...td, textAlign: "center", color: C.gray }}>Aucune personne pour le moment.</td></tr>}
+              {personnes.map((l) => (
+                <tr key={l.cle}>
+                  <td style={{ ...td, fontWeight: 800 }}>{l.nom}</td>
+                  <td style={td}>{l.prenom}</td>
+                  <td style={td}>{l.role}</td>
+                  <td style={td}>{l.email || "—"}</td>
+                  <td style={td}>{l.inscritPar || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
       <div style={{ background: C.white, borderRadius: 24, overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 760 }}>
           <thead>
@@ -136,6 +186,7 @@ export default function PatinoireSection() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }
